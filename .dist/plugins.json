@@ -2022,7 +2022,7 @@
 		"name": "SkyNovels",
 		"site": "https://www.skynovels.net/",
 		"lang": "Español",
-		"version": "1.1.0",
+		"version": "1.1.1",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/skynovels.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/skynovels/icon.png"
 	},

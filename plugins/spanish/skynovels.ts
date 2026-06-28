@@ -1,13 +1,14 @@
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { FilterTypes, Filters } from '@libs/filterInputs';
+import { load } from 'cheerio';
 
 class SkyNovels implements Plugin.PluginBase {
   id = 'skynovels';
   name = 'SkyNovels';
   site = 'https://www.skynovels.net/';
   apiSite = 'https://api.skynovels.net/api/';
-  version = '1.1.0';
+  version = '1.1.1';
   icon = 'src/es/skynovels/icon.png';
   filters = {
     genres: {
@@ -86,6 +87,7 @@ class SkyNovels implements Plugin.PluginBase {
 
     return novels;
   }
+
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
     const novelId = novelPath.split('/')[1];
     const url = this.apiSite + 'novel/' + novelId + '/reading?&q';
@@ -146,23 +148,38 @@ class SkyNovels implements Plugin.PluginBase {
     const body = (await result.json()) as responseChapter;
 
     const item = body?.chapter?.[0];
-
-    // 1. Extraemos el texto crudo enviado por la API
     let chapterText = item?.chp_content || '';
 
-    // 2. Limpieza profunda de caracteres invisibles anti-copia (Zero-Width Spaces)
+    // 1. Limpieza profunda de caracteres invisibles anti-copia (Zero-Width Spaces y variantes)
     chapterText = chapterText
-      .replace(/[\u200B-\u200D\uFEFF]/g, '')
+      .replace(/[\u200B-\u200D\uFEFF\u200E\u200F\u202A-\u202E]/g, '')
       .trim();
 
-    // 3. Formateamos en bloques de párrafos para darle pausas naturales al lector TTS
-    const capituloFormateado = chapterText
-      .split('\n')
-      .filter(linea => linea.trim().length > 0)
-      .map(linea => `<p>${linea.trim()}</p>`)
-      .join('');
+    if (!chapterText) return '';
 
-    return capituloFormateado;
+    // 2. Cargamos en Cheerio para un manejo preciso del árbol HTML
+    const $ = load(chapterText);
+
+    // Eliminamos scripts, estilos o contenedores de publicidad si existieran
+    $('script, style, ins, .chapter-ad, .adsbygoogle').remove();
+
+    // 3. Forzamos saltos de línea en elementos estructurales para no perder la separación al extraer texto plano
+    $('p, div, h1, h2, h3, h4, h5, h6').append('\n');
+    $('br').replaceWith('\n');
+
+    // 4. Extraemos el texto plano completamente limpio de código HTML residual
+    const rawText = $.text();
+
+    // 5. Reconstruimos los párrafos línea por línea envolviéndolos limpiamente en etiquetas <p>
+    const chapterHtml: string[] = [];
+    rawText.split('\n').forEach(linea => {
+      const lineaLimpia = linea.trim();
+      if (lineaLimpia.length > 0) {
+        chapterHtml.push(`<p>${lineaLimpia}</p>`);
+      }
+    });
+
+    return chapterHtml.join('');
   }
 
   async searchNovels(
