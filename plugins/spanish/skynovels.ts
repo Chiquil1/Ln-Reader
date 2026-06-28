@@ -168,7 +168,24 @@ class SkyNovels implements Plugin.PluginBase {
     $('br').replaceWith('\n');
 
     // 4. Extraemos el texto plano completamente limpio de código HTML residual
-    const rawText = $.text();
+    let rawText = $.text();
+
+    // === OPTIMIZACIÓN Y LIMPIEZA PARA TTS (EVITA TEXTO BASURA) ===
+    rawText = rawText
+      // Elimina barras diagonales (/) e invertidas (\)
+      .replace(/[\\\/]/g, '')
+
+      // Unifica rayas de diálogo orientales/extrañas a un guion simple occidental (-)
+      .replace(/[—––─]/g, '-')
+
+      // Borra símbolos de adorno repetitivos comunes en títulos o notas del traductor
+      .replace(/[\*_~|•♦¤°]/g, '')
+
+      // Controla los abusos de puntos suspensivos continuos reduciéndolos a un máximo de 3
+      .replace(/\.{4,}/g, '...')
+
+      // Corrige los dobles o múltiples espacios en blanco para evitar baches de lectura
+      .replace(/ {2,}/g, ' ');
 
     // 5. Reconstruimos los párrafos línea por línea envolviéndolos limpiamente en etiquetas <p>
     const chapterHtml: string[] = [];
