@@ -30,11 +30,11 @@ if (-not (Test-Path .dist) -or -not (Get-ChildItem -Path .dist -Force)) {
     exit 1
 }
 
-# Copy plugins to legacy path (.js/src/plugins) for backward compatibility
-echo "Copying .js/plugins -> .js/src/plugins"
+# Copy plugins to legacy path (.js/plugins) for backward compatibility
+echo "Copying .js/plugins -> .js/plugins"
 New-Item -ItemType Directory -Force -Path .js/src | Out-Null
-Copy-Item -Path .js/plugins -Destination .js/src/plugins -Recurse -Force
-git add -f public/static .dist .js/src/plugins total.svg
+Copy-Item -Path .js/plugins -Destination .js/plugins -Recurse -Force
+git add -f public/static .dist .js/plugins total.svg
 git commit -m "chore: Publish Plugins"
 git push -f origin $dist
 git checkout -f $current
