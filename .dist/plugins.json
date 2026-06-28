@@ -1919,148 +1919,148 @@
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/ru/zelluloza/icon.png"
 	},
 	{
-		"id": "allnovelread",
-		"name": "AllNovelRead",
-		"site": "https://allnovelread.com/",
-		"lang": "Español",
-		"version": "1.1.10",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/AllNovelRead[lightnovelwp].js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/lightnovelwp/allnovelread/icon.png"
-	},
-	{
-		"id": "AnimesHoy12",
-		"name": "AnimesHoy12",
-		"site": "https://animeshoy12.com/",
-		"lang": "Español",
-		"version": "2.2.0",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/AnimesHoy12[madara].js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/madara/animeshoy12/icon.png"
-	},
-	{
-		"id": "HasuTL",
-		"name": "Hasu Translations",
-		"site": "https://hasutl.wordpress.com/",
-		"lang": "Español",
-		"version": "1.0.0",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/hasutl.js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/hasutl/icon.jpg"
-	},
-	{
-		"id": "lightnoveldaily",
-		"name": "LightNovelDaily",
-		"site": "https://lightnoveldaily.com",
-		"lang": "Español",
-		"version": "1.0.1",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/LightNovelDaily[hotnovelpub].js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/hotnovelpub/lightnoveldaily/icon.png"
-	},
-	{
-		"id": "mtlnovel-es",
-		"name": "MTL Novel (ES)",
-		"site": "https://es.mtlnovels.com/",
-		"lang": "Español",
-		"version": "1.1.3",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/MTLNovel(ES)[mtlnovel].js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/mtlnovel/mtlnovel/icon.png"
-	},
-	{
-		"id": "nova",
-		"name": "NOVA",
-		"site": "https://novelasligeras.net",
-		"lang": "Español",
-		"version": "1.1.1",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/NOVA.js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/nova/icon.png"
-	},
-	{
-		"id": "novelasligera",
-		"name": "Novelas Ligera",
-		"site": "https://novelasligera.com/",
-		"lang": "Español",
-		"version": "1.0.0",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/novelasligera.js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/novelasligera/icon.png"
-	},
-	{
-		"id": "novelyra",
-		"name": "Novelyra",
-		"site": "https://novelyra.com/",
-		"lang": "Español",
-		"version": "1.0.1",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/novelyra.js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/novelyra/icon.png"
-	},
-	{
-		"id": "oasistranslations",
-		"name": "Oasis Translations",
-		"site": "https://oasistranslations.wordpress.com/",
-		"lang": "Español",
-		"version": "1.0.0",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/oasistranslations.js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/oasistranslations/icon.png"
-	},
-	{
-		"id": "panchotranslations",
-		"name": "Pancho Translations",
-		"site": "https://panchotranslations.com/",
-		"lang": "Español",
-		"version": "2.2.0",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/PanchoTranslations[madara].js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/madara/panchotranslations/icon.png"
-	},
-	{
-		"id": "reinowuxia",
-		"name": "ReinoWuxia",
-		"site": "http://www.reinowuxia.com/",
-		"lang": "Español",
-		"version": "1.0.0",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/novelawuxia.js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/reinowuxia/icon.png"
-	},
-	{
-		"id": "skynovels",
-		"name": "SkyNovels",
-		"site": "https://www.skynovels.net/",
-		"lang": "Español",
-		"version": "1.1.1",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/skynovels.js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/skynovels/icon.png"
-	},
-	{
-		"id": "TCSega",
-		"name": "TC & Sega",
-		"site": "https://teamchmantranslations.com",
-		"lang": "Español",
-		"version": "1.1.10",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/TC&Sega[lightnovelwp].js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/lightnovelwp/tcsega/icon.png"
-	},
-	{
-		"id": "traducciones",
-		"name": "Traducciones Amistosas",
-		"site": "https://traduccionesamistosas.topmanhuas.org/",
-		"lang": "Español",
-		"version": "2.2.0",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/TraduccionesAmistosas[madara].js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/madara/traducciones/icon.png"
-	},
-	{
-		"id": "tunovelaligera",
-		"name": "TuNovelaLigera",
-		"site": "https://tunovelaligera.com",
-		"lang": "Español",
-		"version": "1.2.1",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/tunovelaligera.js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/tunovelaligera/icon.png"
-	},
-	{
-		"id": "yuukitls",
-		"name": "Yuuki Tls",
-		"site": "https://yuukitls.com/",
-		"lang": "Español",
-		"version": "1.0.0",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/src/plugins/spanish/yukitls.js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/yuukitls/icon.png"
+        "id": "allnovelread",
+        "name": "AllNovelRead",
+        "site": "https://allnovelread.com/",
+        "lang": "Español",
+        "version": "1.1.10",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/AllNovelRead[lightnovelwp].js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/lightnovelwp/allnovelread/icon.png"
+    },
+    {
+        "id": "AnimesHoy12",
+        "name": "AnimesHoy12",
+        "site": "https://animeshoy12.com/",
+        "lang": "Español",
+        "version": "2.2.0",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/AnimesHoy12[madara].js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/madara/animeshoy12/icon.png"
+    },
+    {
+        "id": "HasuTL",
+        "name": "Hasu Translations",
+        "site": "https://hasutl.wordpress.com/",
+        "lang": "Español",
+        "version": "1.0.0",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/hasutl.js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/hasutl/icon.jpg"
+    },
+    {
+        "id": "lightnoveldaily",
+        "name": "LightNovelDaily",
+        "site": "https://lightnoveldaily.com",
+        "lang": "Español",
+        "version": "1.0.1",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/LightNovelDaily[hotnovelpub].js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/hotnovelpub/lightnoveldaily/icon.png"
+    },
+    {
+        "id": "mtlnovel-es",
+        "name": "MTL Novel (ES)",
+        "site": "https://es.mtlnovels.com/",
+        "lang": "Español",
+        "version": "1.1.3",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/MTLNovel(ES)[mtlnovel].js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/mtlnovel/mtlnovel/icon.png"
+    },
+    {
+        "id": "nova",
+        "name": "NOVA",
+        "site": "https://novelasligeras.net",
+        "lang": "Español",
+        "version": "1.1.1",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/NOVA.js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/nova/icon.png"
+    },
+    {
+        "id": "novelasligera",
+        "name": "Novelas Ligera",
+        "site": "https://novelasligera.com/",
+        "lang": "Español",
+        "version": "1.0.0",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/novelasligera.js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/novelasligera/icon.png"
+    },
+    {
+        "id": "novelyra",
+        "name": "Novelyra",
+        "site": "https://novelyra.com/",
+        "lang": "Español",
+        "version": "1.0.1",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/novelyra.js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/novelyra/icon.png"
+    },
+    {
+        "id": "oasistranslations",
+        "name": "Oasis Translations",
+        "site": "https://oasistranslations.wordpress.com/",
+        "lang": "Español",
+        "version": "1.0.0",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/oasistranslations.js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/oasistranslations/icon.png"
+    },
+    {
+        "id": "panchotranslations",
+        "name": "Pancho Translations",
+        "site": "https://panchotranslations.com/",
+        "lang": "Español",
+        "version": "2.2.0",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/PanchoTranslations[madara].js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/madara/panchotranslations/icon.png"
+    },
+    {
+        "id": "reinowuxia",
+        "name": "ReinoWuxia",
+        "site": "http://www.reinowuxia.com/",
+        "lang": "Español",
+        "version": "1.0.0",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/novelawuxia.js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/reinowuxia/icon.png"
+    },
+    {
+        "id": "skynovels",
+        "name": "SkyNovels",
+        "site": "https://www.skynovels.net/",
+        "lang": "Español",
+        "version": "1.1.1",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/skynovels.js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/skynovels/icon.png"
+    },
+    {
+        "id": "TCSega",
+        "name": "TC & Sega",
+        "site": "https://teamchmantranslations.com",
+        "lang": "Español",
+        "version": "1.1.10",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/TC&Sega[lightnovelwp].js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/lightnovelwp/tcsega/icon.png"
+    },
+    {
+        "id": "traducciones",
+        "name": "Traducciones Amistosas",
+        "site": "https://traduccionesamistosas.topmanhuas.org/",
+        "lang": "Español",
+        "version": "2.2.0",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/TraduccionesAmistosas[madara].js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/madara/traducciones/icon.png"
+    },
+    {
+        "id": "tunovelaligera",
+        "name": "TuNovelaLigera",
+        "site": "https://tunovelaligera.com",
+        "lang": "Español",
+        "version": "1.2.1",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/tunovelaligera.js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/tunovelaligera/icon.png"
+    },
+    {
+        "id": "yuukitls",
+        "name": "Yuuki Tls",
+        "site": "https://yuukitls.com/",
+        "lang": "Español",
+        "version": "1.0.0",
+        "url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/yukitls.js",
+        "iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/yuukitls/icon.png"
 	},
 	{
 		"id": "novel-lucky",
