@@ -4,7 +4,7 @@ import { FilterTypes, Filters } from '@libs/filterInputs';
 import { load } from 'cheerio';
 
 class SkyNovels implements Plugin.PluginBase {
-  id = 'skynovels';
+  id = 'skynovels-custom';
   name = 'SkyNovels';
   site = 'https://www.skynovels.net/';
   apiSite = 'https://api.skynovels.net/api/';
