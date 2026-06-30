@@ -8,7 +8,7 @@ class SkyNovels implements Plugin.PluginBase {
   name = 'SkyNovels';
   site = 'https://www.skynovels.net/';
   apiSite = 'https://api.skynovels.net/api/';
-  version = '1.1.1';
+  version = '1.1.2'; // Versión actualizada con fix de TTS
   icon = 'src/es/skynovels/icon.png';
   filters = {
     genres: {
@@ -150,53 +150,78 @@ class SkyNovels implements Plugin.PluginBase {
     const item = body?.chapter?.[0];
     let chapterText = item?.chp_content || '';
 
-    // 1. Limpieza profunda de caracteres invisibles anti-copia (Zero-Width Spaces y variantes)
-    chapterText = chapterText
-      .replace(/[\u200B-\u200D\uFEFF\u200E\u200F\u202A-\u202E]/g, '')
-      .trim();
-
     if (!chapterText) return '';
 
-    // 2. Cargamos en Cheerio para un manejo preciso del árbol HTML
+    // Cargamos en Cheerio para manipular el DOM sin destruirlo
     const $ = load(chapterText);
 
-    // Eliminamos scripts, estilos o contenedores de publicidad si existieran
-    $('script, style, ins, .chapter-ad, .adsbygoogle').remove();
+    // 1. Eliminar elementos basura (scripts, estilos, anuncios)
+    $(
+      'script, style, ins, .chapter-ad, .adsbygoogle, .hidden, [style*="display:none"]',
+    ).remove();
 
-    // 3. Forzamos saltos de línea en elementos estructurales para no perder la separación al extraer texto plano
-    $('p, div, h1, h2, h3, h4, h5, h6').append('\n');
-    $('br').replaceWith('\n');
+    // 2. Función de limpieza para aplicar a cada nodo de texto individualmente
+    // Esto preserva la estructura HTML (<p>, <div>) necesaria para el TTS
+    const cleanTextNode = (text: string): string => {
+      let cleaned = text;
 
-    // 4. Extraemos el texto plano completamente limpio de código HTML residual
-    let rawText = $.text();
+      // Eliminar caracteres invisibles anti-copia
+      cleaned = cleaned.replace(
+        /[\u200B-\u200D\uFEFF\u200E\u200F\u202A-\u202E]/g,
+        '',
+      );
 
-    // === OPTIMIZACIÓN Y LIMPIEZA PARA TTS (EVITA TEXTO BASURA) ===
-    rawText = rawText
-      // Elimina barras diagonales (/) e invertidas (\)
-      .replace(/[\\\/]/g, '')
+      // === LIMPIEZA ESPECÍFICA PARA TTS (EVITA BARRAS Y CARACTERES RAROS) ===
+      cleaned = cleaned
+        // Elimina barras diagonales (/) e invertidas (\) sueltas o repetidas
+        .replace(/[\\\/]+/g, '')
+        // Unifica rayas de diálogo orientales/extrañas a un guion simple
+        .replace(/[—––─]/g, '-')
+        // Borra símbolos de adorno repetitivos comunes
+        .replace(/[\*_~|•♦¤°]/g, '')
+        // Controla abusos de puntos suspensivos
+        .replace(/\.{4,}/g, '...')
+        // Corrige múltiples espacios en blanco
+        .replace(/ {2,}/g, ' ')
+        // Elimina saltos de línea excesivos dentro del mismo párrafo
+        .replace(/\n\s*\n/g, '\n')
+        .trim();
 
-      // Unifica rayas de diálogo orientales/extrañas a un guion simple occidental (-)
-      .replace(/[—––─]/g, '-')
+      return cleaned;
+    };
 
-      // Borra símbolos de adorno repetitivos comunes en títulos o notas del traductor
-      .replace(/[\*_~|•♦¤°]/g, '')
+    // 3. Recorrer todos los nodos de texto y limpiarlos individualmente
+    // Esto es CLAVE para que el TTS funcione y el resaltado se mueva correctamente
+    $('*')
+      .contents()
+      .each((_, element) => {
+        if (element.type === 'text' && element.data) {
+          const originalText = element.data;
+          const cleanedText = cleanTextNode(originalText);
 
-      // Controla los abusos de puntos suspensivos continuos reduciéndolos a un máximo de 3
-      .replace(/\.{4,}/g, '...')
+          // Solo actualizar si el texto cambió para evitar renderizados innecesarios
+          if (originalText !== cleanedText) {
+            element.data = cleanedText;
+          }
+        }
+      });
 
-      // Corrige los dobles o múltiples espacios en blanco para evitar baches de lectura
-      .replace(/ {2,}/g, ' ');
-
-    // 5. Reconstruimos los párrafos línea por línea envolviéndolos limpiamente en etiquetas <p>
-    const chapterHtml: string[] = [];
-    rawText.split('\n').forEach(linea => {
-      const lineaLimpia = linea.trim();
-      if (lineaLimpia.length > 0) {
-        chapterHtml.push(`<p>${lineaLimpia}</p>`);
+    // 4. Asegurar que los párrafos vacíos no rompan el flujo, pero mantener la estructura
+    $('p, div').each((_, el) => {
+      const $el = $(el);
+      // Si un párrafo quedó vacío tras la limpieza, podemos dejarlo o eliminarlo según preferencia
+      // Generalmente es mejor dejarlo si tiene altura, pero si está totalmente vacío de texto:
+      if (!$el.text().trim()) {
+        // Opción A: Eliminar párrafos vacíos (recomendado para limpieza)
+        $el.remove();
+        // Opción B: Dejar un espacio mínimo si se prefiere separación visual
+        // $el.html('&nbsp;');
       }
     });
 
-    return chapterHtml.join('');
+    // 5. Devolver el HTML procesado manteniendo la estructura original
+    // Esto permite que el TTS identifique correctamente cada párrafo para el resaltado
+    return $.html();
   }
 
   async searchNovels(
