@@ -223,7 +223,7 @@ import p_220 from '@plugins/spanish/novelasligera';
 import p_221 from '@plugins/spanish/novelawuxia';
 import p_222 from '@plugins/spanish/novelyra';
 import p_223 from '@plugins/spanish/oasistranslations';
-import p_224 from '@plugins/spanish/PanchoNovels';
+import p_224 from '@plugins/spanish/panchovovels';
 import p_225 from '@plugins/spanish/skynovels';
 import p_226 from '@plugins/spanish/TC&Sega[lightnovelwp]';
 import p_227 from '@plugins/spanish/TraduccionesAmistosas[madara]';
