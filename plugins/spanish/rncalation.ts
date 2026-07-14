@@ -21,7 +21,7 @@ class RNCalationPlugin implements Plugin.PluginBase {
     }: Plugin.PopularNovelsOptions<typeof this.filters>,
   ): Promise<Plugin.NovelItem[]> {
     const sort = showLatestNovels ? 'latest' : 'popular';
-    const url = `${this.site}library?q=&type=&status=&genre=&sort=${sort}&page=${pageNo}`;
+    const url = `${this.site}library?q=&type=Novel&status=&genre=&sort=${sort}&page=${pageNo}`;
 
     const body = await fetchApi(url).then(res => res.text());
     const $ = cheerio.load(body);
@@ -29,9 +29,6 @@ class RNCalationPlugin implements Plugin.PluginBase {
     const novels: Plugin.NovelItem[] = [];
 
     $('a.comic-card').each((_, el) => {
-      const badge = $(el).find('span').first().text().trim();
-      if (badge !== 'Novel') return; // solo novelas de texto, sin manhwa/manga
-
       const path = $(el).attr('href')?.replace(this.site, '/') || '';
       const name = $(el).find('p').first().text().trim();
       const coverSrc = $(el).find('img').attr('src') || '';
@@ -122,7 +119,7 @@ class RNCalationPlugin implements Plugin.PluginBase {
   ): Promise<Plugin.NovelItem[]> {
     const url = `${this.site}library?q=${encodeURIComponent(
       searchTerm,
-    )}&type=&status=&genre=&sort=latest&page=${pageNo}`;
+    )}&type=Novel&status=&genre=&sort=latest&page=${pageNo}`;
 
     const body = await fetchApi(url).then(res => res.text());
     const $ = cheerio.load(body);
@@ -130,9 +127,6 @@ class RNCalationPlugin implements Plugin.PluginBase {
     const novels: Plugin.NovelItem[] = [];
 
     $('a.comic-card').each((_, el) => {
-      const badge = $(el).find('span').first().text().trim();
-      if (badge !== 'Novel') return;
-
       const path = $(el).attr('href')?.replace(this.site, '/') || '';
       const name = $(el).find('p').first().text().trim();
       const coverSrc = $(el).find('img').attr('src') || '';
