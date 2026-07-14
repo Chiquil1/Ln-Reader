@@ -81,21 +81,63 @@ class RNCalationPlugin implements Plugin.PluginBase {
     };
 
     const chapters: Plugin.ChapterItem[] = [];
+    const seenPaths = new Set<string>();
 
-    $('a[data-chapter-num]').each((_, el) => {
-      const chapterName =
-        $(el).attr('data-chapter-label') || $(el).text().trim();
-      const chapterPath = $(el).attr('href')?.replace(this.site, '/') || '';
-      const chapterNum = Number($(el).attr('data-chapter-num')) || undefined;
+    const extractChapters = ($doc: cheerio.CheerioAPI) => {
+      let found = 0;
+      $doc('a[data-chapter-num]').each((_, el) => {
+        const chapterName =
+          $doc(el).attr('data-chapter-label') || $doc(el).text().trim();
+        const chapterPath =
+          $doc(el).attr('href')?.replace(this.site, '/') || '';
+        const chapterNum =
+          Number($doc(el).attr('data-chapter-num')) || undefined;
 
-      if (chapterPath) {
-        chapters.push({
-          name: chapterName,
-          path: chapterPath,
-          chapterNumber: chapterNum,
-        });
+        if (chapterPath && !seenPaths.has(chapterPath)) {
+          seenPaths.add(chapterPath);
+          chapters.push({
+            name: chapterName,
+            path: chapterPath,
+            chapterNumber: chapterNum,
+          });
+          found++;
+        }
+      });
+      return found;
+    };
+
+    // capítulos ya incluidos en el HTML principal de la novela
+    extractChapters($);
+
+    // el resto se carga por páginas vía /chapters?page=N (botón "cargar más")
+    const chaptersBase =
+      this.site + novelPath.replace(/^\//, '').replace(/\/$/, '');
+    let page = 1;
+    let keepGoing = true;
+
+    while (keepGoing) {
+      page++;
+      const pageBody = await fetchApi(
+        `${chaptersBase}/chapters?page=${page}`,
+      ).then(res => res.text());
+
+      if (!pageBody || pageBody.trim().length === 0) {
+        keepGoing = false;
+        break;
       }
-    });
+
+      const $page = cheerio.load(pageBody);
+      const foundThisPage = extractChapters($page);
+
+      if (foundThisPage === 0) {
+        keepGoing = false;
+      }
+
+      // límite de seguridad para no hacer loop infinito si algo sale mal
+      if (page > 200) {
+        keepGoing = false;
+      }
+    }
 
     // el sitio suele listarlos del más nuevo al más viejo
     novel.chapters = chapters.reverse();
