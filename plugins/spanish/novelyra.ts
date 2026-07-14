@@ -2,19 +2,36 @@ import { Plugin } from '@typings/plugin';
 import { fetchApi } from '@libs/fetch';
 import { load as loadCheerio } from 'cheerio';
 
-// Headers necesarios para forzar la traducción y evitar bloqueos básicos
 const headers = {
-  'Cookie': 'googtrans=/en/es',
   'User-Agent':
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
 };
+
+// Función auxiliar para traducir texto de manera gratuita usando la API interna de Google
+async function translateText(text: string): Promise<string> {
+  if (!text || text.trim() === '') return '';
+  try {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(text)}`;
+    const res = await fetchApi(url, { headers });
+    const json = await res.json();
+
+    // Google Translate devuelve un array complejo. Extraemos y unimos las partes traducidas.
+    if (json && json[0]) {
+      return json[0].map((item: any) => item[0]).join('');
+    }
+    return text;
+  } catch (error) {
+    console.error('Error en la traducción:', error);
+    return text; // Si falla, devolvemos el texto original para no dejar el capítulo en blanco
+  }
+}
 
 class Novelyra implements Plugin.PluginBase {
   id = 'novelyra';
   name = 'Novelyra';
   icon = 'https://novelyra.com/favicon.ico';
   site = 'https://novelyra.com/';
-  version = '1.2.0';
+  version = '1.3.0';
 
   async popularNovels(pageNo: number): Promise<Plugin.NovelItem[]> {
     const res = await fetchApi(this.site, { headers });
@@ -56,11 +73,9 @@ class Novelyra implements Plugin.PluginBase {
     let cover = '';
     const chapters: Plugin.ChapterItem[] = [];
 
-    // Limpiamos la ruta
     const cleanPath = novelPath.replace(/^\//, '');
 
     while (hasMore) {
-      // Construimos la URL: página 1 es la base, las siguientes llevan ?page=X
       const url =
         page === 1
           ? `${this.site}${cleanPath}`
@@ -69,14 +84,11 @@ class Novelyra implements Plugin.PluginBase {
       const res = await fetchApi(url, { headers });
       const $ = loadCheerio(await res.text());
 
-      // Capturar info básica solo en la primera página
       if (page === 1) {
         name = $('h1').text().trim() || name;
-        // Selector preciso que me diste
         cover = $('img.w-32.rounded-xl').attr('src') || '';
       }
 
-      // Extraer capítulos de la página actual
       const pageChapters: Plugin.ChapterItem[] = [];
       $('a[href*="/chapter-"]').each((i, el) => {
         const chapterName = $(el).find('span.truncate').text().trim();
@@ -89,7 +101,6 @@ class Novelyra implements Plugin.PluginBase {
         }
       });
 
-      // Si no hay capítulos en esta página, detenemos el bucle
       if (pageChapters.length === 0) {
         hasMore = false;
         break;
@@ -97,8 +108,6 @@ class Novelyra implements Plugin.PluginBase {
 
       chapters.push(...pageChapters);
 
-      // Verificamos si existe un enlace a la página siguiente
-      // Buscamos un enlace que contenga el patrón ?page=X
       const nextPattern = `page=${page + 1}`;
       const nextButton = $(`a[href*="${nextPattern}"]`);
 
@@ -113,7 +122,7 @@ class Novelyra implements Plugin.PluginBase {
       path: novelPath,
       name: name,
       cover: cover,
-      chapters: chapters.reverse(), // Ordenamos al final
+      chapters: chapters.reverse(),
     };
   }
 
@@ -122,7 +131,52 @@ class Novelyra implements Plugin.PluginBase {
       headers,
     });
     const $ = loadCheerio(await res.text());
-    return $('article').html() || 'Contenido no encontrado';
+
+    // Limpiamos elementos innecesarios
+    $('script, style, iframe, ins').remove();
+
+    // Obtenemos todos los párrafos de la novela
+    const paragraphs: string[] = [];
+    $('article p').each((i, el) => {
+      const pText = $(el).text().trim();
+      if (pText) {
+        paragraphs.push(pText);
+      }
+    });
+
+    // Si no hay párrafos mapeados en <p>, intentamos con el HTML crudo limpio
+    if (paragraphs.length === 0) {
+      const rawText = $('article').text().trim();
+      if (rawText) paragraphs.push(rawText);
+    }
+
+    // Traducimos los párrafos. Para evitar bloqueos de Google y no exceder límites de caracteres,
+    // agrupamos los párrafos en bloques de texto de máximo ~2000 caracteres.
+    const translatedParagraphs: string[] = [];
+    let currentBatch = '';
+
+    for (const paragraph of paragraphs) {
+      if ((currentBatch + '\n' + paragraph).length > 2000) {
+        const translatedBatch = await translateText(currentBatch);
+        translatedParagraphs.push(...translatedBatch.split('\n'));
+        currentBatch = paragraph;
+      } else {
+        currentBatch =
+          currentBatch === '' ? paragraph : currentBatch + '\n' + paragraph;
+      }
+    }
+
+    if (currentBatch !== '') {
+      const translatedBatch = await translateText(currentBatch);
+      translatedParagraphs.push(...translatedBatch.split('\n'));
+    }
+
+    // Reconstruimos el HTML traducido usando etiquetas <p> para que LnReader lo renderice perfecto
+    const finalHtml = translatedParagraphs
+      .map(p => `<p>${p.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`)
+      .join('');
+
+    return finalHtml || 'Contenido no encontrado o error en la traducción';
   }
 }
 
