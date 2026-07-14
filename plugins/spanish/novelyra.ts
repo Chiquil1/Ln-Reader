@@ -2,7 +2,7 @@ import { Plugin } from '@typings/plugin';
 import { fetchApi } from '@libs/fetch';
 import { load as loadCheerio } from 'cheerio';
 
-// Definimos los headers para forzar la traducción y simular un navegador
+// Headers necesarios para forzar la traducción y evitar bloqueos básicos
 const headers = {
   'Cookie': 'googtrans=/en/es',
   'User-Agent':
@@ -12,9 +12,9 @@ const headers = {
 class Novelyra implements Plugin.PluginBase {
   id = 'novelyra';
   name = 'Novelyra';
-  icon = 'src/es/novelyra/icon.png';
+  icon = 'https://novelyra.com/favicon.ico';
   site = 'https://novelyra.com/';
-  version = '1.0.0';
+  version = '1.2.0';
 
   async popularNovels(pageNo: number): Promise<Plugin.NovelItem[]> {
     const res = await fetchApi(this.site, { headers });
@@ -50,28 +50,70 @@ class Novelyra implements Plugin.PluginBase {
   }
 
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
-    const res = await fetchApi(this.site + novelPath.replace(/^\//, ''), {
-      headers,
-    });
-    const $ = loadCheerio(await res.text());
-
+    let page = 1;
+    let hasMore = true;
+    let name = 'Desconocido';
+    let cover = '';
     const chapters: Plugin.ChapterItem[] = [];
 
-    $('a[href*="/chapter-"]').each((i, el) => {
-      const chapterName = $(el).find('span.truncate').text().trim();
-      const chapterPath = $(el).attr('href');
-      if (chapterPath) {
-        chapters.push({
-          name: chapterName || `Capítulo ${i + 1}`,
-          path: chapterPath,
-        });
+    // Limpiamos la ruta
+    const cleanPath = novelPath.replace(/^\//, '');
+
+    while (hasMore) {
+      // Construimos la URL: página 1 es la base, las siguientes llevan ?page=X
+      const url =
+        page === 1
+          ? `${this.site}${cleanPath}`
+          : `${this.site}${cleanPath}?page=${page}`;
+
+      const res = await fetchApi(url, { headers });
+      const $ = loadCheerio(await res.text());
+
+      // Capturar info básica solo en la primera página
+      if (page === 1) {
+        name = $('h1').text().trim() || name;
+        // Selector preciso que me diste
+        cover = $('img.w-32.rounded-xl').attr('src') || '';
       }
-    });
+
+      // Extraer capítulos de la página actual
+      const pageChapters: Plugin.ChapterItem[] = [];
+      $('a[href*="/chapter-"]').each((i, el) => {
+        const chapterName = $(el).find('span.truncate').text().trim();
+        const chapterPath = $(el).attr('href');
+        if (chapterPath) {
+          pageChapters.push({
+            name: chapterName || `Capítulo ${chapters.length + 1}`,
+            path: chapterPath,
+          });
+        }
+      });
+
+      // Si no hay capítulos en esta página, detenemos el bucle
+      if (pageChapters.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      chapters.push(...pageChapters);
+
+      // Verificamos si existe un enlace a la página siguiente
+      // Buscamos un enlace que contenga el patrón ?page=X
+      const nextPattern = `page=${page + 1}`;
+      const nextButton = $(`a[href*="${nextPattern}"]`);
+
+      if (nextButton.length > 0) {
+        page++;
+      } else {
+        hasMore = false;
+      }
+    }
 
     return {
       path: novelPath,
-      name: $('h1').text().trim() || 'Desconocido',
-      chapters: chapters.reverse(),
+      name: name,
+      cover: cover,
+      chapters: chapters.reverse(), // Ordenamos al final
     };
   }
 
