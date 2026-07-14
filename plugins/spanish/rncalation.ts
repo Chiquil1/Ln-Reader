@@ -31,8 +31,13 @@ class RNCalationPlugin implements Plugin.PluginBase {
     $('a.comic-card').each((_, el) => {
       const path = $(el).attr('href')?.replace(this.site, '/') || '';
       const name = $(el).find('p').first().text().trim();
-      const coverSrc = $(el).find('img').attr('src') || '';
-      const cover = coverSrc ? this.site.slice(0, -1) + coverSrc : defaultCover;
+      const img = $(el).find('img').first();
+      const coverSrc = img.attr('src') || img.attr('data-src') || '';
+      const cover = coverSrc
+        ? coverSrc.startsWith('http')
+          ? coverSrc
+          : this.site.slice(0, -1) + coverSrc
+        : defaultCover;
 
       if (path && name) {
         novels.push({ name, path, cover });
@@ -171,8 +176,13 @@ class RNCalationPlugin implements Plugin.PluginBase {
     $('a.comic-card').each((_, el) => {
       const path = $(el).attr('href')?.replace(this.site, '/') || '';
       const name = $(el).find('p').first().text().trim();
-      const coverSrc = $(el).find('img').attr('src') || '';
-      const cover = coverSrc ? this.site.slice(0, -1) + coverSrc : defaultCover;
+      const img = $(el).find('img').first();
+      const coverSrc = img.attr('src') || img.attr('data-src') || '';
+      const cover = coverSrc
+        ? coverSrc.startsWith('http')
+          ? coverSrc
+          : this.site.slice(0, -1) + coverSrc
+        : defaultCover;
 
       if (path && name) {
         novels.push({ name, path, cover });
