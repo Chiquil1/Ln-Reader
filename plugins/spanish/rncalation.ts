@@ -55,9 +55,12 @@ class RNCalationPlugin implements Plugin.PluginBase {
 
     const name = $('h1').first().text().trim();
 
+    const coverImg = $('.comic-cover__img, .card-media-wrap img').first();
     const coverSrc =
       $('meta[property="og:image"]').attr('content') ||
       $('.hero-bg').attr('data-bg') ||
+      coverImg.attr('src') ||
+      coverImg.attr('data-src') ||
       '';
     const cover = coverSrc
       ? coverSrc.startsWith('http')
