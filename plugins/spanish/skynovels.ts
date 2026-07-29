@@ -8,8 +8,9 @@ class SkyNovels implements Plugin.PluginBase {
   name = 'SkyNovels';
   site = 'https://www.skynovels.net/';
   apiSite = 'https://api.skynovels.net/api/';
-  version = '1.1.2'; // Versión actualizada con fix de TTS
+  version = '1.1.3'; // Fix: regex de barras menos agresiva (preserva "1/2", "y/o", fechas)
   icon = 'src/es/skynovels/icon.png';
+
   filters = {
     genres: {
       type: FilterTypes.CheckboxGroup,
@@ -59,200 +60,184 @@ class SkyNovels implements Plugin.PluginBase {
     },
   } satisfies Filters;
 
+  // ---------------------------------------------------------------------
+  // Listado / búsqueda
+  // ---------------------------------------------------------------------
+
   async popularNovels(
     pageNo: number,
     { filters }: Plugin.PopularNovelsOptions<typeof this.filters>,
   ): Promise<Plugin.NovelItem[]> {
     const genres = (filters?.genres?.value as string[]) || [];
     const order = genres.length > 0 ? 'updated' : 'rating';
+
     let url = `${this.apiSite}novels?page=${pageNo}&order=${order}`;
     if (genres.length > 0) url += `&genres=${genres.join(',')}`;
 
-    const result = await fetchApi(url, {
-      headers: {
-        'Cache-Control': 'no-cache',
-      },
-    });
-    const body = (await result.json()) as response;
+    const body = await this.fetchJson<response>(url);
 
-    const novels: Plugin.NovelItem[] = [];
-
-    body.novels?.forEach(res => {
-      const name = res.nvl_title;
-      const cover = this.apiSite + 'get-image/' + res.image + '/novels/false';
-      const path = 'novelas/' + res.id + '/' + res.nvl_name + '/';
-
-      novels.push({ name, cover, path });
-    });
-
-    return novels;
-  }
-
-  async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
-    const novelId = novelPath.split('/')[1];
-    const url = this.apiSite + 'novel/' + novelId + '/reading?&q';
-
-    const result = await fetchApi(url, {
-      headers: {
-        'Cache-Control': 'no-cache',
-      },
-    });
-    const body = (await result.json()) as responseBook;
-
-    const item = body?.novel?.[0];
-
-    const novel: Plugin.SourceNovel = {
-      path: novelPath,
-      name: item?.nvl_title || 'Untitled',
-    };
-
-    novel.cover = this.apiSite + 'get-image/' + item?.image + '/novels/false';
-
-    const genres: string[] = [];
-    item?.genres?.forEach(genre => genres.push(genre.genre_name));
-    novel.genres = genres.join(',');
-    novel.author = item?.nvl_writer;
-    novel.summary = item?.nvl_content;
-    novel.status = item?.nvl_status;
-
-    const novelChapters: Plugin.ChapterItem[] = [];
-
-    item?.volumes?.forEach(volume => {
-      volume?.chapters?.forEach(chapter => {
-        const chapterName = chapter.chp_index_title;
-        const releaseDate = new Date(chapter.createdAt).toDateString();
-        const chapterPath = novelPath + chapter.id + '/' + chapter.chp_name;
-
-        novelChapters.push({
-          name: chapterName,
-          releaseTime: releaseDate,
-          path: chapterPath,
-        });
-      });
-    });
-
-    novel.chapters = novelChapters;
-
-    return novel;
-  }
-
-  async parseChapter(chapterPath: string): Promise<string> {
-    const chapterId: string = chapterPath.split('/')[3];
-    const url = `${this.apiSite}novel-chapter/${chapterId}`;
-
-    const result = await fetchApi(url, {
-      headers: {
-        'Cache-Control': 'no-cache',
-      },
-    });
-    const body = (await result.json()) as responseChapter;
-
-    const item = body?.chapter?.[0];
-    let chapterText = item?.chp_content || '';
-
-    if (!chapterText) return '';
-
-    // Cargamos en Cheerio para manipular el DOM sin destruirlo
-    const $ = load(chapterText);
-
-    // 1. Eliminar elementos basura (scripts, estilos, anuncios)
-    $(
-      'script, style, ins, .chapter-ad, .adsbygoogle, .hidden, [style*="display:none"]',
-    ).remove();
-
-    // 2. Función de limpieza para aplicar a cada nodo de texto individualmente
-    // Esto preserva la estructura HTML (<p>, <div>) necesaria para el TTS
-    const cleanTextNode = (text: string): string => {
-      let cleaned = text;
-
-      // Eliminar caracteres invisibles anti-copia
-      cleaned = cleaned.replace(
-        /[\u200B-\u200D\uFEFF\u200E\u200F\u202A-\u202E]/g,
-        '',
-      );
-
-      // === LIMPIEZA ESPECÍFICA PARA TTS (EVITA BARRAS Y CARACTERES RAROS) ===
-      cleaned = cleaned
-        // Elimina barras diagonales (/) e invertidas (\) sueltas o repetidas
-        .replace(/[\\\/]+/g, '')
-        // Unifica rayas de diálogo orientales/extrañas a un guion simple
-        .replace(/[—––─]/g, '-')
-        // Borra símbolos de adorno repetitivos comunes
-        .replace(/[\*_~|•♦¤°]/g, '')
-        // Controla abusos de puntos suspensivos
-        .replace(/\.{4,}/g, '...')
-        // Corrige múltiples espacios en blanco
-        .replace(/ {2,}/g, ' ')
-        // Elimina saltos de línea excesivos dentro del mismo párrafo
-        .replace(/\n\s*\n/g, '\n')
-        .trim();
-
-      return cleaned;
-    };
-
-    // 3. Recorrer todos los nodos de texto y limpiarlos individualmente
-    // Esto es CLAVE para que el TTS funcione y el resaltado se mueva correctamente
-    $('*')
-      .contents()
-      .each((_, element) => {
-        if (element.type === 'text' && element.data) {
-          const originalText = element.data;
-          const cleanedText = cleanTextNode(originalText);
-
-          // Solo actualizar si el texto cambió para evitar renderizados innecesarios
-          if (originalText !== cleanedText) {
-            element.data = cleanedText;
-          }
-        }
-      });
-
-    // 4. Asegurar que los párrafos vacíos no rompan el flujo, pero mantener la estructura
-    $('p, div').each((_, el) => {
-      const $el = $(el);
-      // Si un párrafo quedó vacío tras la limpieza, podemos dejarlo o eliminarlo según preferencia
-      // Generalmente es mejor dejarlo si tiene altura, pero si está totalmente vacío de texto:
-      if (!$el.text().trim()) {
-        // Opción A: Eliminar párrafos vacíos (recomendado para limpieza)
-        $el.remove();
-        // Opción B: Dejar un espacio mínimo si se prefiere separación visual
-        // $el.html('&nbsp;');
-      }
-    });
-
-    // 5. Devolver el HTML procesado manteniendo la estructura original
-    // Esto permite que el TTS identifique correctamente cada párrafo para el resaltado
-    return $.html();
+    return this.mapNovelList(body.novels);
   }
 
   async searchNovels(
     searchTerm: string,
     pageNo: number,
   ): Promise<Plugin.NovelItem[]> {
-    searchTerm = encodeURIComponent(searchTerm.toLowerCase());
-    const url = `${this.apiSite}novels?page=${pageNo}&q=${searchTerm}`;
+    const q = encodeURIComponent(searchTerm.toLowerCase());
+    const url = `${this.apiSite}novels?page=${pageNo}&q=${q}`;
 
+    const body = await this.fetchJson<response>(url);
+
+    return this.mapNovelList(body.novels);
+  }
+
+  private mapNovelList(entries?: NovelsEntity[] | null): Plugin.NovelItem[] {
+    const novels: Plugin.NovelItem[] = [];
+
+    entries?.forEach(res => {
+      novels.push({
+        name: res.nvl_title,
+        cover: this.apiSite + 'get-image/' + res.image + '/novels/false',
+        path: 'novelas/' + res.id + '/' + res.nvl_name + '/',
+      });
+    });
+
+    return novels;
+  }
+
+  // ---------------------------------------------------------------------
+  // Detalle de novela
+  // ---------------------------------------------------------------------
+
+  async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
+    const novelId = novelPath.split('/')[1];
+    const url = this.apiSite + 'novel/' + novelId + '/reading?&q';
+
+    const body = await this.fetchJson<responseBook>(url);
+    const item = body?.novel?.[0];
+
+    const novel: Plugin.SourceNovel = {
+      path: novelPath,
+      name: item?.nvl_title || 'Untitled',
+      cover: this.apiSite + 'get-image/' + item?.image + '/novels/false',
+      genres: (item?.genres ?? []).map(g => g.genre_name).join(','),
+      author: item?.nvl_writer,
+      summary: item?.nvl_content,
+      status: item?.nvl_status,
+      chapters: this.mapChapters(novelPath, item?.volumes),
+    };
+
+    return novel;
+  }
+
+  private mapChapters(
+    novelPath: string,
+    volumes?: VolumesEntity[] | null,
+  ): Plugin.ChapterItem[] {
+    const novelChapters: Plugin.ChapterItem[] = [];
+
+    volumes?.forEach(volume => {
+      volume?.chapters?.forEach(chapter => {
+        novelChapters.push({
+          name: chapter.chp_index_title,
+          releaseTime: new Date(chapter.createdAt).toDateString(),
+          path: novelPath + chapter.id + '/' + chapter.chp_name,
+        });
+      });
+    });
+
+    return novelChapters;
+  }
+
+  // ---------------------------------------------------------------------
+  // Capítulo + limpieza de texto para TTS
+  // ---------------------------------------------------------------------
+
+  async parseChapter(chapterPath: string): Promise<string> {
+    // path: novelas/{nvl_id}/{nvl_name}/{chp_id}/{chp_name}
+    const chapterId = chapterPath.split('/')[3];
+    const url = `${this.apiSite}novel-chapter/${chapterId}`;
+
+    const body = await this.fetchJson<responseChapter>(url);
+    const item = body?.chapter?.[0];
+    const chapterText = item?.chp_content || '';
+
+    if (!chapterText) return '';
+
+    const $ = load(chapterText);
+
+    // 1) Quitar elementos que no aportan contenido legible/audible
+    $(
+      'script, style, ins, .chapter-ad, .adsbygoogle, .hidden, [style*="display:none"]',
+    ).remove();
+
+    // 2) Limpiar cada nodo de texto (invisibles, símbolos, espacios)
+    $('*')
+      .contents()
+      .each((_, element) => {
+        if (element.type === 'text' && element.data) {
+          const cleanedText = this.cleanTextForTts(element.data);
+          if (element.data !== cleanedText) {
+            element.data = cleanedText;
+          }
+        }
+      });
+
+    // 3) Eliminar contenedores que quedaron vacíos tras la limpieza
+    $('p, div').each((_, el) => {
+      const $el = $(el);
+      if (!$el.text().trim()) $el.remove();
+    });
+
+    return $.html();
+  }
+
+  /**
+   * Limpieza de texto orientada a TTS: elimina caracteres invisibles
+   * anti-copia y normaliza símbolos que suenan mal o rompen la lectura,
+   * sin destruir barras/guiones que tienen significado gramatical.
+   */
+  private cleanTextForTts(text: string): string {
+    return (
+      text
+        // Caracteres invisibles anti-copia (zero-width, marcas de dirección)
+        .replace(/[\u200B-\u200D\uFEFF\u200E\u200F\u202A-\u202E]/g, '')
+        // Barras decorativas repetidas ("///", "\\\\") -> fuera.
+        // Se preservan barras simples con significado ("1/2", "y/o", "12/05").
+        .replace(/[\\/]{2,}/g, '')
+        // Rayas de diálogo orientales/atípicas -> guion simple
+        .replace(/[—––─]/g, '-')
+        // Símbolos de adorno repetitivos comunes
+        .replace(/[*_~|•♦¤°]/g, '')
+        // Controlar abusos de puntos suspensivos
+        .replace(/\.{4,}/g, '...')
+        // Colapsar espacios múltiples
+        .replace(/ {2,}/g, ' ')
+        // Colapsar saltos de línea excesivos dentro del mismo párrafo
+        .replace(/\n\s*\n/g, '\n')
+        .trim()
+    );
+  }
+
+  // ---------------------------------------------------------------------
+  // Helper de fetch
+  // ---------------------------------------------------------------------
+
+  private async fetchJson<T>(url: string): Promise<T> {
     const result = await fetchApi(url, {
       headers: {
         'Cache-Control': 'no-cache',
       },
     });
-    const body = (await result.json()) as response;
-
-    const novels: Plugin.NovelItem[] = [];
-
-    body?.novels?.forEach(res => {
-      const name = res.nvl_title;
-      const cover = this.apiSite + 'get-image/' + res.image + '/novels/false';
-      const path = 'novelas/' + res.id + '/' + res.nvl_name + '/';
-
-      novels.push({ name, cover, path });
-    });
-
-    return novels;
+    return (await result.json()) as T;
   }
 }
 
 export default new SkyNovels();
+
+// ---------------------------------------------------------------------
+// Tipos
+// ---------------------------------------------------------------------
 
 type response = {
   novels?: NovelsEntity[] | null;

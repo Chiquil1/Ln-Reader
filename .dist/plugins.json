@@ -1986,9 +1986,9 @@
 		"name": "Novelyra",
 		"site": "https://novelyra.com/",
 		"lang": "Español",
-		"version": "1.0.1",
+		"version": "1.3.0",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/novelyra.js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/novelyra/icon.png"
+		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/https://novelyra.com/favicon.ico"
 	},
 	{
 		"id": "oasistranslations",
@@ -2000,13 +2000,13 @@
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/oasistranslations/icon.png"
 	},
 	{
-		"id": "panchonovels-api",
-		"name": "Pancho Novels (API)",
-		"site": "https://panchonovels.online",
+		"id": "panchonovels",
+		"name": "PanchoNovels",
+		"site": "https://panchonovels.online/",
 		"lang": "Español",
-		"version": "1.0.0",
+		"version": "1.1.0",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/panchonovels.js",
-		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/multisrc/madara/panchotranslations/icon.png"
+		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/https://panchonovels.online/favicon.ico"
 	},
 	{
 		"id": "panchotranslations",
@@ -2031,7 +2031,7 @@
 		"name": "RNCalation",
 		"site": "https://rncalation.online/",
 		"lang": "Español",
-		"version": "1.0.0",
+		"version": "1.0.2",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/rncalation.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/rncalation/icon.png"
 	},
@@ -2040,7 +2040,7 @@
 		"name": "SkyNovels",
 		"site": "https://www.skynovels.net/",
 		"lang": "Español",
-		"version": "1.1.2",
+		"version": "1.1.3",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/skynovels.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/skynovels/icon.png"
 	},
