@@ -8,7 +8,7 @@ class SkyNovels implements Plugin.PluginBase {
   name = 'SkyNovels';
   site = 'https://www.skynovels.net/';
   apiSite = 'https://api.skynovels.net/api/';
-  version = '1.1.4'; // Fix: TTS no leía nada por documento html/body anidado en parseChapter
+  version = '1.1.5'; // Fix: reconstruir/segmentar párrafos para que el TTS no corte por bloques de texto demasiado largos
   icon = 'src/es/skynovels/icon.png';
 
   filters = {
@@ -189,6 +189,17 @@ class SkyNovels implements Plugin.PluginBase {
       if (!$el.text().trim()) $el.remove();
     });
 
+    // 4) Garantizar que el contenido esté dividido en párrafos <p> de
+    // tamaño razonable. El lector de LNReader (y su TTS) procesa el
+    // capítulo párrafo por párrafo; si el HTML de origen viene como un
+    // bloque gigante (sin <p>, o con <br> en vez de párrafos separados),
+    // el TTS puede terminar tratando todo el capítulo como una sola
+    // "frase" que excede el límite de síntesis de Android (~4000
+    // caracteres) y se corta sin sonido justo después de resaltar el
+    // primer fragmento. Esta función normaliza la estructura para
+    // evitarlo.
+    this.ensureReadableParagraphs($);
+
     // IMPORTANTE: $.html() devuelve el documento COMPLETO que cheerio arma
     // internamente (<html><head></head><body>...</body></html>). Eso queda
     // anidado dentro del body del WebView de la app y rompe el árbol de
@@ -197,6 +208,87 @@ class SkyNovels implements Plugin.PluginBase {
     // <body>, igual que hacen otros plugins (ej. RNCalation con
     // `.novel-content`).
     return $('body').html() || '';
+  }
+
+  /**
+   * Máximo de caracteres seguro por párrafo/utterance. Se deja bastante
+   * margen por debajo del límite real de Android TTS (~4000) para no
+   * rozarlo con distintos motores de voz.
+   */
+  private static readonly MAX_PARAGRAPH_LENGTH = 1800;
+
+  /**
+   * Asegura que el body tenga párrafos <p> bien delimitados y de tamaño
+   * acotado, reconstruyéndolos desde el texto plano si hace falta.
+   */
+  private ensureReadableParagraphs($: any): void {
+    const body = $('body');
+
+    const goodParagraphs = body
+      .find('p')
+      .filter(
+        (_, el) =>
+          $(el).text().trim().length > 0 &&
+          $(el).text().trim().length <= SkyNovels.MAX_PARAGRAPH_LENGTH,
+      );
+
+    const anyParagraphs = body
+      .find('p')
+      .filter((_, el) => $(el).text().trim().length > 0);
+
+    // Ya hay párrafos <p> y ninguno es demasiado largo: no hace falta tocar nada
+    if (
+      anyParagraphs.length > 0 &&
+      goodParagraphs.length === anyParagraphs.length
+    ) {
+      return;
+    }
+
+    // Convertimos <br> en saltos de línea para no perder la separación visual
+    body.find('br').replaceWith('\n');
+
+    const rawText = body.text();
+    const rawParagraphs = rawText
+      .split(/\n+/)
+      .map(p => p.trim())
+      .filter(Boolean);
+
+    body.empty();
+
+    rawParagraphs.forEach(paragraph => {
+      this.appendAsParagraphs(body, paragraph);
+    });
+  }
+
+  /**
+   * Agrega `text` al contenedor como uno o más <p>, partiendo por oraciones
+   * si excede el largo máximo seguro para una sola síntesis de TTS.
+   */
+  private appendAsParagraphs(container: any, text: string): void {
+    const escape = (s: string) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    if (text.length <= SkyNovels.MAX_PARAGRAPH_LENGTH) {
+      container.append(`<p>${escape(text)}</p>`);
+      return;
+    }
+
+    // Partimos por oraciones para no cortar a la mitad de una frase
+    const sentences = text.match(/[^.!?]+[.!?]*\s*/g) || [text];
+    let chunk = '';
+
+    sentences.forEach(sentence => {
+      if ((chunk + sentence).length > SkyNovels.MAX_PARAGRAPH_LENGTH && chunk) {
+        container.append(`<p>${escape(chunk.trim())}</p>`);
+        chunk = sentence;
+      } else {
+        chunk += sentence;
+      }
+    });
+
+    if (chunk.trim()) {
+      container.append(`<p>${escape(chunk.trim())}</p>`);
+    }
   }
 
   /**
