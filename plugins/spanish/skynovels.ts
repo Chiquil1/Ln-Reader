@@ -8,7 +8,7 @@ class SkyNovels implements Plugin.PluginBase {
   name = 'SkyNovels';
   site = 'https://www.skynovels.net/';
   apiSite = 'https://api.skynovels.net/api/';
-  version = '1.1.3'; // Fix: regex de barras menos agresiva (preserva "1/2", "y/o", fechas)
+  version = '1.1.4'; // Fix: TTS no leía nada por documento html/body anidado en parseChapter
   icon = 'src/es/skynovels/icon.png';
 
   filters = {
@@ -189,7 +189,14 @@ class SkyNovels implements Plugin.PluginBase {
       if (!$el.text().trim()) $el.remove();
     });
 
-    return $.html();
+    // IMPORTANTE: $.html() devuelve el documento COMPLETO que cheerio arma
+    // internamente (<html><head></head><body>...</body></html>). Eso queda
+    // anidado dentro del body del WebView de la app y rompe el árbol de
+    // accesibilidad que usa el TTS del sistema para leer el texto (aunque
+    // visualmente se vea bien). Por eso devolvemos solo el contenido de
+    // <body>, igual que hacen otros plugins (ej. RNCalation con
+    // `.novel-content`).
+    return $('body').html() || '';
   }
 
   /**
