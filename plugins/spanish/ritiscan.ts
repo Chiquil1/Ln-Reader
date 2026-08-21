@@ -15,40 +15,27 @@ class RitiScanPlugin implements Plugin.PluginBase {
 
   icon = 'src/es/ritiscan/icon.png';
 
-  site = 'https://riti-scan.com/h2copia/';
+  site = 'https://riti-scan.com/';
 
-  version = '1.0.1';
+  version = '2.0.0';
 
   filters = undefined;
 
   /**
-   * Convierte URLs absolutas de Rit'i Scan en paths
+   * Convierte una URL absoluta de Rit'i Scan en una ruta
    * que LNReader pueda guardar.
+   *
+   * https://riti-scan.com/serie/ejemplo/
+   * ->
+   * /serie/ejemplo/
    */
-  private normalizePath(url: string): string {
+  private getPath(url: string): string {
     if (!url) {
       return '';
     }
 
     if (url.startsWith(this.site)) {
       return '/' + url.slice(this.site.length);
-    }
-
-    try {
-      const parsed = new URL(url);
-
-      if (
-        parsed.hostname === 'riti-scan.com' &&
-        parsed.pathname.startsWith('/h2copia/')
-      ) {
-        return '/' + parsed.pathname.slice('/h2copia/'.length) + parsed.search;
-      }
-    } catch {
-      // Ya puede ser un path relativo.
-    }
-
-    if (url.startsWith('/h2copia/')) {
-      return '/' + url.slice('/h2copia/'.length);
     }
 
     if (url.startsWith('/')) {
@@ -59,21 +46,20 @@ class RitiScanPlugin implements Plugin.PluginBase {
   }
 
   /**
-   * Convierte un path de LNReader en URL absoluta.
+   * Convierte una ruta de LNReader en URL absoluta.
    */
-  private absoluteUrl(path: string): string {
+  private getUrl(path: string): string {
     if (path.startsWith('http')) {
       return path;
-    }
-
-    if (path.startsWith('/h2copia/')) {
-      return `https://riti-scan.com${path}`;
     }
 
     return this.site + path.replace(/^\//, '');
   }
 
-  private normalizeCover(src?: string): string {
+  /**
+   * Portadas.
+   */
+  private getCover(src?: string): string {
     if (!src) {
       return defaultCover;
     }
@@ -86,17 +72,33 @@ class RitiScanPlugin implements Plugin.PluginBase {
       return `https:${src}`;
     }
 
-    if (src.startsWith('/h2copia/')) {
-      return `https://riti-scan.com${src}`;
-    }
-
     return this.site + src.replace(/^\//, '');
   }
 
   /**
-   * Extrae obras de una página de listado.
+   * ============================================================
+   * CATÁLOGO
+   * ============================================================
    *
-   * Rit'i Scan utiliza Madara/WordPress.
+   * HTML comprobado:
+   *
+   * <div class="slider__item">
+   *
+   *   <div class="slider__thumb_item">
+   *     <a href=".../serie/vete-de-aqui-fantasma/">
+   *       <img src="PORTADA">
+   *     </a>
+   *   </div>
+   *
+   *   <div class="post-title">
+   *     <h4>
+   *       <a href=".../serie/vete-de-aqui-fantasma/">
+   *         vete de aquí fantasma
+   *       </a>
+   *     </h4>
+   *   </div>
+   *
+   * </div>
    */
   private parseNovelCards(body: string): Plugin.NovelItem[] {
     const $ = cheerio.load(body);
@@ -105,264 +107,218 @@ class RitiScanPlugin implements Plugin.PluginBase {
 
     const seen = new Set<string>();
 
-    const addNovel = (href: string, name: string, coverSrc?: string) => {
-      if (!href || !href.includes('/serie/')) {
+    /**
+     * UNA sola estrategia.
+     *
+     * No usamos múltiples fallbacks porque eso fue lo que provocó
+     * novelas repetidas anteriormente.
+     */
+    $('.slider__item').each((_, el) => {
+      const item = $(el);
+
+      /**
+       * Nombre y URL.
+       */
+      const titleLink = item.find('.post-title a[href*="/serie/"]').first();
+
+      const href = titleLink.attr('href') || '';
+
+      const name = titleLink.text().replace(/\s+/g, ' ').trim();
+
+      if (!href || !name) {
         return;
       }
 
-      const path = this.normalizePath(href).split('#')[0];
-
-      if (
-        !path.startsWith('/serie/') ||
-        path.includes('/capitulo-') ||
-        seen.has(path)
-      ) {
+      /**
+       * Solo aceptamos fichas /serie/.
+       */
+      if (!href.includes('/serie/')) {
         return;
       }
 
-      const cleanName = name.replace(/\s+/g, ' ').trim();
+      const path = this.getPath(href);
 
-      if (!cleanName) {
+      /**
+       * Evitamos duplicados.
+       *
+       * Quitamos slash final para comparar:
+       *
+       * /serie/foo/
+       * /serie/foo
+       *
+       * se consideran la misma novela.
+       */
+      const key = path.replace(/\/+$/, '');
+
+      if (seen.has(key)) {
         return;
       }
 
-      seen.add(path);
+      /**
+       * Portada.
+       */
+      const img = item.find('.slider__thumb_item img').first();
+
+      const coverSrc =
+        img.attr('data-src-webp') ||
+        img.attr('data-src') ||
+        img.attr('src') ||
+        '';
+
+      const cover = this.getCover(coverSrc);
+
+      seen.add(key);
 
       novels.push({
-        name: cleanName,
+        name,
         path,
-        cover: this.normalizeCover(coverSrc),
+        cover,
       });
-    };
-
-    /**
-     * Estructura habitual de Madara.
-     */
-    $('.c-tabs-item__content').each((_, el) => {
-      const item = $(el);
-
-      const link = item
-        .find(
-          '.post-title a, .tab-summary .post-title a, .item-summary .post-title a',
-        )
-        .first();
-
-      const href = link.attr('href') || '';
-
-      const name = link.text().trim();
-
-      const img = item.find('img').first();
-
-      const cover =
-        img.attr('data-src') ||
-        img.attr('data-lazy-src') ||
-        img.attr('src') ||
-        '';
-
-      addNovel(href, name, cover);
-    });
-
-    /**
-     * Otro formato habitual del listado Madara.
-     */
-    $('.row.c-tabs-item__content').each((_, el) => {
-      const item = $(el);
-
-      const link = item
-        .find('a[href*="/serie/"]')
-        .filter((_, linkEl) => {
-          const href = $(linkEl).attr('href') || '';
-
-          return !href.includes('/capitulo-');
-        })
-        .first();
-
-      const href = link.attr('href') || '';
-
-      const name =
-        item.find('.post-title').first().text().trim() ||
-        link.attr('title') ||
-        link.text().trim();
-
-      const img = item.find('img').first();
-
-      const cover =
-        img.attr('data-src') ||
-        img.attr('data-lazy-src') ||
-        img.attr('src') ||
-        '';
-
-      addNovel(href, name, cover);
-    });
-
-    /**
-     * Fallback:
-     *
-     * busca directamente enlaces /serie/.
-     */
-    $('a[href*="/h2copia/serie/"], a[href*="/serie/"]').each((_, el) => {
-      const href = $(el).attr('href') || '';
-
-      if (href.includes('/capitulo-')) {
-        return;
-      }
-
-      const parent = $(el).closest(
-        '.c-tabs-item__content, .page-item-detail, .item-summary, .row',
-      );
-
-      const name =
-        $(el).attr('title') ||
-        $(el).find('h2, h3, h4').first().text().trim() ||
-        parent.find('.post-title, h2, h3, h4').first().text().trim() ||
-        $(el).find('img').first().attr('alt') ||
-        '';
-
-      const img =
-        $(el).find('img').first().length > 0
-          ? $(el).find('img').first()
-          : parent.find('img').first();
-
-      const cover =
-        img.attr('data-src') ||
-        img.attr('data-lazy-src') ||
-        img.attr('src') ||
-        '';
-
-      addNovel(href, name, cover);
     });
 
     return novels;
   }
 
+  /**
+   * ============================================================
+   * NOVELAS POPULARES / RECIENTES
+   * ============================================================
+   */
   async popularNovels(
     pageNo: number,
     { showLatestNovels }: Plugin.PopularNovelsOptions<typeof this.filters>,
   ): Promise<Plugin.NovelItem[]> {
     /**
-     * Madara utiliza /manga/?page=N para sus listados.
+     * Por ahora usamos el HTML principal que contiene
+     * .slider__item.
      *
-     * También acepta m_orderby para ordenar.
+     * No inventamos paginación hasta comprobarla en el HTML.
      */
-    const order = showLatestNovels ? 'latest' : 'views';
-
-    const urls = [
-      `${this.site}manga/?page=${pageNo}&m_orderby=${order}`,
-      `${this.site}series/page/${pageNo}/?m_orderby=${order}`,
-    ];
-
-    /**
-     * Probamos primero el listado estándar.
-     *
-     * Si no devuelve obras, usamos el segundo formato.
-     */
-    for (const url of urls) {
-      try {
-        const response = await fetchApi(url);
-
-        if (!response.ok) {
-          continue;
-        }
-
-        const body = await response.text();
-
-        const novels = this.parseNovelCards(body);
-
-        if (novels.length > 0) {
-          return novels;
-        }
-      } catch {
-        continue;
-      }
+    if (pageNo > 1) {
+      return [];
     }
 
-    return [];
+    const url = this.site;
+
+    const body = await fetchApi(url).then(res => res.text());
+
+    return this.parseNovelCards(body);
   }
 
+  /**
+   * ============================================================
+   * BÚSQUEDA
+   * ============================================================
+   */
   async searchNovels(
     searchTerm: string,
     pageNo: number,
   ): Promise<Plugin.NovelItem[]> {
     /**
-     * Búsqueda estándar de WordPress/Madara.
+     * Búsqueda normal de WordPress.
+     *
+     * Aquí sí utilizamos el HTML resultante, pero seguimos buscando
+     * únicamente fichas /serie/.
      */
-    const urls = [
-      `${this.site}?s=${encodeURIComponent(
-        searchTerm,
-      )}&post_type=wp-manga&page=${pageNo}`,
+    const url =
+      `${this.site}?s=${encodeURIComponent(searchTerm)}` +
+      `&post_type=wp-manga`;
 
-      `${this.site}page/${pageNo}/?s=${encodeURIComponent(
-        searchTerm,
-      )}&post_type=wp-manga`,
-    ];
-
-    for (const url of urls) {
-      try {
-        const response = await fetchApi(url);
-
-        if (!response.ok) {
-          continue;
-        }
-
-        const body = await response.text();
-
-        const novels = this.parseNovelCards(body);
-
-        if (novels.length > 0) {
-          return novels;
-        }
-      } catch {
-        continue;
-      }
-    }
-
-    return [];
-  }
-
-  /**
-   * Extrae TODOS los capítulos mediante el endpoint real
-   * utilizado por Rit'i Scan:
-   *
-   * POST
-   * /serie/{slug}/ajax/chapters/?t=1
-   *
-   * La respuesta contiene:
-   *
-   * <li class="wp-manga-chapter">
-   *   <a href=".../capitulo-449-5/">
-   *     Capitulo 449.5
-   *   </a>
-   * </li>
-   */
-  private async getChapters(novelPath: string): Promise<Plugin.ChapterItem[]> {
-    const cleanPath = novelPath.split('?')[0].replace(/\/+$/, '');
-
-    const chaptersUrl = this.absoluteUrl(cleanPath) + '/ajax/chapters/?t=1';
-
-    const response = await fetchApi(chaptersUrl, {
-      method: 'POST',
-      headers: {
-        Accept: 'text/html, */*; q=0.01',
-        'X-Requested-With': 'XMLHttpRequest',
-        Referer: this.absoluteUrl(cleanPath) + '/',
-      },
-    });
-
-    if (!response.ok) {
-      return [];
-    }
-
-    const body = await response.text();
-
-    if (!body.trim()) {
-      return [];
-    }
+    const body = await fetchApi(url).then(res => res.text());
 
     const $ = cheerio.load(body);
 
-    const chapters: Plugin.ChapterItem[] = [];
+    const novels: Plugin.NovelItem[] = [];
 
     const seen = new Set<string>();
+
+    $('a[href*="/serie/"]').each((_, el) => {
+      const link = $(el);
+
+      const href = link.attr('href') || '';
+
+      if (!href.includes('/serie/')) {
+        return;
+      }
+
+      const path = this.getPath(href);
+
+      const key = path.replace(/\/+$/, '');
+
+      if (seen.has(key)) {
+        return;
+      }
+
+      const parent = link.closest(
+        '.c-tabs-item__content, .row, .page-item-detail',
+      );
+
+      const name =
+        parent
+          .find('.post-title a[href*="/serie/"]')
+          .first()
+          .text()
+          .replace(/\s+/g, ' ')
+          .trim() || link.text().replace(/\s+/g, ' ').trim();
+
+      if (!name) {
+        return;
+      }
+
+      const img = parent.find('img').first();
+
+      const coverSrc =
+        img.attr('data-src-webp') ||
+        img.attr('data-src') ||
+        img.attr('src') ||
+        '';
+
+      seen.add(key);
+
+      novels.push({
+        name,
+        path,
+        cover: this.getCover(coverSrc),
+      });
+    });
+
+    return novels;
+  }
+
+  /**
+   * ============================================================
+   * CAPÍTULOS
+   * ============================================================
+   *
+   * HTML comprobado:
+   *
+   * <li class="wp-manga-chapter">
+   *
+   *   <a href="
+   *     https://riti-scan.com/serie/.../capitulo-02/
+   *   ">
+   *     Capitulo 02
+   *   </a>
+   *
+   * </li>
+   *
+   *
+   * También comprobamos paginación:
+   *
+   * <span class="page current page-1">1</span>
+   *
+   * <span class="page page-2">
+   *   <a href="/?t=2" data-page="2">2</a>
+   * </span>
+   */
+  private parseChapters(
+    body: string,
+    chapters: Plugin.ChapterItem[],
+    seen: Set<string>,
+  ): number {
+    const $ = cheerio.load(body);
+
+    let added = 0;
 
     $('li.wp-manga-chapter a').each((_, el) => {
       const href = $(el).attr('href') || '';
@@ -373,50 +329,51 @@ class RitiScanPlugin implements Plugin.PluginBase {
         return;
       }
 
-      const path = this.normalizePath(href);
+      const path = this.getPath(href);
 
-      if (!path || seen.has(path)) {
+      if (seen.has(path)) {
         return;
       }
 
       /**
-       * Primero obtenemos el número del texto:
+       * Preferimos sacar el número del texto.
        *
-       * Capitulo 449.5 -> 449.5
-       *
-       * Esto es más fiable que interpretar:
-       *
-       * capitulo-449-5
+       * Capitulo 01
+       * Capitulo 02
+       * Capitulo 449.5
        */
-      const textNumberMatch = name.match(
+      const numberMatch = name.match(
         /(?:cap[ií]tulo|capitulo|cap\.?)\s*([0-9]+(?:\.[0-9]+)?)/i,
       );
 
-      /**
-       * Fallback al slug.
-       */
-      const slugNumberMatch = path.match(/\/capitulo-(\d+(?:[-.]\d+)?)/i);
-
       let chapterNumber: number | undefined;
 
-      if (textNumberMatch) {
-        const number = Number(textNumberMatch[1]);
+      if (numberMatch) {
+        const number = Number(numberMatch[1]);
 
         if (Number.isFinite(number)) {
           chapterNumber = number;
         }
-      } else if (slugNumberMatch) {
-        let rawNumber = slugNumberMatch[1];
+      }
 
-        /**
-         * 449-5 -> 449.5
-         */
-        rawNumber = rawNumber.replace(/^(\d+)-(\d+)$/, '$1.$2');
+      /**
+       * Fallback al slug.
+       *
+       * capitulo-449-5
+       * ->
+       * 449.5
+       */
+      if (chapterNumber === undefined) {
+        const slugMatch = path.match(/\/capitulo-(\d+(?:[-.]\d+)?)/i);
 
-        const number = Number(rawNumber);
+        if (slugMatch) {
+          const raw = slugMatch[1].replace(/^(\d+)-(\d+)$/, '$1.$2');
 
-        if (Number.isFinite(number)) {
-          chapterNumber = number;
+          const number = Number(raw);
+
+          if (Number.isFinite(number)) {
+            chapterNumber = number;
+          }
         }
       }
 
@@ -427,12 +384,79 @@ class RitiScanPlugin implements Plugin.PluginBase {
         path,
         chapterNumber,
       });
+
+      added++;
+    });
+
+    return added;
+  }
+
+  /**
+   * Descarga las páginas de capítulos:
+   *
+   * ?t=1
+   * ?t=2
+   * ...
+   */
+  private async getChapters(novelPath: string): Promise<Plugin.ChapterItem[]> {
+    const chapters: Plugin.ChapterItem[] = [];
+
+    const seen = new Set<string>();
+
+    const baseUrl = this.getUrl(novelPath.replace(/\/+$/, ''));
+
+    /**
+     * Empezamos por la ficha normal.
+     *
+     * Si ya contiene capítulos, los recogemos.
+     */
+    const mainBody = await fetchApi(`${baseUrl}/`).then(res => res.text());
+
+    this.parseChapters(mainBody, chapters, seen);
+
+    const $main = cheerio.load(mainBody);
+
+    /**
+     * Buscamos el número máximo de página directamente
+     * en data-page.
+     *
+     * Ejemplo:
+     *
+     * data-page="2"
+     */
+    let maxPage = 1;
+
+    $('a[data-page]').each((_, el) => {
+      const page = Number($main(el).attr('data-page'));
+
+      if (Number.isFinite(page) && page > maxPage) {
+        maxPage = page;
+      }
     });
 
     /**
-     * El endpoint devuelve más nuevo -> más viejo.
+     * Si el HTML dice que hay página 2, 3, etc.,
+     * las recorremos.
+     */
+    for (let page = 2; page <= maxPage; page++) {
+      try {
+        const pageUrl = `${baseUrl}/?t=${page}`;
+
+        const body = await fetchApi(pageUrl).then(res => res.text());
+
+        this.parseChapters(body, chapters, seen);
+      } catch {
+        continue;
+      }
+    }
+
+    /**
+     * Orden:
      *
-     * LNReader necesita más viejo -> más nuevo.
+     * Cap 1
+     * Cap 2
+     * Cap 3
+     * ...
      */
     chapters.sort((a, b) => {
       const aNumber = a.chapterNumber ?? Number.MAX_SAFE_INTEGER;
@@ -445,48 +469,84 @@ class RitiScanPlugin implements Plugin.PluginBase {
     return chapters;
   }
 
+  /**
+   * ============================================================
+   * FICHA
+   * ============================================================
+   */
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
     const cleanPath = novelPath.split('?')[0].replace(/\/+$/, '');
 
-    const url = this.absoluteUrl(cleanPath) + '/';
+    const url = this.getUrl(cleanPath) + '/';
 
-    const response = await fetchApi(url);
-
-    const body = await response.text();
+    const body = await fetchApi(url).then(res => res.text());
 
     const $ = cheerio.load(body);
 
     /**
-     * Título.
+     * TÍTULO
      */
     const name =
-      $('.post-title h1').first().text().trim() ||
-      $('.post-title').first().text().trim() ||
-      $('h1').first().text().trim() ||
+      $('.post-title h1').first().text().replace(/\s+/g, ' ').trim() ||
+      $('h1').first().text().replace(/\s+/g, ' ').trim() ||
       $('meta[property="og:title"]').attr('content')?.trim() ||
       '';
 
     /**
-     * Portada.
+     * PORTADA
+     *
+     * HTML que nos pasaste:
+     *
+     * <img
+     *   class="img-responsive"
+     *   src="https://riti-scan.com/wp-content/..."
+     * >
      */
-    const coverImg = $('.summary_image img').first();
+    const coverImg = $('img.img-responsive').first();
 
     const coverSrc =
+      coverImg.attr('data-src-webp') ||
+      coverImg.attr('data-src-img') ||
       coverImg.attr('data-src') ||
-      coverImg.attr('data-lazy-src') ||
       coverImg.attr('src') ||
       $('meta[property="og:image"]').attr('content') ||
       '';
 
-    const cover = this.normalizeCover(coverSrc);
+    const cover = this.getCover(coverSrc);
 
     /**
-     * Sinopsis.
+     * SINOPSIS
+     *
+     * Primero buscamos los contenedores normales de
+     * descripción.
      */
     let summary =
-      $('.summary__content').first().text().replace(/\s+/g, ' ').trim() ||
-      $('.description-summary').first().text().replace(/\s+/g, ' ').trim();
+      $('.summary__content p').first().text().replace(/\s+/g, ' ').trim() ||
+      $('.description-summary p').first().text().replace(/\s+/g, ' ').trim();
 
+    /**
+     * Si la descripción no tiene esos wrappers,
+     * buscamos un párrafo suficientemente largo.
+     *
+     * La sinopsis que nos pasaste es un <p> largo.
+     */
+    if (!summary) {
+      $('p').each((_, el) => {
+        if (summary) {
+          return;
+        }
+
+        const text = $(el).text().replace(/\s+/g, ' ').trim();
+
+        if (text.length >= 100) {
+          summary = text;
+        }
+      });
+    }
+
+    /**
+     * Fallback meta description.
+     */
     if (!summary) {
       summary =
         $('meta[name="description"]').attr('content')?.trim() ||
@@ -495,34 +555,16 @@ class RitiScanPlugin implements Plugin.PluginBase {
     }
 
     /**
-     * Estado.
+     * ESTADO
      */
-    let status = NovelStatus.Ongoing;
+    const pageText = $('body').text().replace(/\s+/g, ' ');
 
-    $('.post-content_item').each((_, el) => {
-      const heading = $(el)
-        .find('.summary-heading')
-        .text()
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      if (!/status|estado/i.test(heading)) {
-        return;
-      }
-
-      const value = $(el)
-        .find('.summary-content')
-        .text()
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      if (/completed|complete|finalizado|completado|terminado/i.test(value)) {
-        status = NovelStatus.Completed;
-      }
-    });
+    const status = /completo|completado|finalizado|terminado/i.test(pageText)
+      ? NovelStatus.Completed
+      : NovelStatus.Ongoing;
 
     /**
-     * TODOS los capítulos vienen del endpoint AJAX real.
+     * CAPÍTULOS
      */
     const chapters = await this.getChapters(cleanPath);
 
@@ -536,58 +578,96 @@ class RitiScanPlugin implements Plugin.PluginBase {
     };
   }
 
+  /**
+   * ============================================================
+   * LECTURA
+   * ============================================================
+   */
   async parseChapter(chapterPath: string): Promise<string> {
-    const url = this.absoluteUrl(chapterPath);
+    const url = this.getUrl(chapterPath);
 
-    const response = await fetchApi(url);
-
-    const body = await response.text();
+    const body = await fetchApi(url).then(res => res.text());
 
     const $ = cheerio.load(body);
 
     /**
-     * Madara normalmente coloca el contenido textual aquí.
+     * Buscamos primero el contenedor típico de Madara.
      */
-    const selectors = [
+    const containers = [
       '.reading-content',
-      '.text-left',
       '.entry-content',
       '.chapter-content',
-      '.c-page__content',
+      '.text-left',
     ];
 
-    let content = '';
+    for (const selector of containers) {
+      const container = $(selector).first();
 
-    for (const selector of selectors) {
-      const element = $(selector).first();
-
-      if (!element.length) {
+      if (!container.length) {
         continue;
       }
 
       /**
-       * Quitamos elementos que no forman parte de la novela.
+       * Solo nos interesan párrafos con texto.
        */
-      element
-        .find(
-          'script, style, iframe, ins, .adsbygoogle, .code-block, .sharedaddy',
-        )
-        .remove();
+      const paragraphs: string[] = [];
 
-      const html = element.html()?.trim();
+      container.find('p').each((_, el) => {
+        const text = $(el).text().replace(/\s+/g, ' ').trim();
 
-      if (html && html.length > content.length) {
-        content = html;
+        if (!text) {
+          return;
+        }
+
+        paragraphs.push(`<p>${this.escapeHtml(text)}</p>`);
+      });
+
+      if (paragraphs.length > 0) {
+        return paragraphs.join('');
       }
     }
 
-    if (!content) {
-      throw new Error(
-        "Rit'i Scan: no se pudo encontrar el contenido del capítulo.",
-      );
+    /**
+     * Fallback.
+     *
+     * El HTML que nos pasaste tiene:
+     *
+     * <p>Capitulo 01</p>
+     * <p>Hablar conmigo mismo...</p>
+     *
+     * Si no encontramos contenedor conocido, buscamos
+     * párrafos que tengan contenido significativo.
+     */
+    const paragraphs: string[] = [];
+
+    $('p').each((_, el) => {
+      const text = $(el).text().replace(/\s+/g, ' ').trim();
+
+      if (!text) {
+        return;
+      }
+
+      paragraphs.push(`<p>${this.escapeHtml(text)}</p>`);
+    });
+
+    if (paragraphs.length === 0) {
+      throw new Error("Rit'i Scan: no se encontró texto en el capítulo.");
     }
 
-    return content;
+    return paragraphs.join('');
+  }
+
+  /**
+   * Evita que símbolos del texto rompan el HTML
+   * entregado a LNReader.
+   */
+  private escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 }
 
