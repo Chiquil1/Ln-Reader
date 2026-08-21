@@ -8,6 +8,13 @@ import { defaultCover } from '@libs/defaultCover';
 
 import * as cheerio from 'cheerio';
 
+type RittoChapter = {
+  id?: string;
+  nombre?: string;
+  href?: string;
+  numero?: number | string;
+};
+
 class RittoPlugin implements Plugin.PluginBase {
   id = 'ritto';
 
@@ -17,7 +24,7 @@ class RittoPlugin implements Plugin.PluginBase {
 
   site = 'https://ritto.cc/';
 
-  version = '1.0.0';
+  version = '1.0.1';
 
   filters = undefined;
 
@@ -25,17 +32,23 @@ class RittoPlugin implements Plugin.PluginBase {
    * Extrae las novelas mostradas en el catálogo.
    *
    * Ritto mezcla manga, manhwa, novelas, etc., por lo que las URLs
-   * que llaman a este método deben incluir tipo=NOVELA.
+   * que llaman a este método incluyen tipo=NOVELA.
    */
   private parseNovelCards(body: string): Plugin.NovelItem[] {
     const $ = cheerio.load(body);
 
     const novels: Plugin.NovelItem[] = [];
 
+    const seenPaths = new Set<string>();
+
     $('a.ritto-work-card').each((_, el) => {
       const href = $(el).attr('href') || '';
 
       if (!href.startsWith('/obra/')) {
+        return;
+      }
+
+      if (seenPaths.has(href)) {
         return;
       }
 
@@ -55,6 +68,8 @@ class RittoPlugin implements Plugin.PluginBase {
         : defaultCover;
 
       if (name && href) {
+        seenPaths.add(href);
+
         novels.push({
           name,
           path: href,
@@ -97,6 +112,193 @@ class RittoPlugin implements Plugin.PluginBase {
     return this.parseNovelCards(body);
   }
 
+  /**
+   * Convierte secuencias escapadas habituales de los payloads de Next.js.
+   */
+  private decodePayloadString(value: string): string {
+    return value
+      .replace(/\\"/g, '"')
+      .replace(/\\u0026/g, '&')
+      .replace(/\\u003d/g, '=')
+      .replace(/\\u003f/g, '?')
+      .replace(/\\u002f/gi, '/')
+      .replace(/\\\//g, '/');
+  }
+
+  /**
+   * Busca los capítulos que Ritto incluye dentro del payload de Next.js.
+   *
+   * Ejemplo:
+   *
+   * "items":[
+   *   {
+   *     "id":"...",
+   *     "nombre":"Cap. 30",
+   *     "href":"/obra/yokuoni/capitulo/capitulo-30?scan=...",
+   *     "numero":30
+   *   }
+   * ]
+   */
+  private extractPayloadChapters(body: string): Plugin.ChapterItem[] {
+    const chapters: Plugin.ChapterItem[] = [];
+
+    const seenPaths = new Set<string>();
+
+    /*
+     * El HTML de Next.js puede contener el JSON normal:
+     *
+     * "nombre":"Cap. 30"
+     *
+     * o escapado:
+     *
+     * \"nombre\":\"Cap. 30\"
+     *
+     * Normalizamos ambas variantes.
+     */
+    const normalizedBody = this.decodePayloadString(body);
+
+    /*
+     * En lugar de intentar JSON.parse() sobre todo el payload de Next.js,
+     * buscamos directamente objetos que tengan nombre/href/numero.
+     *
+     * Esto evita depender de la estructura interna exacta de Next.js.
+     */
+    const objectRegex = /\{[^{}]*\}/g;
+
+    const objects = normalizedBody.match(objectRegex) || [];
+
+    for (const objectText of objects) {
+      if (
+        !objectText.includes('"href"') ||
+        !objectText.includes('/capitulo/')
+      ) {
+        continue;
+      }
+
+      const hrefMatch = objectText.match(
+        /"href"\s*:\s*"([^"]*\/capitulo\/[^"]+)"/i,
+      );
+
+      if (!hrefMatch) {
+        continue;
+      }
+
+      const href = this.decodePayloadString(hrefMatch[1]);
+
+      if (
+        !href.includes('/obra/') ||
+        !href.includes('/capitulo/') ||
+        seenPaths.has(href)
+      ) {
+        continue;
+      }
+
+      const nameMatch = objectText.match(/"nombre"\s*:\s*"([^"]+)"/i);
+
+      const numberMatch = objectText.match(
+        /"numero"\s*:\s*(?:"([^"]+)"|(-?\d+(?:\.\d+)?))/i,
+      );
+
+      let chapterNumber: number | undefined;
+
+      if (numberMatch) {
+        const rawNumber = numberMatch[1] || numberMatch[2];
+
+        const parsedNumber = Number(rawNumber);
+
+        if (Number.isFinite(parsedNumber)) {
+          chapterNumber = parsedNumber;
+        }
+      }
+
+      /*
+       * Si por alguna razón numero no está presente, intentamos obtenerlo
+       * del nombre o del slug.
+       */
+      if (chapterNumber === undefined) {
+        const fallbackNumber =
+          href.match(/\/capitulo\/capitulo-(\d+(?:[-.]\d+)?)/i) ||
+          nameMatch?.[1]?.match(/(\d+(?:\.\d+)?)/);
+
+        if (fallbackNumber) {
+          const parsedNumber = Number(fallbackNumber[1].replace('-', '.'));
+
+          if (Number.isFinite(parsedNumber)) {
+            chapterNumber = parsedNumber;
+          }
+        }
+      }
+
+      const chapterName =
+        nameMatch?.[1]?.trim() ||
+        (chapterNumber !== undefined ? `Cap. ${chapterNumber}` : 'Capítulo');
+
+      seenPaths.add(href);
+
+      chapters.push({
+        name: chapterName,
+        path: href,
+        chapterNumber,
+      });
+    }
+
+    return chapters;
+  }
+
+  /**
+   * Método de respaldo.
+   *
+   * Si Ritto cambia el payload pero continúa renderizando enlaces
+   * de capítulos en el HTML, todavía podremos obtenerlos.
+   */
+  private extractHtmlChapters($: cheerio.CheerioAPI): Plugin.ChapterItem[] {
+    const chapters: Plugin.ChapterItem[] = [];
+
+    const seenPaths = new Set<string>();
+
+    $('a[href*="/capitulo/"]').each((_, el) => {
+      const href = $(el).attr('href') || '';
+
+      if (!href.includes('/obra/') || !href.includes('/capitulo/')) {
+        return;
+      }
+
+      if (seenPaths.has(href)) {
+        return;
+      }
+
+      const text = $(el).text().replace(/\s+/g, ' ').trim();
+
+      const numberMatch =
+        href.match(/\/capitulo\/capitulo-(\d+(?:[-.]\d+)?)/i) ||
+        text.match(/(?:Cap(?:ítulo)?\.?\s*)(\d+(?:\.\d+)?)/i);
+
+      let chapterNumber: number | undefined;
+
+      if (numberMatch) {
+        const parsedNumber = Number(numberMatch[1].replace('-', '.'));
+
+        if (Number.isFinite(parsedNumber)) {
+          chapterNumber = parsedNumber;
+        }
+      }
+
+      const chapterName =
+        text ||
+        (chapterNumber !== undefined ? `Cap. ${chapterNumber}` : 'Capítulo');
+
+      seenPaths.add(href);
+
+      chapters.push({
+        name: chapterName,
+        path: href,
+        chapterNumber,
+      });
+    });
+
+    return chapters;
+  }
+
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
     const url = this.site + novelPath.replace(/^\//, '');
 
@@ -115,9 +317,6 @@ class RittoPlugin implements Plugin.PluginBase {
 
     /*
      * Portada
-     *
-     * No usamos og:image como primera opción porque Ritto utiliza
-     * un banner distinto a la portada de la obra.
      */
     let coverSrc =
       $('.obra-hub__cover img').first().attr('src') ||
@@ -136,9 +335,6 @@ class RittoPlugin implements Plugin.PluginBase {
 
     /*
      * Sinopsis
-     *
-     * La ficha renderizada por Ritto contiene la descripción completa.
-     * Como respaldo utilizamos meta description.
      */
     let summary = $('.obra-hub__description').first().text().trim();
 
@@ -163,76 +359,57 @@ class RittoPlugin implements Plugin.PluginBase {
     }
 
     /*
-     * Capítulos
+     * CAPÍTULOS
+     *
+     * Primero usamos el payload de Ritto.
+     *
+     * Este es el cambio importante respecto a la versión 1.0.0.
      */
-    const chapters: Plugin.ChapterItem[] = [];
-
-    const seenPaths = new Set<string>();
+    let chapters = this.extractPayloadChapters(body);
 
     /*
-     * Ritto incluye los enlaces de los capítulos en el HTML generado
-     * por Next.js.
-     *
-     * Ejemplo:
-     *
-     * /obra/slug/capitulo/capitulo-116?scan=riomy-scan
+     * Si no encontramos capítulos en el payload, conservamos el método
+     * antiguo como respaldo.
      */
-    $('a[href*="/capitulo/"]').each((_, el) => {
-      const href = $(el).attr('href') || '';
-
-      if (!href.includes('/obra/') || !href.includes('/capitulo/')) {
-        return;
-      }
-
-      if (seenPaths.has(href)) {
-        return;
-      }
-
-      const text = $(el).text().replace(/\s+/g, ' ').trim();
-
-      /*
-       * Sacamos el número principalmente del slug.
-       *
-       * Ejemplo:
-       * capitulo-116 -> 116
-       */
-      const numberMatch =
-        href.match(/\/capitulo\/capitulo-(\d+(?:\.\d+)?)/i) ||
-        text.match(/(?:Cap(?:ítulo)?\.?\s*)(\d+(?:\.\d+)?)/i);
-
-      const chapterNumber = numberMatch ? Number(numberMatch[1]) : undefined;
-
-      let chapterName = text;
-
-      /*
-       * Algunos enlaces contienen texto adicional de botones.
-       * Si conocemos el número usamos un nombre limpio.
-       */
-      if (chapterNumber !== undefined) {
-        chapterName = `Cap. ${chapterNumber}`;
-      }
-
-      if (!chapterName) {
-        chapterName = 'Capítulo';
-      }
-
-      seenPaths.add(href);
-
-      chapters.push({
-        name: chapterName,
-        path: href,
-        chapterNumber,
-      });
-    });
+    if (chapters.length === 0) {
+      chapters = this.extractHtmlChapters($);
+    }
 
     /*
-     * La ficha normalmente muestra capítulos del más nuevo al más viejo.
+     * Eliminamos posibles duplicados una segunda vez porque Next.js puede
+     * repetir información en diferentes partes del payload.
+     */
+    const uniqueChapters = new Map<string, Plugin.ChapterItem>();
+
+    for (const chapter of chapters) {
+      if (!uniqueChapters.has(chapter.path)) {
+        uniqueChapters.set(chapter.path, chapter);
+      }
+    }
+
+    chapters = Array.from(uniqueChapters.values());
+
+    /*
+     * Ritto normalmente entrega:
      *
-     * Ordenamos explícitamente para no depender del orden del HTML.
+     * 30
+     * 29
+     * 28
+     * ...
+     * 1
+     *
+     * LNReader debe recibirlos en orden ascendente.
      */
     chapters.sort((a, b) => {
-      const aNumber = a.chapterNumber ?? 0;
-      const bNumber = b.chapterNumber ?? 0;
+      const aNumber =
+        typeof a.chapterNumber === 'number'
+          ? a.chapterNumber
+          : Number.MAX_SAFE_INTEGER;
+
+      const bNumber =
+        typeof b.chapterNumber === 'number'
+          ? b.chapterNumber
+          : Number.MAX_SAFE_INTEGER;
 
       return aNumber - bNumber;
     });
@@ -260,16 +437,13 @@ class RittoPlugin implements Plugin.PluginBase {
     /*
      * PASO 2
      *
-     * Ritto incluye dentro del payload de Next.js:
+     * Ritto incluye:
      *
      * "archivoUrl":"/api/capitulos/{ID}/archivo"
-     *
-     * El contenido puede aparecer escapado dentro de los scripts,
-     * así que contemplamos ambas variantes.
      */
     const archivoMatch =
       body.match(
-        /\\?"archivoUrl\\?"\s*:\s*\\?"(\/api\/capitulos\/[^"\\]+\/archivo)\\?"/,
+        /\\"archivoUrl\\"\s*:\s*\\"(\/api\/capitulos\/[^"\\]+\/archivo)\\"/,
       ) ||
       body.match(/"archivoUrl"\s*:\s*"(\/api\/capitulos\/[^"]+\/archivo)"/);
 
@@ -284,7 +458,7 @@ class RittoPlugin implements Plugin.PluginBase {
     /*
      * PASO 3
      *
-     * Este endpoint devuelve directamente el texto de la novela.
+     * El endpoint devuelve directamente el texto.
      */
     const text = await fetchApi(this.site.slice(0, -1) + archivoUrl).then(res =>
       res.text(),
@@ -294,12 +468,6 @@ class RittoPlugin implements Plugin.PluginBase {
       throw new Error('Ritto: el capítulo no contiene texto.');
     }
 
-    /*
-     * LNReader espera contenido HTML.
-     *
-     * Escapamos HTML antes de crear los párrafos para que símbolos
-     * presentes en la novela no puedan romper el documento.
-     */
     const escapeHtml = (value: string) =>
       value
         .replace(/&/g, '&amp;')
@@ -309,9 +477,7 @@ class RittoPlugin implements Plugin.PluginBase {
         .replace(/'/g, '&#039;');
 
     /*
-     * Conservamos los párrafos del capítulo.
-     *
-     * Dos saltos de línea = nuevo párrafo.
+     * Conservamos párrafos para LNReader/TTS.
      */
     return text
       .replace(/\r\n/g, '\n')
