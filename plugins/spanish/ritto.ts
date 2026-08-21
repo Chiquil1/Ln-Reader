@@ -13,7 +13,7 @@ class RittoPlugin implements Plugin.PluginBase {
 
   name = 'Ritto';
 
-  icon = 'src/es/ritto/icon.png';
+  icon = 'https://ritto.cc/logo/ritto1w.png';
 
   site = 'https://ritto.cc/';
 
