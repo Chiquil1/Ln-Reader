@@ -17,7 +17,7 @@ class RittoPlugin implements Plugin.PluginBase {
 
   site = 'https://ritto.cc/';
 
-  version = '1.0.3';
+  version = '1.0.4';
 
   filters = undefined;
 
@@ -58,8 +58,7 @@ class RittoPlugin implements Plugin.PluginBase {
    * Extrae las obras del catálogo.
    *
    * Primero utiliza las tarjetas HTML normales.
-   * Después revisa también el payload de Next.js para no perder
-   * obras que no hayan quedado renderizadas como tarjetas.
+   * Después revisa también el payload de Next.js.
    */
   private parseNovelCards(body: string): Plugin.NovelItem[] {
     const $ = cheerio.load(body);
@@ -118,7 +117,7 @@ class RittoPlugin implements Plugin.PluginBase {
     });
 
     /**
-     * Fallback para cualquier tarjeta que tenga /obra/.
+     * Fallback para cualquier enlace de obra.
      */
     $('a[href^="/obra/"]').each((_, el) => {
       const href = $(el).attr('href') || '';
@@ -148,9 +147,6 @@ class RittoPlugin implements Plugin.PluginBase {
 
     /**
      * Payload de Next.js.
-     *
-     * Aquí buscamos referencias /obra/... que puedan no haber
-     * quedado disponibles como tarjetas HTML normales.
      */
     const normalized = this.normalizeNextPayload(body);
 
@@ -168,10 +164,8 @@ class RittoPlugin implements Plugin.PluginBase {
         continue;
       }
 
-      /**
-       * Intentamos encontrar el nombre cerca del href.
-       */
       const start = Math.max(0, match.index - 1500);
+
       const end = Math.min(normalized.length, match.index + 1500);
 
       const context = normalized.slice(start, end);
@@ -186,10 +180,6 @@ class RittoPlugin implements Plugin.PluginBase {
         name = titleMatches[titleMatches.length - 1][1];
       }
 
-      /**
-       * Si ya obtuvimos esta obra mediante HTML no necesitamos
-       * añadirla otra vez.
-       */
       if (seen.has(href.split('?')[0])) {
         continue;
       }
@@ -208,9 +198,6 @@ class RittoPlugin implements Plugin.PluginBase {
   ): Promise<Plugin.NovelItem[]> {
     const orden = showLatestNovels ? 'reciente' : 'vistas';
 
-    /**
-     * Ritto utiliza "pagina" internamente.
-     */
     const url =
       `${this.site}catalogo?tipo=NOVELA` +
       `&orden=${orden}` +
@@ -237,13 +224,17 @@ class RittoPlugin implements Plugin.PluginBase {
   }
 
   /**
-   * Extrae TODOS los capítulos del payload de Next.js.
+   * Extrae TODOS los capítulos desde el payload
+   * de Next.js.
    *
-   * Este método utiliza exactamente la estrategia que comprobamos
-   * contra Yokuoni:
+   * Para Yokuoni comprobamos:
    *
-   * HTML <a> normales = 11
-   * payload Next.js    = 30
+   * HTML normal -> 11
+   * payload     -> 30
+   *
+   * Para Solo Necesito Al Hijo Del Duque:
+   *
+   * payload -> 116
    */
   private extractChapters(
     body: string,
@@ -261,17 +252,13 @@ class RittoPlugin implements Plugin.PluginBase {
     );
 
     /**
-     * IMPORTANTE:
-     *
-     * Buscamos las DOS representaciones:
+     * Buscamos las dos representaciones:
      *
      * \"href\":\"/obra/.../capitulo/...\"
      *
-     * y:
+     * y
      *
      * "href":"/obra/.../capitulo/..."
-     *
-     * sin intentar parsear los objetos anidados.
      */
     const patterns = [
       new RegExp(
@@ -298,11 +285,6 @@ class RittoPlugin implements Plugin.PluginBase {
         return;
       }
 
-      /**
-       * capitulo-30
-       * capitulo-12.5
-       * capitulo-449-5
-       */
       const numberMatch = href.match(/\/capitulo\/capitulo-(\d+(?:[.-]\d+)?)/i);
 
       if (!numberMatch) {
@@ -312,6 +294,8 @@ class RittoPlugin implements Plugin.PluginBase {
       let rawNumber = numberMatch[1];
 
       /**
+       * Ejemplo:
+       *
        * 449-5 -> 449.5
        */
       rawNumber = rawNumber.replace(/^(\d+)-(\d+)$/, '$1.$2');
@@ -332,7 +316,7 @@ class RittoPlugin implements Plugin.PluginBase {
     };
 
     /**
-     * Primero buscamos directamente sobre el HTML bruto.
+     * Primero buscamos sobre el HTML bruto.
      */
     for (const regex of patterns) {
       let match: RegExpExecArray | null;
@@ -343,7 +327,7 @@ class RittoPlugin implements Plugin.PluginBase {
     }
 
     /**
-     * También probamos sobre el payload normalizado.
+     * Después sobre el payload normalizado.
      */
     const normalized = this.normalizeNextPayload(body);
 
@@ -374,22 +358,26 @@ class RittoPlugin implements Plugin.PluginBase {
     }
 
     /**
-     * Orden LNReader:
-     *
-     * 1 -> último
+     * Orden ascendente para LNReader.
      */
     chapters.sort((a, b) => (a.chapterNumber ?? 0) - (b.chapterNumber ?? 0));
 
     return chapters;
   }
 
-  async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
-    const cleanPath = novelPath.split('?')[0];
-
-    const url = this.site + cleanPath.replace(/^\//, '');
-
-    const body = await fetchApi(url).then(res => res.text());
-
+  /**
+   * Procesa una ficha descargada.
+   */
+  private parseNovelBody(
+    body: string,
+    cleanPath: string,
+  ): {
+    name: string;
+    cover: string;
+    summary: string;
+    status: string;
+    chapters: Plugin.ChapterItem[];
+  } {
     const $ = cheerio.load(body);
 
     /**
@@ -413,10 +401,18 @@ class RittoPlugin implements Plugin.PluginBase {
     const cover = this.normalizeCover(coverSrc);
 
     /**
-     * Sinopsis
+     * Sinopsis.
      */
-    let summary = $('.obra-hub__description').first().text().trim();
+    let summary = $('.obra-hub__description')
+      .first()
+      .text()
+      .replace(/\s+/g, ' ')
+      .trim();
 
+    /**
+     * Fallback independiente del contenido
+     * renderizado de la ficha.
+     */
     if (!summary) {
       summary =
         $('meta[name="description"]').attr('content')?.trim() ||
@@ -425,7 +421,7 @@ class RittoPlugin implements Plugin.PluginBase {
     }
 
     /**
-     * Estado
+     * Estado.
      */
     const pageText = $('.obra-hub').first().text();
 
@@ -439,12 +435,123 @@ class RittoPlugin implements Plugin.PluginBase {
     const chapters = this.extractChapters(body, cleanPath);
 
     return {
-      path: cleanPath,
       name,
       cover,
       summary,
       status,
       chapters,
+    };
+  }
+
+  /**
+   * Ficha de novela.
+   *
+   * Ritto utiliza Next.js y hemos observado que
+   * algunas fichas pueden requerir una recarga en
+   * LNReader antes de mostrar toda la información.
+   *
+   * Ahora el plugin hace esa recarga automáticamente.
+   */
+  async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
+    const cleanPath = novelPath.split('?')[0];
+
+    const baseUrl = this.site + cleanPath.replace(/^\//, '');
+
+    let bestName = '';
+
+    let bestCover = defaultCover;
+
+    let bestSummary = '';
+
+    let bestStatus = NovelStatus.Ongoing;
+
+    let bestChapters: Plugin.ChapterItem[] = [];
+
+    /**
+     * Hasta tres intentos.
+     *
+     * Si el primero está completo, solamente
+     * hacemos una petición.
+     */
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const requestUrl =
+        attempt === 1
+          ? baseUrl
+          : `${baseUrl}?_lnreader=${Date.now()}-${attempt}`;
+
+      try {
+        const response = await fetchApi(requestUrl, {
+          headers: {
+            Accept: 'text/html,application/xhtml+xml',
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
+          },
+        });
+
+        if (!response.ok) {
+          continue;
+        }
+
+        const body = await response.text();
+
+        /**
+         * Evitamos intentar procesar respuestas
+         * claramente vacías.
+         */
+        if (!body || body.length < 1000) {
+          continue;
+        }
+
+        const parsed = this.parseNovelBody(body, cleanPath);
+
+        if (parsed.name) {
+          bestName = parsed.name;
+        }
+
+        if (parsed.cover && parsed.cover !== defaultCover) {
+          bestCover = parsed.cover;
+        }
+
+        if (parsed.summary) {
+          bestSummary = parsed.summary;
+        }
+
+        bestStatus =
+          parsed.status === NovelStatus.Completed
+            ? NovelStatus.Completed
+            : NovelStatus.Ongoing;
+
+        /**
+         * Conservamos siempre la respuesta que
+         * haya encontrado más capítulos.
+         */
+        if (parsed.chapters.length > bestChapters.length) {
+          bestChapters = parsed.chapters;
+        }
+
+        /**
+         * Si ya tenemos título, sinopsis y
+         * capítulos, no necesitamos más intentos.
+         */
+        if (bestName && bestSummary && bestChapters.length > 0) {
+          break;
+        }
+      } catch {
+        /**
+         * Si Ritto falla temporalmente,
+         * probamos otra vez.
+         */
+        continue;
+      }
+    }
+
+    return {
+      path: cleanPath,
+      name: bestName,
+      cover: bestCover,
+      summary: bestSummary,
+      status: bestStatus,
+      chapters: bestChapters,
     };
   }
 
@@ -454,10 +561,16 @@ class RittoPlugin implements Plugin.PluginBase {
     const body = await fetchApi(chapterUrl).then(res => res.text());
 
     /**
-     * Ritto incluye archivoUrl en el payload Next.js.
+     * Normalizamos el payload Next.js.
      */
     const normalized = this.normalizeNextPayload(body);
 
+    /**
+     * Los capítulos de texto incluyen:
+     *
+     * "archivoUrl":
+     * "/api/capitulos/{ID}/archivo"
+     */
     const archivoMatch = normalized.match(
       /"archivoUrl"\s*:\s*"(\/api\/capitulos\/[^"]+\/archivo)"/,
     );
@@ -470,6 +583,9 @@ class RittoPlugin implements Plugin.PluginBase {
 
     const archivoUrl = archivoMatch[1];
 
+    /**
+     * Descargamos el texto real.
+     */
     const text = await fetchApi(this.site.slice(0, -1) + archivoUrl).then(res =>
       res.text(),
     );
@@ -478,6 +594,9 @@ class RittoPlugin implements Plugin.PluginBase {
       throw new Error('Ritto: el capítulo no contiene texto.');
     }
 
+    /**
+     * Escapamos HTML.
+     */
     const escapeHtml = (value: string) =>
       value
         .replace(/&/g, '&amp;')
@@ -486,6 +605,9 @@ class RittoPlugin implements Plugin.PluginBase {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
 
+    /**
+     * Conservamos párrafos para LNReader/TTS.
+     */
     return text
       .replace(/\r\n/g, '\n')
       .split(/\n\s*\n/)
