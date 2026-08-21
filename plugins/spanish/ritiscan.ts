@@ -1,50 +1,34 @@
 import { Plugin } from '@typings/plugin';
-
 import { fetchApi } from '@libs/fetch';
-
 import { NovelStatus } from '@libs/novelStatus';
-
 import { defaultCover } from '@libs/defaultCover';
-
 import * as cheerio from 'cheerio';
 
 class RitiScanPlugin implements Plugin.PluginBase {
   id = 'ritiscan';
-
   name = "Rit'i Scan";
-
   icon = 'src/es/ritiscan/icon.png';
-
   site = 'https://riti-scan.com/';
-
-  version = '2.0.5';
-
+  version = '2.0.6';
   filters = undefined;
 
   /**
-   * Headers necesarios para las páginas normales.
+   * La ficha individual de Rit'i devuelve 403 con una petición
+   * demasiado genérica. Estos headers ya fueron comprobados:
    *
-   * En nuestras pruebas:
+   * sin ellos -> 403
+   * con ellos -> 200
    *
-   * sin headers -> 403
-   * con User-Agent/Referer -> 200
+   * Los usamos SOLO para páginas HTML normales.
    */
   private pageHeaders = {
     Accept: 'text/html,application/xhtml+xml,*/*;q=0.8',
-
     Referer: 'https://riti-scan.com/',
-
     'User-Agent':
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ' +
       'AppleWebKit/537.36 (KHTML, like Gecko) ' +
       'Chrome/151.0.0.0 Safari/537.36',
   };
-
-  /**
-   * ============================================================
-   * HELPERS DE URL
-   * ============================================================
-   */
 
   private getPath(url: string): string {
     if (!url) {
@@ -87,44 +71,27 @@ class RitiScanPlugin implements Plugin.PluginBase {
   }
 
   /**
-   * ============================================================
-   * GET HTML
-   * ============================================================
-   *
-   * Esta función tiene logs temporales para comprobar qué
-   * ocurre realmente dentro de Android.
+   * Páginas HTML normales.
    */
   private async fetchHtml(url: string): Promise<string> {
-    console.log('[RITI] GET START:', url);
+    const response = await fetchApi(url, {
+      headers: this.pageHeaders,
+    });
 
-    try {
-      const response = await fetchApi(url, {
-        headers: this.pageHeaders,
-      });
-
-      console.log('[RITI] GET RESPONSE:', response.status, url);
-
-      const body = await response.text();
-
-      console.log('[RITI] GET BODY:', body.length, url);
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      if (
-        /403 Forbidden/i.test(body) ||
-        /Access to this resource on the server is denied/i.test(body)
-      ) {
-        throw new Error('403 Forbidden en HTML');
-      }
-
-      return body;
-    } catch (error) {
-      console.error('[RITI] GET ERROR:', url, error);
-
-      throw error;
+    if (!response.ok) {
+      throw new Error(`Rit'i Scan: HTTP ${response.status} al cargar ${url}`);
     }
+
+    const body = await response.text();
+
+    if (
+      /403 Forbidden/i.test(body) ||
+      /Access to this resource on the server is denied/i.test(body)
+    ) {
+      throw new Error("Rit'i Scan: 403 Forbidden.");
+    }
+
+    return body;
   }
 
   /**
@@ -132,12 +99,10 @@ class RitiScanPlugin implements Plugin.PluginBase {
    * CATÁLOGO
    * ============================================================
    */
-
   private parseNovelCards(body: string): Plugin.NovelItem[] {
     const $ = cheerio.load(body);
 
     const novels: Plugin.NovelItem[] = [];
-
     const seen = new Set<string>();
 
     $('.slider__item').each((_, el) => {
@@ -149,16 +114,11 @@ class RitiScanPlugin implements Plugin.PluginBase {
 
       const name = titleLink.text().replace(/\s+/g, ' ').trim();
 
-      if (!href || !name) {
-        return;
-      }
-
-      if (!href.includes('/serie/')) {
+      if (!href || !name || !href.includes('/serie/')) {
         return;
       }
 
       const path = this.getPath(href);
-
       const key = path.replace(/\/+$/, '');
 
       if (seen.has(key)) {
@@ -183,16 +143,8 @@ class RitiScanPlugin implements Plugin.PluginBase {
       });
     });
 
-    console.log('[RITI] CATALOG NOVELS:', novels.length);
-
     return novels;
   }
-
-  /**
-   * ============================================================
-   * POPULARES
-   * ============================================================
-   */
 
   async popularNovels(
     pageNo: number,
@@ -214,7 +166,6 @@ class RitiScanPlugin implements Plugin.PluginBase {
    * BÚSQUEDA
    * ============================================================
    */
-
   async searchNovels(
     searchTerm: string,
     pageNo: number,
@@ -224,16 +175,13 @@ class RitiScanPlugin implements Plugin.PluginBase {
     }
 
     const url =
-      `${this.site}?s=` +
-      `${encodeURIComponent(searchTerm)}` +
+      `${this.site}?s=${encodeURIComponent(searchTerm)}` +
       '&post_type=wp-manga';
 
     const body = await this.fetchHtml(url);
-
     const $ = cheerio.load(body);
 
     const novels: Plugin.NovelItem[] = [];
-
     const seen = new Set<string>();
 
     $('a[href*="/serie/"]').each((_, el) => {
@@ -246,7 +194,6 @@ class RitiScanPlugin implements Plugin.PluginBase {
       }
 
       const path = this.getPath(href);
-
       const key = path.replace(/\/+$/, '');
 
       if (seen.has(key)) {
@@ -254,10 +201,7 @@ class RitiScanPlugin implements Plugin.PluginBase {
       }
 
       const parent = link.closest(
-        '.c-tabs-item__content, ' +
-          '.page-item-detail, ' +
-          '.item-summary, ' +
-          '.row',
+        '.c-tabs-item__content, .page-item-detail, .item-summary, .row',
       );
 
       const titleLink = parent.find('.post-title a[href*="/serie/"]').first();
@@ -293,10 +237,17 @@ class RitiScanPlugin implements Plugin.PluginBase {
 
   /**
    * ============================================================
-   * PARSEAR CAPÍTULOS
+   * PARSER DE CAPÍTULOS
    * ============================================================
+   *
+   * Respuesta real:
+   *
+   * <li class="wp-manga-chapter">
+   *   <a href=".../capitulo-26/">
+   *     Capítulo 26
+   *   </a>
+   * </li>
    */
-
   private parseChapters(
     body: string,
     chapters: Plugin.ChapterItem[],
@@ -329,6 +280,12 @@ class RitiScanPlugin implements Plugin.PluginBase {
 
       let chapterNumber: number | undefined;
 
+      /**
+       * Capítulo 26
+       * Capitulo 26
+       * Cap. 26
+       * Capítulo 449.5
+       */
       const textMatch = name.match(
         /(?:cap[ií]tulo|capitulo|cap\.?)\s*([0-9]+(?:\.[0-9]+)?)/i,
       );
@@ -341,6 +298,12 @@ class RitiScanPlugin implements Plugin.PluginBase {
         }
       }
 
+      /**
+       * Fallback al slug:
+       *
+       * capitulo-26
+       * capitulo-449-5
+       */
       if (chapterNumber === undefined) {
         const slugMatch = path.match(/\/capitulo-(\d+(?:[-.]\d+)?)/i);
 
@@ -371,72 +334,55 @@ class RitiScanPlugin implements Plugin.PluginBase {
 
   /**
    * ============================================================
-   * POST DE CAPÍTULOS
+   * PETICIÓN DE CAPÍTULOS
    * ============================================================
    *
-   * Request comprobado en Chrome:
+   * Petición comprobada:
    *
    * POST
    * /serie/{slug}/ajax/chapters/?t=N
    *
    * Body vacío.
    *
-   * Aquí están los logs más importantes para Android.
+   * Importante:
+   * no forzamos Referer, Origin, User-Agent ni X-Requested-With.
+   * Dejamos que fetchApi/React Native manejen la petición.
    */
   private async fetchChapterPage(
     baseUrl: string,
     page: number,
   ): Promise<string> {
-    const url = `${baseUrl}/ajax/chapters/` + `?t=${page}`;
+    const url = `${baseUrl}/ajax/chapters/?t=${page}`;
 
-    console.log('[RITI] CHAPTER POST START:', page, url);
+    const response = await fetchApi(url, {
+      method: 'POST',
+    });
 
-    try {
-      const response = await fetchApi(url, {
-        method: 'POST',
-
-        headers: {
-          Accept: '*/*',
-
-          Referer: `${baseUrl}/`,
-
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-      });
-
-      console.log('[RITI] CHAPTER RESPONSE:', page, response.status);
-
-      const body = await response.text();
-
-      console.log('[RITI] CHAPTER BODY:', page, body.length);
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const chapterCount = (body.match(/wp-manga-chapter/g) || []).length;
-
-      console.log('[RITI] CHAPTER HTML COUNT:', page, chapterCount);
-
-      return body;
-    } catch (error) {
-      console.error('[RITI] CHAPTER ERROR:', page, url, error);
-
-      throw error;
+    if (!response.ok) {
+      throw new Error(
+        `Rit'i Scan: HTTP ${response.status} cargando página ${page}.`,
+      );
     }
+
+    return response.text();
   }
 
   /**
    * ============================================================
    * OBTENER TODOS LOS CAPÍTULOS
    * ============================================================
+   *
+   * Seguimos un flujo simple:
+   *
+   * t=1
+   * t=2
+   * t=3
+   *
+   * Nada de Promise.all.
+   * Nada de concurrencia.
    */
-
   private async getChapters(novelPath: string): Promise<Plugin.ChapterItem[]> {
-    console.log('[RITI] GET CHAPTERS START:', novelPath);
-
     const chapters: Plugin.ChapterItem[] = [];
-
     const seen = new Set<string>();
 
     const cleanPath = novelPath.split('?')[0].replace(/\/+$/, '');
@@ -444,31 +390,38 @@ class RitiScanPlugin implements Plugin.PluginBase {
     const baseUrl = this.getUrl(cleanPath);
 
     /**
-     * Página 1.
+     * Primera página.
      */
     const firstBody = await this.fetchChapterPage(baseUrl, 1);
 
-    const firstAdded = this.parseChapters(firstBody, chapters, seen);
+    if (!firstBody.trim()) {
+      return chapters;
+    }
 
-    console.log('[RITI] PAGE 1 ADDED:', firstAdded);
+    this.parseChapters(firstBody, chapters, seen);
 
     /**
-     * Detectar paginación.
+     * Detectar cuántas páginas existen.
+     *
+     * <a href="/?t=2" data-page="2">
      */
     const $ = cheerio.load(firstBody);
 
     let maxPage = 1;
 
     $('a[data-page]').each((_, el) => {
-      const value = $(el).attr('data-page');
-
-      const page = Number(value);
+      const page = Number($(el).attr('data-page'));
 
       if (Number.isFinite(page) && page > maxPage) {
         maxPage = page;
       }
     });
 
+    /**
+     * Fallback:
+     *
+     * href="/?t=3"
+     */
     $('a[href*="?t="]').each((_, el) => {
       const href = $(el).attr('href') || '';
 
@@ -485,63 +438,28 @@ class RitiScanPlugin implements Plugin.PluginBase {
       }
     });
 
-    console.log('[RITI] MAX PAGE:', maxPage);
-
-    if (maxPage <= 1) {
-      const sorted = this.sortChapters(chapters);
-
-      console.log('[RITI] CHAPTERS FINISHED:', sorted.length);
-
-      return sorted;
-    }
-
     /**
-     * Máximo dos solicitudes simultáneas.
+     * Carga secuencial, igual que el enfoque sencillo
+     * que funciona correctamente en otros plugins.
      */
-    const pages = Array.from(
-      {
-        length: maxPage - 1,
-      },
-      (_, index) => index + 2,
-    );
+    for (let page = 2; page <= maxPage; page++) {
+      try {
+        const body = await this.fetchChapterPage(baseUrl, page);
 
-    const concurrency = 2;
-
-    for (let index = 0; index < pages.length; index += concurrency) {
-      const batch = pages.slice(index, index + concurrency);
-
-      console.log('[RITI] CHAPTER BATCH:', batch.join(','));
-
-      const results = await Promise.allSettled(
-        batch.map(page => this.fetchChapterPage(baseUrl, page)),
-      );
-
-      results.forEach((result, resultIndex) => {
-        const page = batch[resultIndex];
-
-        if (result.status !== 'fulfilled') {
-          console.error('[RITI] PAGE FAILED:', page);
-
-          return;
+        if (!body.trim()) {
+          continue;
         }
 
-        const added = this.parseChapters(result.value, chapters, seen);
-
-        console.log('[RITI] PAGE ADDED:', page, added);
-      });
+        this.parseChapters(body, chapters, seen);
+      } catch {
+        /**
+         * Una página fallida no elimina
+         * las demás.
+         */
+        continue;
+      }
     }
 
-    const sorted = this.sortChapters(chapters);
-
-    console.log('[RITI] CHAPTERS FINISHED:', sorted.length);
-
-    return sorted;
-  }
-
-  /**
-   * Orden ascendente.
-   */
-  private sortChapters(chapters: Plugin.ChapterItem[]): Plugin.ChapterItem[] {
     chapters.sort((a, b) => {
       const aNumber = a.chapterNumber ?? Number.MAX_SAFE_INTEGER;
 
@@ -555,23 +473,15 @@ class RitiScanPlugin implements Plugin.PluginBase {
 
   /**
    * ============================================================
-   * FICHA
+   * FICHA DE NOVELA
    * ============================================================
    */
-
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
-    console.log('[RITI] PARSE NOVEL START:', novelPath);
-
     const cleanPath = novelPath.split('?')[0].replace(/\/+$/, '');
 
     const url = this.getUrl(cleanPath) + '/';
 
-    /**
-     * Ficha.
-     */
     const body = await this.fetchHtml(url);
-
-    console.log('[RITI] NOVEL HTML RECEIVED:', body.length);
 
     const $ = cheerio.load(body);
 
@@ -583,8 +493,6 @@ class RitiScanPlugin implements Plugin.PluginBase {
       $('h1').first().text().replace(/\s+/g, ' ').trim() ||
       $('meta[property="og:title"]').attr('content')?.trim() ||
       '';
-
-    console.log('[RITI] NOVEL NAME:', name);
 
     /**
      * Portada.
@@ -610,6 +518,9 @@ class RitiScanPlugin implements Plugin.PluginBase {
       $('.summary__content').first().text().replace(/\s+/g, ' ').trim() ||
       $('.description-summary').first().text().replace(/\s+/g, ' ').trim();
 
+    /**
+     * Fallback a párrafo largo.
+     */
     if (!summary) {
       $('p').each((_, el) => {
         if (summary) {
@@ -624,14 +535,15 @@ class RitiScanPlugin implements Plugin.PluginBase {
       });
     }
 
+    /**
+     * Fallback final.
+     */
     if (!summary) {
       summary =
         $('meta[name="description"]').attr('content')?.trim() ||
         $('meta[property="og:description"]').attr('content')?.trim() ||
         '';
     }
-
-    console.log('[RITI] SUMMARY LENGTH:', summary.length);
 
     /**
      * Estado.
@@ -642,28 +554,20 @@ class RitiScanPlugin implements Plugin.PluginBase {
       ? NovelStatus.Completed
       : NovelStatus.Ongoing;
 
-    console.log('[RITI] STATUS:', status);
-
     /**
      * Capítulos.
      *
-     * Si falla, la ficha igualmente debe poder terminar.
+     * Si el endpoint falla, conservamos la ficha.
      */
     let chapters: Plugin.ChapterItem[] = [];
 
-    console.log('[RITI] BEFORE CHAPTERS');
-
     try {
       chapters = await this.getChapters(cleanPath);
-    } catch (error) {
-      console.error('[RITI] GET CHAPTERS ERROR:', error);
-
+    } catch {
       chapters = [];
     }
 
-    console.log('[RITI] AFTER CHAPTERS:', chapters.length);
-
-    const novel: Plugin.SourceNovel = {
+    return {
       path: cleanPath,
       name,
       cover,
@@ -671,29 +575,23 @@ class RitiScanPlugin implements Plugin.PluginBase {
       status,
       chapters,
     };
-
-    console.log('[RITI] PARSE NOVEL FINISHED:', name, chapters.length);
-
-    return novel;
   }
 
   /**
    * ============================================================
-   * CAPÍTULO
+   * CONTENIDO DEL CAPÍTULO
    * ============================================================
    */
-
   async parseChapter(chapterPath: string): Promise<string> {
-    console.log('[RITI] PARSE CHAPTER:', chapterPath);
-
     const url = this.getUrl(chapterPath);
 
     const body = await this.fetchHtml(url);
 
-    console.log('[RITI] CHAPTER PAGE BODY:', body.length);
-
     const $ = cheerio.load(body);
 
+    /**
+     * Contenedores habituales.
+     */
     const selectors = [
       '.reading-content',
       '.entry-content_wrap .reading-content',
@@ -708,11 +606,13 @@ class RitiScanPlugin implements Plugin.PluginBase {
         continue;
       }
 
+      /**
+       * Eliminar basura.
+       */
       container
         .find(
           'script, style, iframe, ins, ' +
-            '.adsbygoogle, .code-block, ' +
-            '.sharedaddy',
+            '.adsbygoogle, .code-block, .sharedaddy',
         )
         .remove();
 
@@ -729,14 +629,12 @@ class RitiScanPlugin implements Plugin.PluginBase {
       });
 
       if (paragraphs.length > 0) {
-        console.log('[RITI] CHAPTER PARAGRAPHS:', paragraphs.length);
-
         return paragraphs.join('');
       }
     }
 
     /**
-     * Fallback.
+     * Fallback general.
      */
     const paragraphs: string[] = [];
 
@@ -754,20 +652,12 @@ class RitiScanPlugin implements Plugin.PluginBase {
       paragraphs.push(`<p>${this.escapeHtml(text)}</p>`);
     });
 
-    console.log('[RITI] CHAPTER FALLBACK PARAGRAPHS:', paragraphs.length);
-
     if (paragraphs.length === 0) {
       throw new Error("Rit'i Scan: no se encontró texto en el capítulo.");
     }
 
     return paragraphs.join('');
   }
-
-  /**
-   * ============================================================
-   * ESCAPE HTML
-   * ============================================================
-   */
 
   private escapeHtml(value: string): string {
     return value
