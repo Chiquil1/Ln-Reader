@@ -23,7 +23,7 @@ async function translateText(text: string): Promise<string> {
     const res = await fetchApi(url);
 
     if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
+      throw new Error(`HTTP ${res.status}: ${url}`);
     }
 
     const json = await res.json();
@@ -102,7 +102,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.0.0';
+  version = '2.0.1';
 
   filters: Filters = {
     genres: {
@@ -236,7 +236,7 @@ class Novelyra implements Plugin.PluginBase {
     const result = await fetchApi(url);
 
     if (!result.ok) {
-      throw new Error(`HTTP ${result.status}`);
+      throw new Error(`HTTP ${result.status}: ${url}`);
     }
 
     const body = await result.text();
@@ -261,7 +261,7 @@ class Novelyra implements Plugin.PluginBase {
     const result = await fetchApi(url);
 
     if (!result.ok) {
-      throw new Error(`HTTP ${result.status}`);
+      throw new Error(`HTTP ${result.status}: ${url}`);
     }
 
     const body = await result.text();
@@ -274,10 +274,12 @@ class Novelyra implements Plugin.PluginBase {
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
     const cleanPath = novelPath.replace(/^\/+/, '');
 
-    const result = await fetchApi(`${this.site}${cleanPath}`);
+    const url = `${this.site}${cleanPath}`;
+
+    const result = await fetchApi(url);
 
     if (!result.ok) {
-      throw new Error(`HTTP ${result.status}`);
+      throw new Error(`HTTP ${result.status}: ${url}`);
     }
 
     const body = await result.text();
@@ -288,6 +290,7 @@ class Novelyra implements Plugin.PluginBase {
 
     const cover =
       loadedCheerio('.novel-cover img').first().attr('src')?.trim() ||
+      loadedCheerio('.novel-card img').first().attr('src')?.trim() ||
       loadedCheerio('img').first().attr('src')?.trim() ||
       '';
 
@@ -369,10 +372,12 @@ class Novelyra implements Plugin.PluginBase {
   async parseChapter(chapterPath: string): Promise<string> {
     const cleanPath = chapterPath.replace(/^\/+/, '');
 
-    const result = await fetchApi(`${this.site}${cleanPath}`);
+    const url = `${this.site}${cleanPath}`;
+
+    const result = await fetchApi(url);
 
     if (!result.ok) {
-      throw new Error(`HTTP ${result.status}`);
+      throw new Error(`HTTP ${result.status}: ${url}`);
     }
 
     const body = await result.text();
