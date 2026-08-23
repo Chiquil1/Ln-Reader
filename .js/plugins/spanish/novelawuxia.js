@@ -1,1 +1,241 @@
-var t=this&&this.__awaiter||function(t,e,r,n){return new(r||(r=Promise))((function(i,o){function a(t){try{u(n.next(t))}catch(t){o(t)}}function s(t){try{u(n.throw(t))}catch(t){o(t)}}function u(t){var e;t.done?i(t.value):(e=t.value,e instanceof r?e:new r((function(t){t(e)}))).then(a,s)}u((n=n.apply(t,e||[])).next())}))},e=this&&this.__generator||function(t,e){var r,n,i,o={label:0,sent:function(){if(1&i[0])throw i[1];return i[1]},trys:[],ops:[]},a=Object.create(("function"==typeof Iterator?Iterator:Object).prototype);return a.next=s(0),a.throw=s(1),a.return=s(2),"function"==typeof Symbol&&(a[Symbol.iterator]=function(){return this}),a;function s(s){return function(u){return function(s){if(r)throw new TypeError("Generator is already executing.");for(;a&&(a=0,s[0]&&(o=0)),o;)try{if(r=1,n&&(i=2&s[0]?n.return:s[0]?n.throw||((i=n.return)&&i.call(n),0):n.next)&&!(i=i.call(n,s[1])).done)return i;switch(n=0,i&&(s=[2&s[0],i.value]),s[0]){case 0:case 1:i=s;break;case 4:return o.label++,{value:s[1],done:!1};case 5:o.label++,n=s[1],s=[0];continue;case 7:s=o.ops.pop(),o.trys.pop();continue;default:if(!(i=o.trys,(i=i.length>0&&i[i.length-1])||6!==s[0]&&2!==s[0])){o=0;continue}if(3===s[0]&&(!i||s[1]>i[0]&&s[1]<i[3])){o.label=s[1];break}if(6===s[0]&&o.label<i[1]){o.label=i[1],i=s;break}if(i&&o.label<i[2]){o.label=i[2],o.ops.push(s);break}i[2]&&o.ops.pop(),o.trys.pop();continue}s=e.call(t,o)}catch(t){s=[6,t],n=0}finally{r=i=0}if(5&s[0])throw s[1];return{value:s[0]?s[1]:void 0,done:!0}}([s,u])}}};Object.defineProperty(exports,"__esModule",{value:!0});var r=require("@libs/fetch"),n=require("cheerio"),i=require("@libs/defaultCover"),o=function(){function o(){this.id="reinowuxia",this.name="ReinoWuxia",this.icon="src/es/reinowuxia/icon.png",this.version="1.0.0",this.site="http://www.reinowuxia.com/"}return o.prototype.getNovelName=function(t){return null==t?void 0:t.replace(/-/g," ").replace(/(?:^|\s)\S/g,(function(t){return t.toUpperCase()}))},o.prototype.popularNovels=function(){return t(this,void 0,void 0,(function(){var t,i,o,a,s=this;return e(this,(function(e){switch(e.label){case 0:return t=this.site+"p/todas-las-novelas.html",[4,(0,r.fetchApi)(t,{method:"GET"})];case 1:return[4,e.sent().text()];case 2:return i=e.sent(),o=(0,n.load)(i),a=[],o(".post-body.entry-content").find("a").each((function(t,e){var r,n,i=null===(n=null===(r=o(e).attr("href"))||void 0===r?void 0:r.split("/").pop())||void 0===n?void 0:n.replace(".html","");i=s.getNovelName(i);var u=o(e).find("img").attr("src"),c=o(e).attr("href");if(i&&c){var l={name:i,cover:u,path:c.replace(s.site,"")};a.push(l)}})),[2,a]}}))}))},o.prototype.parseNovel=function(i){return t(this,void 0,void 0,(function(){var t,o,a,s,u,c=this;return e(this,(function(e){switch(e.label){case 0:return t=this.site+i,[4,(0,r.fetchApi)(t)];case 1:return[4,e.sent().text()];case 2:return o=e.sent(),a=(0,n.load)(o),(s={path:i,name:a("h1.post-title").text().trim()}).cover=a("div.separator").find("a").attr("href"),s.status="",a("div > b").each((function(){var t=a(this).text(),e=a(this)[0].nextSibling;if(t&&e){var r=a(e).text();t.includes("Autor")&&(s.author=r.replace("Autor:","")),t.includes("Estatus")&&(s.status=r.replace("Estatus: ","")),t.includes("Géneros:")&&(s.genres=r.replace("Géneros: ","").replace(/,\s/g,","))}})),u=[],a("div").each((function(t,e){var r=a(e).text();r.includes("Sinopsis")&&(s.summary=""!==a(e).next().text()?a(e).next().text().replace("Sinopsis","").trim():a(e).next().next().text().replace("Sinopsis","").trim()),r.includes("Lista de Capítulos")&&a(e).find("a").each((function(t,e){var r,n=a(e).text(),i=null===(r=a(e).attr("href"))||void 0===r?void 0:r.replace(c.site,"");if(n&&i&&"/"!==i&&!u.some((function(t){return t.name===n}))){var o={name:n,releaseTime:null,path:i};u.push(o)}}))})),s.chapters=u,[2,s]}}))}))},o.prototype.parseChapter=function(i){return t(this,void 0,void 0,(function(){var t,o,a;return e(this,(function(e){switch(e.label){case 0:return t=this.site+i,[4,(0,r.fetchApi)(t)];case 1:return[4,e.sent().text()];case 2:return o=e.sent(),a=(0,n.load)(o),[2,a(".post-body.entry-content").html()||""]}}))}))},o.prototype.searchNovels=function(o){return t(this,void 0,void 0,(function(){var t,a,s,u,c=this;return e(this,(function(e){switch(e.label){case 0:return t="".concat(this.site,"search?q=").concat(o),[4,(0,r.fetchApi)(t)];case 1:return[4,e.sent().text()];case 2:return a=e.sent(),s=(0,n.load)(a),u=[],s(".date-outer").each((function(t,e){var r,n,o=null===(n=null===(r=s(e).find("a").attr("href"))||void 0===r?void 0:r.split("/").pop())||void 0===n?void 0:n.replace(/-capitulo(.*?).html/,""),a=o+".html/";o=c.getNovelName(o);var l=u.some((function(t){return t.name===o}));if(!l){var p=i.defaultCover;if(!a||!o)return;var h={name:o,cover:p,path:a.replace(c.site,"")};u.push(h)}})),[2,u]}}))}))},o}();exports.default=new o;
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var fetch_1 = require("@libs/fetch");
+var cheerio_1 = require("cheerio");
+var defaultCover_1 = require("@libs/defaultCover");
+var ReinoWuxia = /** @class */ (function () {
+    function ReinoWuxia() {
+        this.id = 'reinowuxia';
+        this.name = 'ReinoWuxia';
+        this.icon = 'src/es/reinowuxia/icon.png';
+        this.version = '1.0.0';
+        this.site = 'http://www.reinowuxia.com/';
+    }
+    ReinoWuxia.prototype.getNovelName = function (y) {
+        return y === null || y === void 0 ? void 0 : y.replace(/-/g, ' ').replace(/(?:^|\s)\S/g, function (a) { return a.toUpperCase(); });
+    };
+    ReinoWuxia.prototype.popularNovels = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var url, result, body, loadedCheerio, novels;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = this.site + 'p/todas-las-novelas.html';
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url, {
+                                method: 'GET',
+                            })];
+                    case 1:
+                        result = _a.sent();
+                        return [4 /*yield*/, result.text()];
+                    case 2:
+                        body = _a.sent();
+                        loadedCheerio = (0, cheerio_1.load)(body);
+                        novels = [];
+                        loadedCheerio('.post-body.entry-content')
+                            .find('a')
+                            .each(function (idx, ele) {
+                            var _a, _b;
+                            var novelName = (_b = (_a = loadedCheerio(ele)
+                                .attr('href')) === null || _a === void 0 ? void 0 : _a.split('/').pop()) === null || _b === void 0 ? void 0 : _b.replace('.html', '');
+                            novelName = _this.getNovelName(novelName);
+                            var novelCover = loadedCheerio(ele).find('img').attr('src');
+                            var novelUrl = loadedCheerio(ele).attr('href');
+                            if (!novelName || !novelUrl)
+                                return;
+                            var novel = {
+                                name: novelName,
+                                cover: novelCover,
+                                path: novelUrl.replace(_this.site, ''),
+                            };
+                            novels.push(novel);
+                        });
+                        return [2 /*return*/, novels];
+                }
+            });
+        });
+    };
+    ReinoWuxia.prototype.parseNovel = function (novelPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var url, result, body, loadedCheerio, novel, novelChapters;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = this.site + novelPath;
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        result = _a.sent();
+                        return [4 /*yield*/, result.text()];
+                    case 2:
+                        body = _a.sent();
+                        loadedCheerio = (0, cheerio_1.load)(body);
+                        novel = {
+                            path: novelPath,
+                            name: loadedCheerio('h1.post-title').text().trim(),
+                        };
+                        novel.cover = loadedCheerio('div.separator').find('a').attr('href');
+                        novel.status = '';
+                        loadedCheerio('div > b').each(function () {
+                            var detailName = loadedCheerio(this).text();
+                            var detail = loadedCheerio(this)[0].nextSibling;
+                            if (detailName && detail) {
+                                var text = loadedCheerio(detail).text();
+                                if (detailName.includes('Autor')) {
+                                    novel.author = text.replace('Autor:', '');
+                                }
+                                if (detailName.includes('Estatus')) {
+                                    novel.status = text.replace('Estatus: ', '');
+                                }
+                                if (detailName.includes('Géneros:')) {
+                                    novel.genres = text.replace('Géneros: ', '').replace(/,\s/g, ',');
+                                }
+                            }
+                        });
+                        novelChapters = [];
+                        loadedCheerio('div').each(function (idx, rootEle) {
+                            var detailName = loadedCheerio(rootEle).text();
+                            if (detailName.includes('Sinopsis')) {
+                                novel.summary =
+                                    loadedCheerio(rootEle).next().text() !== ''
+                                        ? loadedCheerio(rootEle)
+                                            .next()
+                                            .text()
+                                            .replace('Sinopsis', '')
+                                            .trim()
+                                        : loadedCheerio(rootEle)
+                                            .next()
+                                            .next()
+                                            .text()
+                                            .replace('Sinopsis', '')
+                                            .trim();
+                            }
+                            if (detailName.includes('Lista de Capítulos')) {
+                                loadedCheerio(rootEle)
+                                    .find('a')
+                                    .each(function (idx, ele) {
+                                    var _a;
+                                    var chapterName = loadedCheerio(ele).text();
+                                    var chapterPath = (_a = loadedCheerio(ele)
+                                        .attr('href')) === null || _a === void 0 ? void 0 : _a.replace(_this.site, '');
+                                    var releaseDate = null;
+                                    if (chapterName &&
+                                        chapterPath &&
+                                        chapterPath !== '/' &&
+                                        !novelChapters.some(function (chap) { return chap.name === chapterName; })) {
+                                        var chapter = {
+                                            name: chapterName,
+                                            releaseTime: releaseDate,
+                                            path: chapterPath,
+                                        };
+                                        novelChapters.push(chapter);
+                                    }
+                                });
+                            }
+                        });
+                        novel.chapters = novelChapters;
+                        return [2 /*return*/, novel];
+                }
+            });
+        });
+    };
+    ReinoWuxia.prototype.parseChapter = function (chapterPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var url, result, body, loadedCheerio, chapterText;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = this.site + chapterPath;
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        result = _a.sent();
+                        return [4 /*yield*/, result.text()];
+                    case 2:
+                        body = _a.sent();
+                        loadedCheerio = (0, cheerio_1.load)(body);
+                        chapterText = loadedCheerio('.post-body.entry-content').html() || '';
+                        return [2 /*return*/, chapterText];
+                }
+            });
+        });
+    };
+    ReinoWuxia.prototype.searchNovels = function (searchTerm) {
+        return __awaiter(this, void 0, void 0, function () {
+            var url, result, body, loadedCheerio, novels;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = "".concat(this.site, "search?q=").concat(searchTerm);
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        result = _a.sent();
+                        return [4 /*yield*/, result.text()];
+                    case 2:
+                        body = _a.sent();
+                        loadedCheerio = (0, cheerio_1.load)(body);
+                        novels = [];
+                        loadedCheerio('.date-outer').each(function (idx, ele) {
+                            var _a, _b;
+                            var novelName = (_b = (_a = loadedCheerio(ele)
+                                .find('a')
+                                .attr('href')) === null || _a === void 0 ? void 0 : _a.split('/').pop()) === null || _b === void 0 ? void 0 : _b.replace(/-capitulo(.*?).html/, '');
+                            var novelUrl = novelName + '.html/';
+                            novelName = _this.getNovelName(novelName);
+                            var exists = novels.some(function (novel) { return novel.name === novelName; });
+                            if (!exists) {
+                                var novelCover = defaultCover_1.defaultCover;
+                                if (!novelUrl || !novelName)
+                                    return;
+                                var novel = {
+                                    name: novelName,
+                                    cover: novelCover,
+                                    path: novelUrl.replace(_this.site, ''),
+                                };
+                                novels.push(novel);
+                            }
+                        });
+                        return [2 /*return*/, novels];
+                }
+            });
+        });
+    };
+    return ReinoWuxia;
+}());
+exports.default = new ReinoWuxia();

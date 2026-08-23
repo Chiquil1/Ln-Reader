@@ -1,1 +1,302 @@
-var e=this&&this.__awaiter||function(e,t,r,n){return new(r||(r=Promise))((function(a,s){function o(e){try{i(n.next(e))}catch(e){s(e)}}function l(e){try{i(n.throw(e))}catch(e){s(e)}}function i(e){var t;e.done?a(e.value):(t=e.value,t instanceof r?t:new r((function(e){e(t)}))).then(o,l)}i((n=n.apply(e,t||[])).next())}))},t=this&&this.__generator||function(e,t){var r,n,a,s={label:0,sent:function(){if(1&a[0])throw a[1];return a[1]},trys:[],ops:[]},o=Object.create(("function"==typeof Iterator?Iterator:Object).prototype);return o.next=l(0),o.throw=l(1),o.return=l(2),"function"==typeof Symbol&&(o[Symbol.iterator]=function(){return this}),o;function l(l){return function(i){return function(l){if(r)throw new TypeError("Generator is already executing.");for(;o&&(o=0,l[0]&&(s=0)),s;)try{if(r=1,n&&(a=2&l[0]?n.return:l[0]?n.throw||((a=n.return)&&a.call(n),0):n.next)&&!(a=a.call(n,l[1])).done)return a;switch(n=0,a&&(l=[2&l[0],a.value]),l[0]){case 0:case 1:a=l;break;case 4:return s.label++,{value:l[1],done:!1};case 5:s.label++,n=l[1],l=[0];continue;case 7:l=s.ops.pop(),s.trys.pop();continue;default:if(!(a=s.trys,(a=a.length>0&&a[a.length-1])||6!==l[0]&&2!==l[0])){s=0;continue}if(3===l[0]&&(!a||l[1]>a[0]&&l[1]<a[3])){s.label=l[1];break}if(6===l[0]&&s.label<a[1]){s.label=a[1],a=l;break}if(a&&s.label<a[2]){s.label=a[2],s.ops.push(l);break}a[2]&&s.ops.pop(),s.trys.pop();continue}l=t.call(e,s)}catch(e){l=[6,e],n=0}finally{r=a=0}if(5&l[0])throw l[1];return{value:l[0]?l[1]:void 0,done:!0}}([l,i])}}};Object.defineProperty(exports,"__esModule",{value:!0});var r=require("@libs/fetch"),n=require("@libs/filterInputs"),a=require("@libs/defaultCover"),s=require("@libs/novelStatus"),o=function(){function o(){var e=this;this.id="novelrest",this.name="NovelRest",this.icon="src/en/novelrest/icon.png",this.site="https://novelrest.vercel.app",this.apiBase="https://novelrest.vercel.app/api/lnreader",this.version="1.0.0",this.filters={status:{type:n.FilterTypes.Picker,label:"Status",value:"",options:[{label:"All",value:""},{label:"Ongoing",value:"ONGOING"},{label:"Completed",value:"COMPLETED"},{label:"Hiatus",value:"HIATUS"}]},sort:{type:n.FilterTypes.Picker,label:"Sort By",value:"latest",options:[{label:"Latest",value:"latest"},{label:"Popular",value:"popular"},{label:"Rating",value:"rating"},{label:"Updated",value:"updated"}]}},this.resolveUrl=function(t,r){return"".concat(e.site,"/novels/").concat(t)}}return o.prototype.popularNovels=function(n,s){return e(this,arguments,void 0,(function(e,n){var s,o,l,i,c,u,p,v,h,f,b,d=n.showLatestNovels,y=n.filters;return t(this,(function(t){switch(t.label){case 0:s=[],(o=new URLSearchParams).set("page",e.toString()),o.set("limit","20"),(null===(f=null==y?void 0:y.status)||void 0===f?void 0:f.value)&&o.set("status",y.status.value),l=d?"latest":(null===(b=null==y?void 0:y.sort)||void 0===b?void 0:b.value)||"popular",o.set("sort",l),t.label=1;case 1:return t.trys.push([1,4,,5]),i="".concat(this.apiBase,"/novels?").concat(o.toString()),[4,(0,r.fetchApi)(i)];case 2:return[4,t.sent().json()];case 3:if((c=t.sent()).novels&&Array.isArray(c.novels))for(u=0,p=c.novels;u<p.length;u++)v=p[u],s.push({name:v.title,path:v.slug,cover:v.coverImage||a.defaultCover});return[3,5];case 4:return h=t.sent(),console.error("NovelRest: Error fetching popular novels:",h),[3,5];case 5:return[2,s]}}))}))},o.prototype.parseNovel=function(n){return e(this,void 0,void 0,(function(){var e,o,l,i,c,u,p,v;return t(this,(function(t){switch(t.label){case 0:e={path:n,name:"Untitled"},t.label=1;case 1:return t.trys.push([1,4,,5]),o=n.replace(/^\/novels\//,""),[4,(0,r.fetchApi)("".concat(this.apiBase,"/novels/").concat(o))];case 2:return[4,t.sent().json()];case 3:if(l=t.sent()){switch(e.name=l.title||"Untitled",e.author=l.author||"",e.cover=l.coverImage||a.defaultCover,e.genres=Array.isArray(l.genres)?l.genres.map((function(e){return"string"==typeof e?e:e.name})).join(", "):"",e.summary=l.description||"",l.status){case"COMPLETED":e.status=s.NovelStatus.Completed;break;case"ONGOING":e.status=s.NovelStatus.Ongoing;break;case"HIATUS":e.status=s.NovelStatus.OnHiatus;break;default:e.status=s.NovelStatus.Unknown}if(i=[],l.chapters&&Array.isArray(l.chapters))for(c=0,u=l.chapters;c<u.length;c++)p=u[c],i.push({name:p.title||"Chapter ".concat(p.number),path:"".concat(o,"/").concat(p.number),releaseTime:p.createdAt||void 0,chapterNumber:p.number});e.chapters=i}return[3,5];case 4:return v=t.sent(),console.error("NovelRest: Error parsing novel:",v),[3,5];case 5:return[2,e]}}))}))},o.prototype.parseChapter=function(n){return e(this,void 0,void 0,(function(){var e,a,s,o,l;return t(this,(function(t){switch(t.label){case 0:return t.trys.push([0,3,,4]),e=n.split("/"),a=e.pop(),s=e.join("/"),[4,(0,r.fetchApi)("".concat(this.apiBase,"/novels/").concat(s,"/chapters/").concat(a))];case 1:return[4,t.sent().json()];case 2:return(o=t.sent())&&o.contentHtml?[2,o.contentHtml]:[2,"<p>Chapter content could not be loaded.</p>"];case 3:return l=t.sent(),console.error("NovelRest: Error parsing chapter:",l),[2,"<p>Error loading chapter content.</p>"];case 4:return[2]}}))}))},o.prototype.searchNovels=function(n,s){return e(this,void 0,void 0,(function(){var e,o,l,i,c,u,p;return t(this,(function(t){switch(t.label){case 0:e=[],t.label=1;case 1:return t.trys.push([1,4,,5]),(o=new URLSearchParams).set("q",n),o.set("page",s.toString()),o.set("limit","20"),[4,(0,r.fetchApi)("".concat(this.apiBase,"/novels?").concat(o.toString()))];case 2:return[4,t.sent().json()];case 3:if((l=t.sent()).novels&&Array.isArray(l.novels))for(i=0,c=l.novels;i<c.length;i++)u=c[i],e.push({name:u.title,path:u.slug,cover:u.coverImage||a.defaultCover});return[3,5];case 4:return p=t.sent(),console.error("NovelRest: Error searching novels:",p),[3,5];case 5:return[2,e]}}))}))},o}();exports.default=new o;
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var fetch_1 = require("@libs/fetch");
+var filterInputs_1 = require("@libs/filterInputs");
+var defaultCover_1 = require("@libs/defaultCover");
+var novelStatus_1 = require("@libs/novelStatus");
+/**
+ * NovelRest LNReader Plugin
+ *
+ * This plugin allows LNReader to fetch novels from NovelRest (novelrest.vercel.app)
+ *
+ * Features:
+ * - Browse popular novels with pagination
+ * - Search novels
+ * - Read chapters
+ * - Filter by status
+ * - Sort by latest/popular/rating/updated
+ */
+var NovelRestPlugin = /** @class */ (function () {
+    function NovelRestPlugin() {
+        var _this = this;
+        this.id = 'novelrest';
+        this.name = 'NovelRest';
+        this.icon = 'src/en/novelrest/icon.png';
+        this.site = 'https://novelrest.vercel.app';
+        this.apiBase = 'https://novelrest.vercel.app/api/lnreader';
+        this.version = '1.0.0';
+        this.filters = {
+            status: {
+                type: filterInputs_1.FilterTypes.Picker,
+                label: 'Status',
+                value: '',
+                options: [
+                    { label: 'All', value: '' },
+                    { label: 'Ongoing', value: 'ONGOING' },
+                    { label: 'Completed', value: 'COMPLETED' },
+                    { label: 'Hiatus', value: 'HIATUS' },
+                ],
+            },
+            sort: {
+                type: filterInputs_1.FilterTypes.Picker,
+                label: 'Sort By',
+                value: 'latest',
+                options: [
+                    { label: 'Latest', value: 'latest' },
+                    { label: 'Popular', value: 'popular' },
+                    { label: 'Rating', value: 'rating' },
+                    { label: 'Updated', value: 'updated' },
+                ],
+            },
+        };
+        /**
+         * Resolve full URL for novel or chapter
+         */
+        this.resolveUrl = function (path, isNovel) {
+            if (isNovel) {
+                return "".concat(_this.site, "/novels/").concat(path);
+            }
+            // For chapters, path is "slug/chapterNumber"
+            return "".concat(_this.site, "/novels/").concat(path);
+        };
+    }
+    /**
+     * Fetch popular/latest novels with pagination
+     */
+    NovelRestPlugin.prototype.popularNovels = function (pageNo_1, _a) {
+        return __awaiter(this, arguments, void 0, function (pageNo, _b) {
+            var novels, params, sortBy, url, response, data, _i, _c, novel, error_1;
+            var _d, _e;
+            var showLatestNovels = _b.showLatestNovels, filters = _b.filters;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
+                    case 0:
+                        novels = [];
+                        params = new URLSearchParams();
+                        params.set('page', pageNo.toString());
+                        params.set('limit', '20');
+                        if ((_d = filters === null || filters === void 0 ? void 0 : filters.status) === null || _d === void 0 ? void 0 : _d.value) {
+                            params.set('status', filters.status.value);
+                        }
+                        sortBy = showLatestNovels
+                            ? 'latest'
+                            : ((_e = filters === null || filters === void 0 ? void 0 : filters.sort) === null || _e === void 0 ? void 0 : _e.value) || 'popular';
+                        params.set('sort', sortBy);
+                        _f.label = 1;
+                    case 1:
+                        _f.trys.push([1, 4, , 5]);
+                        url = "".concat(this.apiBase, "/novels?").concat(params.toString());
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 2:
+                        response = _f.sent();
+                        return [4 /*yield*/, response.json()];
+                    case 3:
+                        data = _f.sent();
+                        if (data.novels && Array.isArray(data.novels)) {
+                            for (_i = 0, _c = data.novels; _i < _c.length; _i++) {
+                                novel = _c[_i];
+                                novels.push({
+                                    name: novel.title,
+                                    path: novel.slug, // Just the slug, we'll build full path in parseNovel
+                                    cover: novel.coverImage || defaultCover_1.defaultCover,
+                                });
+                            }
+                        }
+                        return [3 /*break*/, 5];
+                    case 4:
+                        error_1 = _f.sent();
+                        console.error('NovelRest: Error fetching popular novels:', error_1);
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/, novels];
+                }
+            });
+        });
+    };
+    /**
+     * Parse novel details and chapter list
+     */
+    NovelRestPlugin.prototype.parseNovel = function (novelPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var novel, slug, response, data, chapters, _i, _a, chapter, error_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        novel = {
+                            path: novelPath,
+                            name: 'Untitled',
+                        };
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 4, , 5]);
+                        slug = novelPath.replace(/^\/novels\//, '');
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)("".concat(this.apiBase, "/novels/").concat(slug))];
+                    case 2:
+                        response = _b.sent();
+                        return [4 /*yield*/, response.json()];
+                    case 3:
+                        data = _b.sent();
+                        if (data) {
+                            novel.name = data.title || 'Untitled';
+                            novel.author = data.author || '';
+                            novel.cover = data.coverImage || defaultCover_1.defaultCover;
+                            novel.genres = Array.isArray(data.genres)
+                                ? data.genres
+                                    .map(function (g) {
+                                    return typeof g === 'string' ? g : g.name;
+                                })
+                                    .join(', ')
+                                : '';
+                            novel.summary = data.description || '';
+                            // Map status
+                            switch (data.status) {
+                                case 'COMPLETED':
+                                    novel.status = novelStatus_1.NovelStatus.Completed;
+                                    break;
+                                case 'ONGOING':
+                                    novel.status = novelStatus_1.NovelStatus.Ongoing;
+                                    break;
+                                case 'HIATUS':
+                                    novel.status = novelStatus_1.NovelStatus.OnHiatus;
+                                    break;
+                                default:
+                                    novel.status = novelStatus_1.NovelStatus.Unknown;
+                            }
+                            chapters = [];
+                            if (data.chapters && Array.isArray(data.chapters)) {
+                                for (_i = 0, _a = data.chapters; _i < _a.length; _i++) {
+                                    chapter = _a[_i];
+                                    chapters.push({
+                                        name: chapter.title || "Chapter ".concat(chapter.number),
+                                        path: "".concat(slug, "/").concat(chapter.number), // slug/chapterNumber format
+                                        releaseTime: chapter.createdAt || undefined,
+                                        chapterNumber: chapter.number,
+                                    });
+                                }
+                            }
+                            novel.chapters = chapters;
+                        }
+                        return [3 /*break*/, 5];
+                    case 4:
+                        error_2 = _b.sent();
+                        console.error('NovelRest: Error parsing novel:', error_2);
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/, novel];
+                }
+            });
+        });
+    };
+    /**
+     * Parse chapter content
+     */
+    NovelRestPlugin.prototype.parseChapter = function (chapterPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var parts, chapterNumber, slug, response, data, error_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        parts = chapterPath.split('/');
+                        chapterNumber = parts.pop();
+                        slug = parts.join('/');
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)("".concat(this.apiBase, "/novels/").concat(slug, "/chapters/").concat(chapterNumber))];
+                    case 1:
+                        response = _a.sent();
+                        return [4 /*yield*/, response.json()];
+                    case 2:
+                        data = _a.sent();
+                        if (data && data.contentHtml) {
+                            return [2 /*return*/, data.contentHtml];
+                        }
+                        return [2 /*return*/, '<p>Chapter content could not be loaded.</p>'];
+                    case 3:
+                        error_3 = _a.sent();
+                        console.error('NovelRest: Error parsing chapter:', error_3);
+                        return [2 /*return*/, '<p>Error loading chapter content.</p>'];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
+     * Search novels by term
+     */
+    NovelRestPlugin.prototype.searchNovels = function (searchTerm, pageNo) {
+        return __awaiter(this, void 0, void 0, function () {
+            var novels, params, response, data, _i, _a, novel, error_4;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        novels = [];
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 4, , 5]);
+                        params = new URLSearchParams();
+                        params.set('q', searchTerm);
+                        params.set('page', pageNo.toString());
+                        params.set('limit', '20');
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)("".concat(this.apiBase, "/novels?").concat(params.toString()))];
+                    case 2:
+                        response = _b.sent();
+                        return [4 /*yield*/, response.json()];
+                    case 3:
+                        data = _b.sent();
+                        if (data.novels && Array.isArray(data.novels)) {
+                            for (_i = 0, _a = data.novels; _i < _a.length; _i++) {
+                                novel = _a[_i];
+                                novels.push({
+                                    name: novel.title,
+                                    path: novel.slug,
+                                    cover: novel.coverImage || defaultCover_1.defaultCover,
+                                });
+                            }
+                        }
+                        return [3 /*break*/, 5];
+                    case 4:
+                        error_4 = _b.sent();
+                        console.error('NovelRest: Error searching novels:', error_4);
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/, novels];
+                }
+            });
+        });
+    };
+    return NovelRestPlugin;
+}());
+exports.default = new NovelRestPlugin();
+// trigger build

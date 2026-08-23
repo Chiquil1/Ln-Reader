@@ -17,7 +17,7 @@ async function translateText(text: string): Promise<string> {
 
   try {
     const url =
-      `https://translate.googleapis.com/translate_a/single` +
+      'https://translate.googleapis.com/translate_a/single' +
       `?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(text)}`;
 
     const res = await fetchApi(url);
@@ -107,8 +107,11 @@ class Novelyra implements Plugin.PluginBase {
   filters: Filters = {
     genres: {
       type: FilterTypes.Picker,
+
       label: 'Géneros',
+
       value: '',
+
       options: [
         { label: 'Todos', value: '' },
         { label: 'Acción', value: 'accion' },
@@ -145,24 +148,46 @@ class Novelyra implements Plugin.PluginBase {
   ): Plugin.NovelItem[] {
     const novels: Plugin.NovelItem[] = [];
 
-    loadedCheerio(
-      '#novelas .novel-card, .novels-grid .novel-card, .novel-card',
-    ).each((_, element) => {
-      const novel = loadedCheerio(element);
+    loadedCheerio('main h3').each((_, element) => {
+      const title = loadedCheerio(element);
 
-      const name =
-        novel.find('h3').first().text().trim() ||
-        novel.find('.novel-title').first().text().trim();
+      const link = title.closest('a');
 
-      const rawPath = novel.find('a').first().attr('href')?.trim() || '';
-
-      const path = rawPath.replace(this.site, '');
-
-      const cover = novel.find('img').first().attr('src')?.trim() || '';
-
-      if (!name || !path) {
+      if (!link.length) {
         return;
       }
+
+      const name = title.text().trim();
+
+      const rawPath = link.attr('href')?.trim() || '';
+
+      if (!name || !rawPath) {
+        return;
+      }
+
+      if (rawPath.startsWith('http') && !rawPath.startsWith(this.site)) {
+        return;
+      }
+
+      let path = rawPath;
+
+      if (path.startsWith(this.site)) {
+        path = path.slice(this.site.length);
+      }
+
+      path = path.replace(/^\/+/, '');
+
+      if (!path) {
+        return;
+      }
+
+      const image = link.find('img').first();
+
+      const cover =
+        image.attr('src')?.trim() ||
+        image.attr('data-src')?.trim() ||
+        image.attr('data-lazy-src')?.trim() ||
+        '';
 
       if (novels.some(item => item.path === path)) {
         return;
@@ -253,59 +278,126 @@ class Novelyra implements Plugin.PluginBase {
 
     const name = loadedCheerio('h1').first().text().trim() || 'Desconocido';
 
-    const cover = loadedCheerio('img').first().attr('src')?.trim() || '';
+    const cover =
+      loadedCheerio('main img').first().attr('src')?.trim() ||
+      loadedCheerio('img').first().attr('src')?.trim() ||
+      '';
 
-    const genres = loadedCheerio('.novel-meta .novel-genres')
+    const synopsis = loadedCheerio('#synopsis')
+      .first()
       .text()
       .trim()
-      .replace(/\s+/g, ', ');
+      .replace(/\s+/g, ' ');
 
-    const summary = loadedCheerio('.novel-description-detail').text().trim();
+    let summary = synopsis;
+
+    if (summary) {
+      const titlePrefix = `${name}:`;
+
+      if (summary.startsWith(titlePrefix)) {
+        summary = summary.slice(titlePrefix.length).trim();
+      }
+
+      summary = summary.replace(/^Information\s*&\s*Overview\s*/i, '').trim();
+    }
+
+    const authorMatch = synopsis.match(
+      /Author:\s*(.+?)(?:\s+Genre:|\s+Status:|\s+Platform:|\s+Theme:|$)/i,
+    );
+
+    const genreMatch = synopsis.match(
+      /Genre:\s*(.+?)(?:\s+Status:|\s+Platform:|\s+Theme:|$)/i,
+    );
+
+    const statusMatch = synopsis.match(
+      /Status:\s*(.+?)(?:\s+Platform:|\s+Theme:|$)/i,
+    );
+
+    const author = authorMatch?.[1]?.trim() || '';
+
+    const genres = genreMatch?.[1]?.trim().replace(/\s+/g, ', ') || '';
+
+    const status = statusMatch?.[1]?.trim() || '';
 
     const novel: Plugin.SourceNovel = {
       path: novelPath,
       name,
       cover,
-      genres,
       summary,
+      author,
+      genres,
+      status,
     };
 
     const chapters: Plugin.ChapterItem[] = [];
 
-    loadedCheerio('.chapter-item-wrapper').each((_, element) => {
-      const chapter = loadedCheerio(element);
+    const seenPaths = new Set<string>();
 
-      const rawChapterPath =
-        chapter.find('a').first().attr('href')?.trim() || '';
+    loadedCheerio('a[href*="/chapter-"]').each((_, element) => {
+      const link = loadedCheerio(element);
 
-      const chapterPath = rawChapterPath.replace(this.site, '');
+      const rawChapterPath = link.attr('href')?.trim() || '';
 
-      if (!chapterPath) {
+      if (!rawChapterPath) {
         return;
       }
 
-      const numberText = chapter.find('.chapter-number').text().trim();
+      const chapterMatch = rawChapterPath.match(
+        /\/chapter-(\d+)(?:\/)?(?:[?#].*)?$/i,
+      );
 
-      const numberMatch = numberText.match(/(\d+)/);
+      if (!chapterMatch) {
+        return;
+      }
 
-      const chapterNumber = numberMatch
-        ? Number(numberMatch[1])
-        : chapters.length + 1;
+      const chapterNumber = Number(chapterMatch[1]);
 
-      const chapterName =
-        chapter.find('.chapter-title').text().trim() ||
-        numberText ||
-        `Capítulo ${chapterNumber}`;
+      if (!Number.isFinite(chapterNumber)) {
+        return;
+      }
 
-      const releaseTime = chapter.find('.chapter-date').text().trim();
+      let chapterPath = rawChapterPath;
+
+      if (chapterPath.startsWith(this.site)) {
+        chapterPath = chapterPath.slice(this.site.length);
+      }
+
+      chapterPath = chapterPath.replace(/^\/+/, '');
+
+      if (!chapterPath || seenPaths.has(chapterPath)) {
+        return;
+      }
+
+      seenPaths.add(chapterPath);
+
+      const text = link.text().trim().replace(/\s+/g, ' ');
+
+      let chapterName = text || `Capítulo ${chapterNumber}`;
+
+      const separatorIndex = chapterName.indexOf(' - ');
+
+      if (separatorIndex > 0) {
+        chapterName =
+          chapterName.slice(0, separatorIndex).trim() ||
+          `Capítulo ${chapterNumber}`;
+      }
+
+      const releaseMatch = text.match(
+        /\b(\d+\s+(?:day|days|week|weeks|month|months|year|years)\s+ago)\b/i,
+      );
 
       chapters.push({
         name: chapterName,
         path: chapterPath,
         chapterNumber,
-        releaseTime: releaseTime || undefined,
+        releaseTime: releaseMatch?.[1],
       });
     });
+
+    chapters.sort(
+      (first, second) =>
+        (first.chapterNumber ?? 0) - (second.chapterNumber ?? 0),
+    );
 
     novel.chapters = chapters;
 
@@ -327,9 +419,13 @@ class Novelyra implements Plugin.PluginBase {
 
     const loadedCheerio = loadCheerio(body);
 
-    loadedCheerio('script, style, iframe, ins, .chapter-ad').remove();
+    // El contenido real del capítulo está dentro de <article>.
+    // Eliminamos elementos que no forman parte del texto.
+    loadedCheerio(
+      'script, style, iframe, ins, nav, header, footer, aside',
+    ).remove();
 
-    const chapterContent = loadedCheerio('.chapter-content').first();
+    const chapterContent = loadedCheerio('article').first();
 
     if (chapterContent.length === 0) {
       return 'Contenido no encontrado';
@@ -338,23 +434,20 @@ class Novelyra implements Plugin.PluginBase {
     const paragraphs: string[] = [];
 
     chapterContent.find('p').each((_, element) => {
-      const text = loadedCheerio(element).text().trim();
+      const text = loadedCheerio(element).text().trim().replace(/\s+/g, ' ');
 
-      if (text) {
-        paragraphs.push(text);
+      if (!text) {
+        return;
       }
+
+      paragraphs.push(text);
     });
 
     if (paragraphs.length === 0) {
-      const rawText = chapterContent.text().trim();
+      const rawText = chapterContent.text().trim().replace(/\s+/g, ' ');
 
       if (rawText) {
-        paragraphs.push(
-          ...rawText
-            .split(/\n+/)
-            .map(text => text.trim())
-            .filter(Boolean),
-        );
+        paragraphs.push(rawText);
       }
     }
 
@@ -362,6 +455,7 @@ class Novelyra implements Plugin.PluginBase {
       return 'Contenido no encontrado';
     }
 
+    // Utiliza el traductor integrado del plugin.
     const translated = await translateParagraphs(paragraphs);
 
     return translated

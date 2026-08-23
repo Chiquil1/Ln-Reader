@@ -1,1 +1,486 @@
-var e=this&&this.__awaiter||function(e,t,a,l){return new(a||(a=Promise))((function(r,n){function i(e){try{u(l.next(e))}catch(e){n(e)}}function o(e){try{u(l.throw(e))}catch(e){n(e)}}function u(e){var t;e.done?r(e.value):(t=e.value,t instanceof a?t:new a((function(e){e(t)}))).then(i,o)}u((l=l.apply(e,t||[])).next())}))},t=this&&this.__generator||function(e,t){var a,l,r,n={label:0,sent:function(){if(1&r[0])throw r[1];return r[1]},trys:[],ops:[]},i=Object.create(("function"==typeof Iterator?Iterator:Object).prototype);return i.next=o(0),i.throw=o(1),i.return=o(2),"function"==typeof Symbol&&(i[Symbol.iterator]=function(){return this}),i;function o(o){return function(u){return function(o){if(a)throw new TypeError("Generator is already executing.");for(;i&&(i=0,o[0]&&(n=0)),n;)try{if(a=1,l&&(r=2&o[0]?l.return:o[0]?l.throw||((r=l.return)&&r.call(l),0):l.next)&&!(r=r.call(l,o[1])).done)return r;switch(l=0,r&&(o=[2&o[0],r.value]),o[0]){case 0:case 1:r=o;break;case 4:return n.label++,{value:o[1],done:!1};case 5:n.label++,l=o[1],o=[0];continue;case 7:o=n.ops.pop(),n.trys.pop();continue;default:if(!(r=n.trys,(r=r.length>0&&r[r.length-1])||6!==o[0]&&2!==o[0])){n=0;continue}if(3===o[0]&&(!r||o[1]>r[0]&&o[1]<r[3])){n.label=o[1];break}if(6===o[0]&&n.label<r[1]){n.label=r[1],r=o;break}if(r&&n.label<r[2]){n.label=r[2],n.ops.push(o);break}r[2]&&n.ops.pop(),n.trys.pop();continue}o=t.call(e,n)}catch(e){o=[6,e],l=0}finally{a=r=0}if(5&o[0])throw o[1];return{value:o[0]?o[1]:void 0,done:!0}}([o,u])}}},a=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(exports,"__esModule",{value:!0}),exports.MadaraPlugin=void 0;var l=require("@libs/fetch"),r=require("cheerio"),n=require("@libs/defaultCover"),i=require("@libs/novelStatus"),o=a(require("dayjs")),u=require("@libs/storage"),s=function(e,t){return new RegExp(t.join("|")).test(e)},c=function(){function a(e){var t,a;this.hideLocked=u.storage.get("hideLocked"),this.parseData=function(e){var t,a=(0,o.default)(),l=(null===(t=e.match(/\d+/))||void 0===t?void 0:t[0])||"",r=parseInt(l,10);if(!l)return e;if(s(e,["detik","segundo","second","วินาที"]))a=a.subtract(r,"second");else if(s(e,["menit","dakika","min","minute","minuto","นาที","دقائق"]))a=a.subtract(r,"minute");else if(s(e,["jam","saat","heure","hora","hour","ชั่วโมง","giờ","ore","ساعة","小时"]))a=a.subtract(r,"hours");else if(s(e,["hari","gün","jour","día","dia","day","วัน","ngày","giorni","أيام","天"]))a=a.subtract(r,"days");else if(s(e,["week","semana"]))a=a.subtract(r,"week");else if(s(e,["month","mes"]))a=a.subtract(r,"month");else{if(!s(e,["year","año"]))return"Invalid Date"!==(0,o.default)(e).format("LL")?(0,o.default)(e).format("LL"):e;a=a.subtract(r,"year")}return a.format("LL")},this.id=e.id,this.name=e.sourceName,this.icon="multisrc/madara/".concat(e.id.toLowerCase(),"/icon.png"),this.site=e.sourceSite;var l=(null===(t=e.options)||void 0===t?void 0:t.versionIncrements)||0;this.version="2.2.".concat(l),this.options=e.options,this.filters=e.filters,(null===(a=this.options)||void 0===a?void 0:a.hasLocked)&&(this.pluginSettings={hideLocked:{value:"",label:"Hide locked chapters",type:"Switch"}})}return a.prototype.translateDragontea=function(e){var t;if("dragontea"!==this.id)return e;var a=(0,r.load)((null===(t=e.html())||void 0===t?void 0:t.replace("\n","").replace(/<br\s*\/?>/g,"\n"))||"");return e.html(a.html()),e.find("*").addBack().contents().filter((function(e,t){return 3===t.nodeType})).each((function(e,t){var l=a(t),r=l.text().normalize("NFD").split("").map((function(e){var t=e.normalize("NFC"),a="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(t);return a>=0?"zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA"[a]+e.slice(t.length):e})).join("");l.replaceWith(r.replace("\n","<br>"))})),e},a.prototype.getHostname=function(e){var t=(e=e.split("/")[2]).split(".");return t.pop(),t.join(".")},a.prototype.getCheerio=function(a,n){return e(this,void 0,void 0,(function(){var e,i,o,u;return t(this,(function(t){switch(t.label){case 0:return[4,(0,l.fetchApi)(a)];case 1:if(!(e=t.sent()).ok&&1!=n)throw new Error("Could not reach site ("+e.status+") try to open in webview.");return o=r.load,[4,e.text()];case 2:if(i=o.apply(void 0,[t.sent()]),u=i("title").text().trim(),this.getHostname(a)!=this.getHostname(e.url)||"Bot Verification"==u||"You are being redirected..."==u||"Un instant..."==u||"Just a moment..."==u||"Redirecting..."==u)throw new Error("Captcha error, please open in webview");return[2,i]}}))}))},a.prototype.parseNovels=function(e){var t=[];return e(".manga-title-badges").remove(),e(".page-item-detail, .c-tabs-item__content").each((function(a,l){var r=e(l).find(".post-title").text().trim(),i=e(l).find(".post-title").find("a").attr("href")||"";if(r&&i){var o=e(l).find("img"),u={name:r,cover:o.attr("data-src")||o.attr("src")||o.attr("data-lazy-srcset")||n.defaultCover,path:i.replace(/https?:\/\/.*?\//,"")};t.push(u)}})),t},a.prototype.popularNovels=function(a,l){return e(this,arguments,void 0,(function(e,a){var l,r,n,i,o,u,s=a.filters,c=a.showLatestNovels;return t(this,(function(t){switch(t.label){case 0:for(r in l=this.site+"/page/"+e+"/?s=&post_type=wp-manga",s||(s=this.filters||{}),c&&(l+="&m_orderby=latest"),s)if("object"==typeof s[r].value)for(n=0,i=s[r].value;n<i.length;n++)o=i[n],l+="&".concat(r,"=").concat(o);else s[r].value&&(l+="&".concat(r,"=").concat(s[r].value));return[4,this.getCheerio(l,1!=e)];case 1:return u=t.sent(),[2,this.parseNovels(u)]}}))}))},a.prototype.parseNovel=function(a){return e(this,void 0,void 0,(function(){var e,u,s,c,v,b,p,h,d=this;return t(this,(function(t){switch(t.label){case 0:return[4,this.getCheerio(this.site+a,!1)];case 1:return(e=t.sent())(".manga-title-badges, #manga-title span").remove(),(u={path:a,name:e(".post-title h1").text().trim()||e("#manga-title h1").text().trim()||e(".manga-title").text().trim()||""}).cover=e(".summary_image > a > img").attr("data-lazy-src")||e(".summary_image > a > img").attr("data-src")||e(".summary_image > a > img").attr("src")||n.defaultCover,e(".post-content_item, .post-content").each((function(){var t=e(this).find("h5").text().trim(),a=e(this).find(".summary-content")||e(this).find(".summary_content");switch(t){case"Genre(s)":case"Genre":case"Tags(s)":case"Tag(s)":case"Tags":case"Género(s)":case"Kategori":case"التصنيفات":u.genres?u.genres+=", "+a.find("a").map((function(t,a){return e(a).text()})).get().join(", "):u.genres=a.find("a").map((function(t,a){return e(a).text()})).get().join(", ");break;case"Author(s)":case"Author":case"Autor(es)":case"المؤلف":case"المؤلف (ين)":u.author=a.text().trim();break;case"Status":case"Novel":case"Estado":case"Durum":u.status=a.text().trim().includes("OnGoing")||a.text().trim().includes("مستمرة")?i.NovelStatus.Ongoing:i.NovelStatus.Completed;break;case"Artist(s)":u.artist=a.text().trim()}})),u.genres||(u.genres=e(".genres-content").text().trim()),u.status||(u.status=e(".manga-status").text().trim().includes("OnGoing")?i.NovelStatus.Ongoing:i.NovelStatus.Completed),u.author||(u.author=e(".manga-author a").text().trim()),u.rating||(u.rating=parseFloat(e(".post-rating span").text().trim())),u.author||(u.author=e(".manga-authors").text().trim()),e("div.summary__content .code-block,script,noscript").remove(),u.summary=this.translateDragontea(e("div.summary__content")).text().trim()||e("#tab-manga-about").text().trim()||e('.post-content_item h5:contains("Summary")').next().find("span").map((function(t,a){return e(a).text()})).get().join("\n\n").trim()||e(".manga-summary p").map((function(t,a){return e(a).text()})).get().join("\n\n").trim()||e(".manga-excerpt p").map((function(t,a){return e(a).text()})).get().join("\n\n").trim(),s=[],c="",(null===(h=this.options)||void 0===h?void 0:h.useNewChapterEndpoint)?[4,(0,l.fetchApi)(this.site+a+"ajax/chapters/",{method:"POST",referrer:this.site+a}).then((function(e){return e.text()}))]:[3,3];case 2:return c=t.sent(),[3,5];case 3:return v=e(".rating-post-id").attr("value")||e("#manga-chapters-holder").attr("data-id")||"",(b=new FormData).append("action","manga_get_chapters"),b.append("manga",v),[4,(0,l.fetchApi)(this.site+"wp-admin/admin-ajax.php",{method:"POST",body:b}).then((function(e){return e.text()}))];case 4:c=t.sent(),t.label=5;case 5:return"0"!==c&&(e=(0,r.load)(c)),p=e(".wp-manga-chapter").length,e(".wp-manga-chapter").each((function(t,a){var l=e(a).find("a").text().trim(),r=a.attribs.class.includes("premium-block");r&&(l="🔒 "+l);var n=e(a).find("span.chapter-release-date").text().trim();n=n?d.parseData(n):(0,o.default)().format("LL");var i=e(a).find("a").attr("href")||"";!i||"#"==i||r&&d.hideLocked||s.push({name:l,path:i.replace(/https?:\/\/.*?\//,""),releaseTime:n||null,chapterNumber:p-t})})),u.chapters=s.reverse(),[2,u]}}))}))},a.prototype.parseChapter=function(a){return e(this,void 0,void 0,(function(){var e,l,r;return t(this,(function(t){switch(t.label){case 0:return[4,this.getCheerio(this.site+a,!1)];case 1:return e=t.sent(),l=e(".text-left")||e(".text-right")||e(".entry-content")||e(".c-blog-post > div > div:nth-child(2)"),null===(r=this.options)||void 0===r||r.customJs,[2,this.translateDragontea(l).html()||""]}}))}))},a.prototype.searchNovels=function(a,l){return e(this,void 0,void 0,(function(){var e,r;return t(this,(function(t){switch(t.label){case 0:return e=this.site+"/page/"+l+"/?s="+encodeURIComponent(a)+"&post_type=wp-manga",[4,this.getCheerio(e,!0)];case 1:return r=t.sent(),[2,this.parseNovels(r)]}}))}))},a}();exports.MadaraPlugin=c;var v=new c({id:"azora",sourceSite:"https://azoramoon.com/",sourceName:"Azora",options:{useNewChapterEndpoint:!0,lang:"Arabic"},filters:{"genre[]":{type:"Checkbox",label:"Genre",value:[],options:[{label:"أكشن",value:"أكشن"},{label:"أيتام",value:"أيتام"},{label:"إثارة",value:"إثارة"},{label:"إعادة إحياء",value:"إعادة-إحياء"},{label:"اتشي",value:"اتشي"},{label:"اثارة",value:"اثارة"},{label:"اسبوعي",value:"weekly"},{label:"اشباح",value:"اشباح"},{label:"الأرواح",value:"الأرواح"},{label:"الحياة المدرسية",value:"الحياة-المدرسية"},{label:"الحياة اليومية",value:"الحياة-اليومية"},{label:"السفر عبر الزمن",value:"السفر-عبر-الزمن"},{label:"العاب",value:"العاب"},{label:"انتقام",value:"انتقام"},{label:"ايسكاي",value:"ايسكاي"},{label:"ايسيكاي",value:"ايسيكاي"},{label:"ايشي",value:"ايشي"},{label:"بطل غير اعتيادي",value:"بطل-غير-اعتيادي"},{label:"بطل مجنون",value:"بطل-مجنون"},{label:"تاريخي",value:"تاريخي"},{label:"تجسد",value:"تجسد"},{label:"تجسيد",value:"تجسيد"},{label:"تحقيق",value:"تحقيق"},{label:"تراجيدي",value:"تراجيدي"},{label:"تشويق",value:"تشويق"},{label:"تناسخ",value:"تناسخ"},{label:"ثأر",value:"ثأر"},{label:"جريمة",value:"جريمة"},{label:"جوسي",value:"جوسي"},{label:"جوسين",value:"جوسين"},{label:"حاصد",value:"حاصد"},{label:"حريم",value:"حريم"},{label:"حياة جامعية",value:"حياة-جامعية"},{label:"حياة مدرسية",value:"حياة-مدرسية"},{label:"خارق للطبيعة",value:"خارق-للطبيعة"},{label:"خيال",value:"خيال"},{label:"خيال علمي",value:"خيال-علمي"},{label:"خيالي",value:"خيالي"},{label:"دراما",value:"دراما"},{label:"دموي",value:"دموي"},{label:"راشد",value:"راشد"},{label:"رعاية اطفال",value:"رعاية-اطفال"},{label:"رعب",value:"رعب"},{label:"رومانسي",value:"رومانسي"},{label:"رياضي",value:"رياضي"},{label:"زمكاني",value:"زمكاني"},{label:"زمنكاني",value:"زمنكاني"},{label:"زواج مدبر",value:"زواج-مدبر"},{label:"زومبي",value:"زومبي"},{label:"ساموراي",value:"ساموراي"},{label:"سحر",value:"سحر"},{label:"سينين",value:"سينين"},{label:"شريحة من الحياة",value:"شريحة-من-الحياة"},{label:"شوجو",value:"شوجو"},{label:"شونسن",value:"شونسن"},{label:"شونين",value:"شونين"},{label:"شياطين",value:"شياطين"},{label:"شينين",value:"شينين"},{label:"طبخ",value:"طبخ"},{label:"طبي",value:"طبي"},{label:"عائلي",value:"عائلي"},{label:"عالم اخر",value:"عالم-اخر"},{label:"عسكري",value:"عسكري"},{label:"عصر حديث",value:"عصر-حديث"},{label:"عصري",value:"عصري"},{label:"عصور وسطى",value:"عصور-وسطى"},{label:"عودة بالزمن",value:"عودة-بالزمن"},{label:"غموض",value:"غموض"},{label:"فانتازيا",value:"فانتازيا"},{label:"فراغ",value:"فراغ"},{label:"فنتازيا",value:"فنتازيا"},{label:"فنون قتالية",value:"فنون-قتالية"},{label:"فيكتوري",value:"فيكتوري"},{label:"قصة حقيقة",value:"قصة-حقيقة"},{label:"قوة خارقة",value:"قوة-خارقة"},{label:"قوى خارقه",value:"قوى-خارقه"},{label:"كوميدي",value:"كوميدي"},{label:"لعبة",value:"لعبة"},{label:"مأساة",value:"مأساة"},{label:"مأساوي",value:"مأساوي"},{label:"مافيا",value:"مافيا"},{label:"مانها",value:"مانها"},{label:"مانهوا",value:"مانهوا"},{label:"مصاصي الدماء",value:"مصاصي-الدماء"},{label:"مغامرات",value:"مغامرات"},{label:"مغامرة",value:"مغامرة"},{label:"مكتبي",value:"مكتبي"},{label:"مميز",value:"special"},{label:"موريم",value:"موريم"},{label:"موسيقي",value:"موسيقي"},{label:"موظفين",value:"موظفين"},{label:"ندم",value:"ندم"},{label:"نظام",value:"نظام"},{label:"نفسي",value:"نفسي"},{label:"هوس",value:"هوس"},{label:"وحوش",value:"وحوش"},{label:"ويبتون",value:"ويبتون"}]},op:{type:"Switch",label:"مع كل التصنيفات المحددة",value:!1},author:{type:"Text",label:"المؤلف",value:""},artist:{type:"Text",label:"الرسام",value:""},release:{type:"Text",label:"سنة الاصدار",value:""},adult:{type:"Picker",label:"محتوى للبالغين",value:"",options:[{label:"الكل",value:""},{label:"بدون محتوى للبالغين",value:"0"},{label:"محتوى للبالغين فقط",value:"1"}]},"status[]":{type:"Checkbox",label:"الحالة",value:[],options:[{label:"مستمرة",value:"on-going"},{label:"Completed",value:"end"},{label:"ألغيت",value:"canceled"},{label:"في الانتظار",value:"on-hold"},{label:"Upcoming",value:"upcoming"}]},m_orderby:{type:"Picker",label:"ترتيب حسب :",value:"",options:[{label:"ملاءمة",value:""},{label:"أحدث",value:"latest"},{label:"أ-ي",value:"alphabet"},{label:"تقييم",value:"rating"},{label:"الشائع",value:"trending"},{label:"الأكثر مشاهدة",value:"views"},{label:"جديد",value:"new-manga"}]}}});exports.default=v;
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MadaraPlugin = void 0;
+var fetch_1 = require("@libs/fetch");
+var cheerio_1 = require("cheerio");
+var defaultCover_1 = require("@libs/defaultCover");
+var novelStatus_1 = require("@libs/novelStatus");
+var dayjs_1 = __importDefault(require("dayjs"));
+var storage_1 = require("@libs/storage");
+var includesAny = function (str, keywords) {
+    return new RegExp(keywords.join('|')).test(str);
+};
+var MadaraPlugin = /** @class */ (function () {
+    function MadaraPlugin(metadata) {
+        var _a, _b;
+        this.hideLocked = storage_1.storage.get('hideLocked');
+        this.parseData = function (date) {
+            var _a;
+            var dayJSDate = (0, dayjs_1.default)(); // today
+            var timeAgo = ((_a = date.match(/\d+/)) === null || _a === void 0 ? void 0 : _a[0]) || '';
+            var timeAgoInt = parseInt(timeAgo, 10);
+            if (!timeAgo)
+                return date; // there is no number!
+            if (includesAny(date, ['detik', 'segundo', 'second', 'วินาที'])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'second'); // go back N seconds
+            }
+            else if (includesAny(date, [
+                'menit',
+                'dakika',
+                'min',
+                'minute',
+                'minuto',
+                'นาที',
+                'دقائق',
+            ])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'minute'); // go back N minute
+            }
+            else if (includesAny(date, [
+                'jam',
+                'saat',
+                'heure',
+                'hora',
+                'hour',
+                'ชั่วโมง',
+                'giờ',
+                'ore',
+                'ساعة',
+                '小时',
+            ])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'hours'); // go back N hours
+            }
+            else if (includesAny(date, [
+                'hari',
+                'gün',
+                'jour',
+                'día',
+                'dia',
+                'day',
+                'วัน',
+                'ngày',
+                'giorni',
+                'أيام',
+                '天',
+            ])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'days'); // go back N days
+            }
+            else if (includesAny(date, ['week', 'semana'])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'week'); // go back N a week
+            }
+            else if (includesAny(date, ['month', 'mes'])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'month'); // go back N months
+            }
+            else if (includesAny(date, ['year', 'año'])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'year'); // go back N years
+            }
+            else {
+                if ((0, dayjs_1.default)(date).format('LL') !== 'Invalid Date') {
+                    return (0, dayjs_1.default)(date).format('LL');
+                }
+                return date;
+            }
+            return dayJSDate.format('LL');
+        };
+        this.id = metadata.id;
+        this.name = metadata.sourceName;
+        this.icon = "multisrc/madara/".concat(metadata.id.toLowerCase(), "/icon.png");
+        this.site = metadata.sourceSite;
+        var versionIncrements = ((_a = metadata.options) === null || _a === void 0 ? void 0 : _a.versionIncrements) || 0;
+        this.version = "2.2.".concat(versionIncrements);
+        this.options = metadata.options;
+        this.filters = metadata.filters;
+        if ((_b = this.options) === null || _b === void 0 ? void 0 : _b.hasLocked) {
+            this.pluginSettings = {
+                hideLocked: {
+                    value: '',
+                    label: 'Hide locked chapters',
+                    type: 'Switch',
+                },
+            };
+        }
+    }
+    MadaraPlugin.prototype.translateDragontea = function (text) {
+        var _a;
+        if (this.id !== 'dragontea')
+            return text;
+        var $ = (0, cheerio_1.load)(((_a = text
+            .html()) === null || _a === void 0 ? void 0 : _a.replace('\n', '').replace(/<br\s*\/?>/g, '\n')) || '');
+        var reverseAlpha = 'zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA';
+        var forwardAlpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        text.html($.html());
+        text
+            .find('*')
+            .addBack()
+            .contents()
+            .filter(function (_, el) { return el.nodeType === 3; })
+            .each(function (_, el) {
+            var $el = $(el);
+            var translated = $el
+                .text()
+                .normalize('NFD')
+                .split('')
+                .map(function (char) {
+                var base = char.normalize('NFC');
+                var idx = forwardAlpha.indexOf(base);
+                return idx >= 0
+                    ? reverseAlpha[idx] + char.slice(base.length)
+                    : char;
+            })
+                .join('');
+            $el.replaceWith(translated.replace('\n', '<br>'));
+        });
+        return text;
+    };
+    MadaraPlugin.prototype.getHostname = function (url) {
+        url = url.split('/')[2];
+        var url_parts = url.split('.');
+        url_parts.pop(); // remove TLD
+        return url_parts.join('.');
+    };
+    MadaraPlugin.prototype.getCheerio = function (url, search) {
+        return __awaiter(this, void 0, void 0, function () {
+            var r, $, _a, title;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        r = _b.sent();
+                        if (!r.ok && search != true)
+                            throw new Error('Could not reach site (' + r.status + ') try to open in webview.');
+                        _a = cheerio_1.load;
+                        return [4 /*yield*/, r.text()];
+                    case 2:
+                        $ = _a.apply(void 0, [_b.sent()]);
+                        title = $('title').text().trim();
+                        if (this.getHostname(url) != this.getHostname(r.url) ||
+                            title == 'Bot Verification' ||
+                            title == 'You are being redirected...' ||
+                            title == 'Un instant...' ||
+                            title == 'Just a moment...' ||
+                            title == 'Redirecting...')
+                            throw new Error('Captcha error, please open in webview');
+                        return [2 /*return*/, $];
+                }
+            });
+        });
+    };
+    MadaraPlugin.prototype.parseNovels = function (loadedCheerio) {
+        var novels = [];
+        loadedCheerio('.manga-title-badges').remove();
+        loadedCheerio('.page-item-detail, .c-tabs-item__content').each(function (index, element) {
+            var novelName = loadedCheerio(element)
+                .find('.post-title')
+                .text()
+                .trim();
+            var novelUrl = loadedCheerio(element).find('.post-title').find('a').attr('href') ||
+                '';
+            if (!novelName || !novelUrl)
+                return;
+            var image = loadedCheerio(element).find('img');
+            var novelCover = image.attr('data-src') ||
+                image.attr('src') ||
+                image.attr('data-lazy-srcset') ||
+                defaultCover_1.defaultCover;
+            var novel = {
+                name: novelName,
+                cover: novelCover,
+                path: novelUrl.replace(/https?:\/\/.*?\//, ''),
+            };
+            novels.push(novel);
+        });
+        return novels;
+    };
+    MadaraPlugin.prototype.popularNovels = function (pageNo_1, _a) {
+        return __awaiter(this, arguments, void 0, function (pageNo, _b) {
+            var url, key, _i, _c, value, loadedCheerio;
+            var filters = _b.filters, showLatestNovels = _b.showLatestNovels;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        url = this.site + '/page/' + pageNo + '/?s=&post_type=wp-manga';
+                        if (!filters)
+                            filters = this.filters || {};
+                        if (showLatestNovels)
+                            url += '&m_orderby=latest';
+                        for (key in filters) {
+                            if (typeof filters[key].value === 'object')
+                                for (_i = 0, _c = filters[key].value; _i < _c.length; _i++) {
+                                    value = _c[_i];
+                                    url += "&".concat(key, "=").concat(value);
+                                }
+                            else if (filters[key].value)
+                                url += "&".concat(key, "=").concat(filters[key].value);
+                        }
+                        return [4 /*yield*/, this.getCheerio(url, pageNo != 1)];
+                    case 1:
+                        loadedCheerio = _d.sent();
+                        return [2 /*return*/, this.parseNovels(loadedCheerio)];
+                }
+            });
+        });
+    };
+    MadaraPlugin.prototype.parseNovel = function (novelPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var loadedCheerio, novel, chapters, html, novelId, formData, totalChapters;
+            var _this = this;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.getCheerio(this.site + novelPath, false)];
+                    case 1:
+                        loadedCheerio = _b.sent();
+                        loadedCheerio('.manga-title-badges, #manga-title span').remove();
+                        novel = {
+                            path: novelPath,
+                            name: loadedCheerio('.post-title h1').text().trim() ||
+                                loadedCheerio('#manga-title h1').text().trim() ||
+                                loadedCheerio('.manga-title').text().trim() ||
+                                '',
+                        };
+                        novel.cover =
+                            loadedCheerio('.summary_image > a > img').attr('data-lazy-src') ||
+                                loadedCheerio('.summary_image > a > img').attr('data-src') ||
+                                loadedCheerio('.summary_image > a > img').attr('src') ||
+                                defaultCover_1.defaultCover;
+                        loadedCheerio('.post-content_item, .post-content').each(function () {
+                            var detailName = loadedCheerio(this).find('h5').text().trim();
+                            var detail = loadedCheerio(this).find('.summary-content') ||
+                                loadedCheerio(this).find('.summary_content');
+                            switch (detailName) {
+                                case 'Genre(s)':
+                                case 'Genre':
+                                case 'Tags(s)':
+                                case 'Tag(s)':
+                                case 'Tags':
+                                case 'Género(s)':
+                                case 'Kategori':
+                                case 'التصنيفات':
+                                    if (novel.genres)
+                                        novel.genres +=
+                                            ', ' +
+                                                detail
+                                                    .find('a')
+                                                    .map(function (i, el) { return loadedCheerio(el).text(); })
+                                                    .get()
+                                                    .join(', ');
+                                    else
+                                        novel.genres = detail
+                                            .find('a')
+                                            .map(function (i, el) { return loadedCheerio(el).text(); })
+                                            .get()
+                                            .join(', ');
+                                    break;
+                                case 'Author(s)':
+                                case 'Author':
+                                case 'Autor(es)':
+                                case 'المؤلف':
+                                case 'المؤلف (ين)':
+                                    novel.author = detail.text().trim();
+                                    break;
+                                case 'Status':
+                                case 'Novel':
+                                case 'Estado':
+                                case 'Durum':
+                                    novel.status =
+                                        detail.text().trim().includes('OnGoing') ||
+                                            detail.text().trim().includes('مستمرة')
+                                            ? novelStatus_1.NovelStatus.Ongoing
+                                            : novelStatus_1.NovelStatus.Completed;
+                                    break;
+                                case 'Artist(s)':
+                                    novel.artist = detail.text().trim();
+                                    break;
+                            }
+                        });
+                        // Checks for "Madara NovelHub" version
+                        {
+                            if (!novel.genres)
+                                novel.genres = loadedCheerio('.genres-content').text().trim();
+                            if (!novel.status)
+                                novel.status = loadedCheerio('.manga-status')
+                                    .text()
+                                    .trim()
+                                    .includes('OnGoing')
+                                    ? novelStatus_1.NovelStatus.Ongoing
+                                    : novelStatus_1.NovelStatus.Completed;
+                            if (!novel.author)
+                                novel.author = loadedCheerio('.manga-author a').text().trim();
+                            if (!novel.rating)
+                                novel.rating = parseFloat(loadedCheerio('.post-rating span').text().trim());
+                        }
+                        if (!novel.author)
+                            novel.author = loadedCheerio('.manga-authors').text().trim();
+                        loadedCheerio('div.summary__content .code-block,script,noscript').remove();
+                        novel.summary =
+                            this.translateDragontea(loadedCheerio('div.summary__content'))
+                                .text()
+                                .trim() ||
+                                loadedCheerio('#tab-manga-about').text().trim() ||
+                                loadedCheerio('.post-content_item h5:contains("Summary")')
+                                    .next()
+                                    .find('span')
+                                    .map(function (i, el) { return loadedCheerio(el).text(); })
+                                    .get()
+                                    .join('\n\n')
+                                    .trim() ||
+                                loadedCheerio('.manga-summary p')
+                                    .map(function (i, el) { return loadedCheerio(el).text(); })
+                                    .get()
+                                    .join('\n\n')
+                                    .trim() ||
+                                loadedCheerio('.manga-excerpt p')
+                                    .map(function (i, el) { return loadedCheerio(el).text(); })
+                                    .get()
+                                    .join('\n\n')
+                                    .trim();
+                        chapters = [];
+                        html = '';
+                        if (!((_a = this.options) === null || _a === void 0 ? void 0 : _a.useNewChapterEndpoint)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(this.site + novelPath + 'ajax/chapters/', {
+                                method: 'POST',
+                                referrer: this.site + novelPath,
+                            }).then(function (res) { return res.text(); })];
+                    case 2:
+                        html = _b.sent();
+                        return [3 /*break*/, 5];
+                    case 3:
+                        novelId = loadedCheerio('.rating-post-id').attr('value') ||
+                            loadedCheerio('#manga-chapters-holder').attr('data-id') ||
+                            '';
+                        formData = new FormData();
+                        formData.append('action', 'manga_get_chapters');
+                        formData.append('manga', novelId);
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(this.site + 'wp-admin/admin-ajax.php', {
+                                method: 'POST',
+                                body: formData,
+                            }).then(function (res) { return res.text(); })];
+                    case 4:
+                        html = _b.sent();
+                        _b.label = 5;
+                    case 5:
+                        if (html !== '0') {
+                            loadedCheerio = (0, cheerio_1.load)(html);
+                        }
+                        totalChapters = loadedCheerio('.wp-manga-chapter').length;
+                        loadedCheerio('.wp-manga-chapter').each(function (chapterIndex, element) {
+                            var chapterName = loadedCheerio(element).find('a').text().trim();
+                            var locked = element.attribs['class'].includes('premium-block');
+                            if (locked) {
+                                chapterName = '🔒 ' + chapterName;
+                            }
+                            var releaseDate = loadedCheerio(element)
+                                .find('span.chapter-release-date')
+                                .text()
+                                .trim();
+                            if (releaseDate) {
+                                releaseDate = _this.parseData(releaseDate);
+                            }
+                            else {
+                                releaseDate = (0, dayjs_1.default)().format('LL');
+                            }
+                            var chapterUrl = loadedCheerio(element).find('a').attr('href') || '';
+                            if (chapterUrl && chapterUrl != '#' && !(locked && _this.hideLocked)) {
+                                chapters.push({
+                                    name: chapterName,
+                                    path: chapterUrl.replace(/https?:\/\/.*?\//, ''),
+                                    releaseTime: releaseDate || null,
+                                    chapterNumber: totalChapters - chapterIndex,
+                                });
+                            }
+                        });
+                        novel.chapters = chapters.reverse();
+                        return [2 /*return*/, novel];
+                }
+            });
+        });
+    };
+    MadaraPlugin.prototype.parseChapter = function (chapterPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var loadedCheerio, chapterText;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.getCheerio(this.site + chapterPath, false)];
+                    case 1:
+                        loadedCheerio = _b.sent();
+                        chapterText = loadedCheerio('.text-left') ||
+                            loadedCheerio('.text-right') ||
+                            loadedCheerio('.entry-content') ||
+                            loadedCheerio('.c-blog-post > div > div:nth-child(2)');
+                        if ((_a = this.options) === null || _a === void 0 ? void 0 : _a.customJs) {
+                            try {
+                            }
+                            catch (error) {
+                                console.error('Error executing customJs:', error);
+                                throw error;
+                            }
+                        }
+                        return [2 /*return*/, this.translateDragontea(chapterText).html() || ''];
+                }
+            });
+        });
+    };
+    MadaraPlugin.prototype.searchNovels = function (searchTerm, pageNo) {
+        return __awaiter(this, void 0, void 0, function () {
+            var url, loadedCheerio;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = this.site +
+                            '/page/' +
+                            pageNo +
+                            '/?s=' +
+                            encodeURIComponent(searchTerm) +
+                            '&post_type=wp-manga';
+                        return [4 /*yield*/, this.getCheerio(url, true)];
+                    case 1:
+                        loadedCheerio = _a.sent();
+                        return [2 /*return*/, this.parseNovels(loadedCheerio)];
+                }
+            });
+        });
+    };
+    return MadaraPlugin;
+}());
+exports.MadaraPlugin = MadaraPlugin;
+var plugin = new MadaraPlugin({ "id": "azora", "sourceSite": "https://azoramoon.com/", "sourceName": "Azora", "options": { "useNewChapterEndpoint": true, "lang": "Arabic" }, "filters": { "genre[]": { "type": "Checkbox", "label": "Genre", "value": [], "options": [{ "label": "أكشن", "value": "أكشن" }, { "label": "أيتام", "value": "أيتام" }, { "label": "إثارة", "value": "إثارة" }, { "label": "إعادة إحياء", "value": "إعادة-إحياء" }, { "label": "اتشي", "value": "اتشي" }, { "label": "اثارة", "value": "اثارة" }, { "label": "اسبوعي", "value": "weekly" }, { "label": "اشباح", "value": "اشباح" }, { "label": "الأرواح", "value": "الأرواح" }, { "label": "الحياة المدرسية", "value": "الحياة-المدرسية" }, { "label": "الحياة اليومية", "value": "الحياة-اليومية" }, { "label": "السفر عبر الزمن", "value": "السفر-عبر-الزمن" }, { "label": "العاب", "value": "العاب" }, { "label": "انتقام", "value": "انتقام" }, { "label": "ايسكاي", "value": "ايسكاي" }, { "label": "ايسيكاي", "value": "ايسيكاي" }, { "label": "ايشي", "value": "ايشي" }, { "label": "بطل غير اعتيادي", "value": "بطل-غير-اعتيادي" }, { "label": "بطل مجنون", "value": "بطل-مجنون" }, { "label": "تاريخي", "value": "تاريخي" }, { "label": "تجسد", "value": "تجسد" }, { "label": "تجسيد", "value": "تجسيد" }, { "label": "تحقيق", "value": "تحقيق" }, { "label": "تراجيدي", "value": "تراجيدي" }, { "label": "تشويق", "value": "تشويق" }, { "label": "تناسخ", "value": "تناسخ" }, { "label": "ثأر", "value": "ثأر" }, { "label": "جريمة", "value": "جريمة" }, { "label": "جوسي", "value": "جوسي" }, { "label": "جوسين", "value": "جوسين" }, { "label": "حاصد", "value": "حاصد" }, { "label": "حريم", "value": "حريم" }, { "label": "حياة جامعية", "value": "حياة-جامعية" }, { "label": "حياة مدرسية", "value": "حياة-مدرسية" }, { "label": "خارق للطبيعة", "value": "خارق-للطبيعة" }, { "label": "خيال", "value": "خيال" }, { "label": "خيال علمي", "value": "خيال-علمي" }, { "label": "خيالي", "value": "خيالي" }, { "label": "دراما", "value": "دراما" }, { "label": "دموي", "value": "دموي" }, { "label": "راشد", "value": "راشد" }, { "label": "رعاية اطفال", "value": "رعاية-اطفال" }, { "label": "رعب", "value": "رعب" }, { "label": "رومانسي", "value": "رومانسي" }, { "label": "رياضي", "value": "رياضي" }, { "label": "زمكاني", "value": "زمكاني" }, { "label": "زمنكاني", "value": "زمنكاني" }, { "label": "زواج مدبر", "value": "زواج-مدبر" }, { "label": "زومبي", "value": "زومبي" }, { "label": "ساموراي", "value": "ساموراي" }, { "label": "سحر", "value": "سحر" }, { "label": "سينين", "value": "سينين" }, { "label": "شريحة من الحياة", "value": "شريحة-من-الحياة" }, { "label": "شوجو", "value": "شوجو" }, { "label": "شونسن", "value": "شونسن" }, { "label": "شونين", "value": "شونين" }, { "label": "شياطين", "value": "شياطين" }, { "label": "شينين", "value": "شينين" }, { "label": "طبخ", "value": "طبخ" }, { "label": "طبي", "value": "طبي" }, { "label": "عائلي", "value": "عائلي" }, { "label": "عالم اخر", "value": "عالم-اخر" }, { "label": "عسكري", "value": "عسكري" }, { "label": "عصر حديث", "value": "عصر-حديث" }, { "label": "عصري", "value": "عصري" }, { "label": "عصور وسطى", "value": "عصور-وسطى" }, { "label": "عودة بالزمن", "value": "عودة-بالزمن" }, { "label": "غموض", "value": "غموض" }, { "label": "فانتازيا", "value": "فانتازيا" }, { "label": "فراغ", "value": "فراغ" }, { "label": "فنتازيا", "value": "فنتازيا" }, { "label": "فنون قتالية", "value": "فنون-قتالية" }, { "label": "فيكتوري", "value": "فيكتوري" }, { "label": "قصة حقيقة", "value": "قصة-حقيقة" }, { "label": "قوة خارقة", "value": "قوة-خارقة" }, { "label": "قوى خارقه", "value": "قوى-خارقه" }, { "label": "كوميدي", "value": "كوميدي" }, { "label": "لعبة", "value": "لعبة" }, { "label": "مأساة", "value": "مأساة" }, { "label": "مأساوي", "value": "مأساوي" }, { "label": "مافيا", "value": "مافيا" }, { "label": "مانها", "value": "مانها" }, { "label": "مانهوا", "value": "مانهوا" }, { "label": "مصاصي الدماء", "value": "مصاصي-الدماء" }, { "label": "مغامرات", "value": "مغامرات" }, { "label": "مغامرة", "value": "مغامرة" }, { "label": "مكتبي", "value": "مكتبي" }, { "label": "مميز", "value": "special" }, { "label": "موريم", "value": "موريم" }, { "label": "موسيقي", "value": "موسيقي" }, { "label": "موظفين", "value": "موظفين" }, { "label": "ندم", "value": "ندم" }, { "label": "نظام", "value": "نظام" }, { "label": "نفسي", "value": "نفسي" }, { "label": "هوس", "value": "هوس" }, { "label": "وحوش", "value": "وحوش" }, { "label": "ويبتون", "value": "ويبتون" }] }, "op": { "type": "Switch", "label": "مع كل التصنيفات المحددة", "value": false }, "author": { "type": "Text", "label": "المؤلف", "value": "" }, "artist": { "type": "Text", "label": "الرسام", "value": "" }, "release": { "type": "Text", "label": "سنة الاصدار", "value": "" }, "adult": { "type": "Picker", "label": "محتوى للبالغين", "value": "", "options": [{ "label": "الكل", "value": "" }, { "label": "بدون محتوى للبالغين", "value": "0" }, { "label": "محتوى للبالغين فقط", "value": "1" }] }, "status[]": { "type": "Checkbox", "label": "الحالة", "value": [], "options": [{ "label": "مستمرة", "value": "on-going" }, { "label": "Completed", "value": "end" }, { "label": "ألغيت", "value": "canceled" }, { "label": "في الانتظار", "value": "on-hold" }, { "label": "Upcoming", "value": "upcoming" }] }, "m_orderby": { "type": "Picker", "label": "ترتيب حسب :", "value": "", "options": [{ "label": "ملاءمة", "value": "" }, { "label": "أحدث", "value": "latest" }, { "label": "أ-ي", "value": "alphabet" }, { "label": "تقييم", "value": "rating" }, { "label": "الشائع", "value": "trending" }, { "label": "الأكثر مشاهدة", "value": "views" }, { "label": "جديد", "value": "new-manga" }] } } });
+exports.default = plugin;

@@ -1,1 +1,502 @@
-var e=this&&this.__awaiter||function(e,t,n,r){return new(n||(n=Promise))((function(a,i){function s(e){try{c(r.next(e))}catch(e){i(e)}}function o(e){try{c(r.throw(e))}catch(e){i(e)}}function c(e){var t;e.done?a(e.value):(t=e.value,t instanceof n?t:new n((function(e){e(t)}))).then(s,o)}c((r=r.apply(e,t||[])).next())}))},t=this&&this.__generator||function(e,t){var n,r,a,i={label:0,sent:function(){if(1&a[0])throw a[1];return a[1]},trys:[],ops:[]},s=Object.create(("function"==typeof Iterator?Iterator:Object).prototype);return s.next=o(0),s.throw=o(1),s.return=o(2),"function"==typeof Symbol&&(s[Symbol.iterator]=function(){return this}),s;function o(o){return function(c){return function(o){if(n)throw new TypeError("Generator is already executing.");for(;s&&(s=0,o[0]&&(i=0)),i;)try{if(n=1,r&&(a=2&o[0]?r.return:o[0]?r.throw||((a=r.return)&&a.call(r),0):r.next)&&!(a=a.call(r,o[1])).done)return a;switch(r=0,a&&(o=[2&o[0],a.value]),o[0]){case 0:case 1:a=o;break;case 4:return i.label++,{value:o[1],done:!1};case 5:i.label++,r=o[1],o=[0];continue;case 7:o=i.ops.pop(),i.trys.pop();continue;default:if(!(a=i.trys,(a=a.length>0&&a[a.length-1])||6!==o[0]&&2!==o[0])){i=0;continue}if(3===o[0]&&(!a||o[1]>a[0]&&o[1]<a[3])){i.label=o[1];break}if(6===o[0]&&i.label<a[1]){i.label=a[1],a=o;break}if(a&&i.label<a[2]){i.label=a[2],i.ops.push(o);break}a[2]&&i.ops.pop(),i.trys.pop();continue}o=t.call(e,i)}catch(e){o=[6,e],r=0}finally{n=a=0}if(5&o[0])throw o[1];return{value:o[0]?o[1]:void 0,done:!0}}([o,c])}}};Object.defineProperty(exports,"__esModule",{value:!0});var n,r=require("htmlparser2"),a=require("@libs/fetch"),i=require("@libs/filterInputs"),s=function(){function s(){this.id="lnmtl",this.name="LnMTL",this.icon="src/en/lnmtl/icon.png",this.site="https://lnmtl.com/",this.version="2.1.1",this.filters={order:{value:"favourites",label:"Order by",options:[{label:"Favourites",value:"favourites"},{label:"Name",value:"name"},{label:"Addition Date",value:"date"}],type:i.FilterTypes.Picker},sort:{value:"desc",label:"Sort by",options:[{label:"Descending",value:"desc"},{label:"Ascending",value:"asc"}],type:i.FilterTypes.Picker},storyStatus:{value:"all",label:"Status",options:[{label:"All",value:"all"},{label:"Ongoing",value:"ongoing"},{label:"Finished",value:"finished"}],type:i.FilterTypes.Picker}}}return s.prototype.sleep=function(n){return e(this,void 0,void 0,(function(){return t(this,(function(e){return[2,new Promise((function(e){return setTimeout(e,n)}))]}))}))},s.prototype.popularNovels=function(i,s){return e(this,arguments,void 0,(function(e,i){var s,o,c,l,u,p,h,f,d=i.filters;return t(this,(function(t){switch(t.label){case 0:return s=new URLSearchParams({orderBy:d.order.value,order:d.sort.value,filter:d.storyStatus.value,page:e.toString()}),o="".concat(this.site,"novel?").concat(s.toString()),[4,(0,a.fetchApi)(o)];case 1:return[4,t.sent().text()];case 2:return c=t.sent(),l=this.site,u=n.Idle,p={},h=[],f=new r.Parser({onopentag:function(e,t){var r;if((null===(r=t.class)||void 0===r?void 0:r.includes("media-left"))&&(u=n.Novel),u===n.Novel)switch(e){case"a":p.path=t.href.replace(l,"");break;case"img":p.name=t.alt,p.cover=t.src}},onclosetag:function(e){"div"===e&&(p.path&&p.name&&(h.push(p),p={}),u=n.Idle)}}),f.write(c),f.end(),[2,h]}}))}))},s.prototype.parseNovel=function(i){return e(this,void 0,void 0,(function(){var e,s,o,c,l,u,p,h,f,d;return t(this,(function(t){switch(t.label){case 0:return[4,(0,a.fetchApi)(this.site+i)];case 1:return[4,t.sent().text().then((function(e){return e.replace(/>\s+</g,"><")}))];case 2:return e=t.sent(),s={path:i,totalPages:1,chapters:[]},o=n.Idle,c=0,l=0,u=!1,p=!1,h=[],f=[],d=new r.Parser({onopentag:function(e,t){var r,a,i;switch(e){case"img":(null===(r=t.class)||void 0===r?void 0:r.includes("img-rounded"))&&(s.name=t.title,s.cover=t.src);break;case"dt":o=n.InPanelKey;break;case"dd":o=n.InPanelValue,c++;break;case"ul":(null===(a=t.class)||void 0===a?void 0:a.includes("list-inline"))&&l++;break;case"li":1===l&&(o=n.InGenres);break;default:if(t.class){var u={description:n.InDescription,source:n.InSource,progress:n.Idle};o=null!==(i=u[t.class])&&void 0!==i?i:o}}},ontext:function(e){switch(o){case n.InScript:var t=JSON.parse(e.match(/lnmtl.volumes = (.+])(?=;)/)[1]||"");s.totalPages=t.length;break;case n.InDescription:h.push(e.trim()),h.push("\n\n");break;case n.InSource:h.push(e);break;case n.InPanelKey:switch(e){case"Authors":u=!0;break;case"Current status":p=!0}break;case n.InPanelValue:u&&1===c?(s.author=(s.author||"")+e.trim(),u=!1):p&&2===c&&(s.status=(s.status||"")+e.trim(),p=!1);break;case n.InGenres:f.push(e.trim())}},onclosetag:function(e){switch(e){case"ul":o===n.InGenres&&(o=n.Idle);break;case"main":o=n.InScript;break;case"script":o===n.InScript&&(o=n.Idle)}},onend:function(){s.summary=h.join(""),s.genres=f.join(", ")}}),d.write(e),d.end(),[2,s]}}))}))},s.prototype.parsePage=function(i,s){return e(this,void 0,void 0,(function(){var e,o,c,l,u,p,h,f,d,v;return t(this,(function(t){switch(t.label){case 0:return[4,(0,a.fetchApi)(this.site+i)];case 1:return[4,t.sent().text().then((function(e){return e.replace(/>\s+</g,"><")}))];case 2:return e=t.sent(),o=n.Idle,c={id:"",title:""},(l=new r.Parser({ontext:function(e){if(o===n.InScript){var t=JSON.parse(e.match(/lnmtl.volumes = (.+])(?=;)/)[1]||"");c=t[+s-1]}},onclosetag:function(e){"main"===e&&(o=n.InScript),"script"===e&&(o=n.Idle)}})).write(e),l.end(),u=[],[4,this.sleep(1e3)];case 3:return t.sent(),[4,(0,a.fetchApi)("".concat(this.site,"chapter?volumeId=").concat(c.id))];case 4:return[4,t.sent().json()];case 5:p=t.sent(),h=p.data.map((function(e){return{name:"#".concat(e.number," - ").concat(e.title),path:"chapter/".concat(e.slug),releaseTime:new Date(e.created_at).toISOString()}})),u.push.apply(u,h),f=2,t.label=6;case 6:return f<=p.last_page?[4,this.sleep(1e3)]:[3,11];case 7:return t.sent(),[4,(0,a.fetchApi)("".concat(this.site,"chapter?page=").concat(f,"&volumeId=").concat(c.id))];case 8:return[4,t.sent().json()];case 9:d=t.sent(),v=d.data.map((function(e){return{name:"#".concat(e.number," ").concat(e.title),path:"chapter/".concat(e.slug),releaseTime:new Date(e.created_at).toISOString()}})),u.push.apply(u,v),t.label=10;case 10:return f++,[3,6];case 11:return[2,{chapters:u}]}}))}))},s.prototype.parseChapter=function(i){return e(this,void 0,void 0,(function(){var e,s,o,c,l,u,p;return t(this,(function(t){switch(t.label){case 0:return[4,(0,a.fetchApi)(this.site+i)];case 1:return[4,t.sent().text()];case 2:return e=t.sent(),s=n.Idle,o=[],c=/[&<>"']/g,l={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"},u=function(e){return c.test(e)?(c.lastIndex=0,e.replace(c,(function(e){return l[e]}))):e},p=new r.Parser({onopentag:function(e,t){var r;"sentence"===e&&(null===(r=t.class)||void 0===r?void 0:r.includes("translated"))&&(s=n.Chapter,o.push("<p>"))},onopentagname:function(e){"nav"===e&&(s=n.Idle)},ontext:function(e){s===n.Chapter&&o.push(u(e))},onclosetag:function(e){"sentence"===e&&s===n.Chapter&&(o.push("</p>"),s=n.Idle)}}),p.write(e),p.end(),[2,o.join("").replace(/„/g,"“")]}}))}))},s.prototype.searchNovels=function(i){return e(this,void 0,void 0,(function(){var e,s,o,c,l,u,p;return t(this,(function(t){switch(t.label){case 0:return[4,(0,a.fetchApi)(this.site).then((function(e){return e.text()})).then((function(e){return e.replace(/>\s+</g,"><")}))];case 1:return e=t.sent(),s=n.Idle,o=new Set,c=new r.Parser({onopentag:function(e,t){var r;s===n.InFooter&&"script"===e&&(null===(r=t.type)||void 0===r?void 0:r.includes("application/javascript"))&&(s=n.InScript)},ontext:function(e){if(s===n.InScript){var t=e.match(/prefetch: '\/(.*?\.json)/);t&&o.add(t[1])}},onclosetag:function(e){switch(e){case"footer":s=n.InFooter;break;case"script":s===n.InScript&&(s=n.Idle)}}}),c.write(e),c.end(),[4,(0,a.fetchApi)("".concat(this.site).concat(Array.from(o).join("")))];case 2:return[4,t.sent().json()];case 3:return l=t.sent(),u=l.filter((function(e){return e.name.toLowerCase().includes(i.toLowerCase())})),p=[],u.map((function(e){var t=e.name,n={path:"novel/".concat(e.slug),name:t,cover:e.image};p.push(n)})),[2,p]}}))}))},s}();exports.default=new s,function(e){e[e.Idle=0]="Idle",e[e.InFooter=1]="InFooter",e[e.InScript=2]="InScript",e[e.InDescription=3]="InDescription",e[e.InSource=4]="InSource",e[e.InPanelKey=5]="InPanelKey",e[e.InPanelValue=6]="InPanelValue",e[e.InGenres=7]="InGenres",e[e.Novel=8]="Novel",e[e.Chapter=9]="Chapter"}(n||(n={}));
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var htmlparser2_1 = require("htmlparser2");
+var fetch_1 = require("@libs/fetch");
+var filterInputs_1 = require("@libs/filterInputs");
+var LnMTLPlugin = /** @class */ (function () {
+    function LnMTLPlugin() {
+        this.id = 'lnmtl';
+        this.name = 'LnMTL';
+        this.icon = 'src/en/lnmtl/icon.png';
+        this.site = 'https://lnmtl.com/';
+        this.version = '2.1.1';
+        this.filters = {
+            order: {
+                value: 'favourites',
+                label: 'Order by',
+                options: [
+                    { label: 'Favourites', value: 'favourites' },
+                    { label: 'Name', value: 'name' },
+                    { label: 'Addition Date', value: 'date' },
+                ],
+                type: filterInputs_1.FilterTypes.Picker,
+            },
+            sort: {
+                value: 'desc',
+                label: 'Sort by',
+                options: [
+                    { label: 'Descending', value: 'desc' },
+                    { label: 'Ascending', value: 'asc' },
+                ],
+                type: filterInputs_1.FilterTypes.Picker,
+            },
+            storyStatus: {
+                value: 'all',
+                label: 'Status',
+                options: [
+                    { label: 'All', value: 'all' },
+                    { label: 'Ongoing', value: 'ongoing' },
+                    { label: 'Finished', value: 'finished' },
+                ],
+                type: filterInputs_1.FilterTypes.Picker,
+            },
+        };
+    }
+    LnMTLPlugin.prototype.sleep = function (ms) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve) { return setTimeout(resolve, ms); })];
+            });
+        });
+    };
+    LnMTLPlugin.prototype.popularNovels = function (page_1, _a) {
+        return __awaiter(this, arguments, void 0, function (page, _b) {
+            var params, link, response, html, baseUrl, state, tempNovel, novels, parser;
+            var filters = _b.filters;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        params = new URLSearchParams({
+                            orderBy: filters.order.value,
+                            order: filters.sort.value,
+                            filter: filters.storyStatus.value,
+                            page: page.toString(),
+                        });
+                        link = "".concat(this.site, "novel?").concat(params.toString());
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(link)];
+                    case 1:
+                        response = _c.sent();
+                        return [4 /*yield*/, response.text()];
+                    case 2:
+                        html = _c.sent();
+                        baseUrl = this.site;
+                        state = ParsingState.Idle;
+                        tempNovel = {};
+                        novels = [];
+                        parser = new htmlparser2_1.Parser({
+                            onopentag: function (name, attribs) {
+                                var _a;
+                                if ((_a = attribs['class']) === null || _a === void 0 ? void 0 : _a.includes('media-left')) {
+                                    state = ParsingState.Novel;
+                                }
+                                if (state !== ParsingState.Novel)
+                                    return;
+                                switch (name) {
+                                    case 'a':
+                                        tempNovel.path = attribs['href'].replace(baseUrl, '');
+                                        break;
+                                    case 'img':
+                                        tempNovel.name = attribs['alt'];
+                                        tempNovel.cover = attribs['src'];
+                                        break;
+                                }
+                            },
+                            onclosetag: function (name) {
+                                if (name === 'div') {
+                                    if (tempNovel.path && tempNovel.name) {
+                                        novels.push(tempNovel);
+                                        tempNovel = {};
+                                    }
+                                    state = ParsingState.Idle;
+                                }
+                            },
+                        });
+                        parser.write(html);
+                        parser.end();
+                        return [2 /*return*/, novels];
+                }
+            });
+        });
+    };
+    LnMTLPlugin.prototype.parseNovel = function (novelPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var body, html, novel, state, panelValueCount, listCount, isAuthorKey, isStatusKey, summaryParts, genreArray, parser;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, fetch_1.fetchApi)(this.site + novelPath)];
+                    case 1:
+                        body = _a.sent();
+                        return [4 /*yield*/, body.text().then(function (r) { return r.replace(/>\s+</g, '><'); })];
+                    case 2:
+                        html = _a.sent();
+                        novel = {
+                            path: novelPath,
+                            totalPages: 1,
+                            chapters: [],
+                        };
+                        state = ParsingState.Idle;
+                        panelValueCount = 0;
+                        listCount = 0;
+                        isAuthorKey = false;
+                        isStatusKey = false;
+                        summaryParts = [];
+                        genreArray = [];
+                        parser = new htmlparser2_1.Parser({
+                            onopentag: function (name, attribs) {
+                                var _a, _b, _c;
+                                switch (name) {
+                                    case 'img':
+                                        if ((_a = attribs['class']) === null || _a === void 0 ? void 0 : _a.includes('img-rounded')) {
+                                            novel.name = attribs['title'];
+                                            novel.cover = attribs['src'];
+                                        }
+                                        break;
+                                    case 'dt':
+                                        state = ParsingState.InPanelKey;
+                                        break;
+                                    case 'dd':
+                                        state = ParsingState.InPanelValue;
+                                        panelValueCount++;
+                                        break;
+                                    case 'ul':
+                                        if ((_b = attribs['class']) === null || _b === void 0 ? void 0 : _b.includes('list-inline')) {
+                                            listCount++;
+                                        }
+                                        break;
+                                    case 'li':
+                                        if (listCount === 1) {
+                                            state = ParsingState.InGenres;
+                                        }
+                                        break;
+                                    default:
+                                        if (attribs['class']) {
+                                            var map = {
+                                                description: ParsingState.InDescription,
+                                                source: ParsingState.InSource,
+                                                progress: ParsingState.Idle,
+                                            };
+                                            state = (_c = map[attribs['class']]) !== null && _c !== void 0 ? _c : state;
+                                        }
+                                }
+                            },
+                            ontext: function (data) {
+                                switch (state) {
+                                    case ParsingState.InScript:
+                                        {
+                                            var volume = JSON.parse(data.match(/lnmtl.volumes = (.+])(?=;)/)[1] || '');
+                                            novel.totalPages = volume.length;
+                                        }
+                                        break;
+                                    case ParsingState.InDescription:
+                                        summaryParts.push(data.trim());
+                                        summaryParts.push('\n\n');
+                                        break;
+                                    case ParsingState.InSource:
+                                        summaryParts.push(data);
+                                        break;
+                                    case ParsingState.InPanelKey:
+                                        switch (data) {
+                                            case 'Authors':
+                                                isAuthorKey = true;
+                                                break;
+                                            case 'Current status':
+                                                isStatusKey = true;
+                                                break;
+                                        }
+                                        break;
+                                    case ParsingState.InPanelValue:
+                                        if (isAuthorKey && panelValueCount === 1) {
+                                            novel.author = (novel.author || '') + data.trim();
+                                            isAuthorKey = false;
+                                        }
+                                        else if (isStatusKey && panelValueCount === 2) {
+                                            novel.status = (novel.status || '') + data.trim();
+                                            isStatusKey = false;
+                                        }
+                                        break;
+                                    case ParsingState.InGenres:
+                                        genreArray.push(data.trim());
+                                        break;
+                                }
+                            },
+                            onclosetag: function (name) {
+                                switch (name) {
+                                    case 'ul':
+                                        if (state === ParsingState.InGenres) {
+                                            state = ParsingState.Idle;
+                                        }
+                                        break;
+                                    case 'main':
+                                        state = ParsingState.InScript;
+                                        break;
+                                    case 'script':
+                                        if (state === ParsingState.InScript) {
+                                            state = ParsingState.Idle;
+                                        }
+                                        break;
+                                }
+                            },
+                            onend: function () {
+                                novel.summary = summaryParts.join('');
+                                novel.genres = genreArray.join(', ');
+                            },
+                        });
+                        parser.write(html);
+                        parser.end();
+                        return [2 /*return*/, novel];
+                }
+            });
+        });
+    };
+    LnMTLPlugin.prototype.parsePage = function (novelPath, page) {
+        return __awaiter(this, void 0, void 0, function () {
+            var result, html, state, volume, parser, chapter, volumeData, volumePage, firstPage, i, chapterData, chapterInfo, chapterDetails, chapters;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, fetch_1.fetchApi)(this.site + novelPath)];
+                    case 1:
+                        result = _a.sent();
+                        return [4 /*yield*/, result.text().then(function (r) { return r.replace(/>\s+</g, '><'); })];
+                    case 2:
+                        html = _a.sent();
+                        state = ParsingState.Idle;
+                        volume = {
+                            id: '',
+                            title: '',
+                        };
+                        parser = new htmlparser2_1.Parser({
+                            ontext: function (data) {
+                                if (state === ParsingState.InScript) {
+                                    var volumes = JSON.parse(data.match(/lnmtl.volumes = (.+])(?=;)/)[1] || '');
+                                    volume = volumes[+page - 1];
+                                }
+                            },
+                            onclosetag: function (name) {
+                                if (name === 'main') {
+                                    state = ParsingState.InScript;
+                                }
+                                if (name === 'script') {
+                                    state = ParsingState.Idle;
+                                }
+                            },
+                        });
+                        parser.write(html);
+                        parser.end();
+                        chapter = [];
+                        return [4 /*yield*/, this.sleep(1000)];
+                    case 3:
+                        _a.sent();
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)("".concat(this.site, "chapter?volumeId=").concat(volume.id))];
+                    case 4:
+                        volumeData = _a.sent();
+                        return [4 /*yield*/, volumeData.json()];
+                    case 5:
+                        volumePage = _a.sent();
+                        firstPage = volumePage.data.map(function (chapter) { return ({
+                            name: "#".concat(chapter.number, " - ").concat(chapter.title),
+                            path: "chapter/".concat(chapter.slug),
+                            releaseTime: new Date(chapter.created_at).toISOString(), //converts time obtained to UTC +0, TODO: Make it not convert
+                        }); });
+                        chapter.push.apply(chapter, firstPage);
+                        i = 2;
+                        _a.label = 6;
+                    case 6:
+                        if (!(i <= volumePage.last_page)) return [3 /*break*/, 11];
+                        return [4 /*yield*/, this.sleep(1000)];
+                    case 7:
+                        _a.sent();
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)("".concat(this.site, "chapter?page=").concat(i, "&volumeId=").concat(volume.id))];
+                    case 8:
+                        chapterData = _a.sent();
+                        return [4 /*yield*/, chapterData.json()];
+                    case 9:
+                        chapterInfo = _a.sent();
+                        chapterDetails = chapterInfo.data.map(function (chapter) { return ({
+                            name: "#".concat(chapter.number, " ").concat(chapter.title),
+                            path: "chapter/".concat(chapter.slug),
+                            releaseTime: new Date(chapter.created_at).toISOString(), //converts time obtained to UTC +0, TODO: Make it not convert
+                        }); });
+                        chapter.push.apply(chapter, chapterDetails);
+                        _a.label = 10;
+                    case 10:
+                        i++;
+                        return [3 /*break*/, 6];
+                    case 11:
+                        chapters = chapter;
+                        return [2 /*return*/, { chapters: chapters }];
+                }
+            });
+        });
+    };
+    LnMTLPlugin.prototype.parseChapter = function (chapterPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var result, html, state, chapterTextParts, escapeRegex, escapeMap, escapeHtml, parser, chapterText;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, fetch_1.fetchApi)(this.site + chapterPath)];
+                    case 1:
+                        result = _a.sent();
+                        return [4 /*yield*/, result.text()];
+                    case 2:
+                        html = _a.sent();
+                        state = ParsingState.Idle;
+                        chapterTextParts = [];
+                        escapeRegex = /[&<>"']/g;
+                        escapeMap = {
+                            '&': '&amp;',
+                            '<': '&lt;',
+                            '>': '&gt;',
+                            '"': '&quot;',
+                            "'": '&#39;',
+                        };
+                        escapeHtml = function (text) {
+                            return escapeRegex.test(text)
+                                ? ((escapeRegex.lastIndex = 0),
+                                    text.replace(escapeRegex, function (char) { return escapeMap[char]; }))
+                                : text;
+                        };
+                        parser = new htmlparser2_1.Parser({
+                            onopentag: function (name, attribs) {
+                                var _a;
+                                if (name === 'sentence' && ((_a = attribs['class']) === null || _a === void 0 ? void 0 : _a.includes('translated'))) {
+                                    state = ParsingState.Chapter;
+                                    chapterTextParts.push('<p>');
+                                }
+                            },
+                            onopentagname: function (name) {
+                                if (name === 'nav') {
+                                    state = ParsingState.Idle;
+                                }
+                            },
+                            ontext: function (data) {
+                                if (state === ParsingState.Chapter) {
+                                    chapterTextParts.push(escapeHtml(data));
+                                }
+                            },
+                            onclosetag: function (name) {
+                                if (name === 'sentence' && state === ParsingState.Chapter) {
+                                    chapterTextParts.push('</p>');
+                                    state = ParsingState.Idle;
+                                }
+                            },
+                        });
+                        parser.write(html);
+                        parser.end();
+                        chapterText = chapterTextParts.join('');
+                        return [2 /*return*/, chapterText.replace(/„/g, '“')];
+                }
+            });
+        });
+    };
+    LnMTLPlugin.prototype.searchNovels = function (searchTerm) {
+        return __awaiter(this, void 0, void 0, function () {
+            var html, state, listPart, parser, search, data, nov, novels;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, fetch_1.fetchApi)(this.site)
+                            .then(function (b) { return b.text(); })
+                            .then(function (r) { return r.replace(/>\s+</g, '><'); })];
+                    case 1:
+                        html = _a.sent();
+                        state = ParsingState.Idle;
+                        listPart = new Set();
+                        parser = new htmlparser2_1.Parser({
+                            onopentag: function (name, attribs) {
+                                var _a;
+                                if (state === ParsingState.InFooter &&
+                                    name === 'script' &&
+                                    ((_a = attribs['type']) === null || _a === void 0 ? void 0 : _a.includes('application/javascript'))) {
+                                    state = ParsingState.InScript;
+                                }
+                            },
+                            ontext: function (data) {
+                                if (state === ParsingState.InScript) {
+                                    var match = data.match(/prefetch: '\/(.*?\.json)/);
+                                    if (match) {
+                                        listPart.add(match[1]);
+                                    }
+                                }
+                            },
+                            onclosetag: function (name) {
+                                switch (name) {
+                                    case 'footer':
+                                        state = ParsingState.InFooter;
+                                        break;
+                                    case 'script':
+                                        if (state === ParsingState.InScript) {
+                                            state = ParsingState.Idle;
+                                        }
+                                        break;
+                                }
+                            },
+                        });
+                        parser.write(html);
+                        parser.end();
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)("".concat(this.site).concat(Array.from(listPart).join('')))];
+                    case 2:
+                        search = _a.sent();
+                        return [4 /*yield*/, search.json()];
+                    case 3:
+                        data = _a.sent();
+                        nov = data.filter(function (res) {
+                            return res.name.toLowerCase().includes(searchTerm.toLowerCase());
+                        });
+                        novels = [];
+                        nov.map(function (res) {
+                            var novelName = res.name;
+                            var novelUrl = "novel/".concat(res.slug);
+                            var novelCover = res.image;
+                            var novel = {
+                                path: novelUrl,
+                                name: novelName,
+                                cover: novelCover,
+                            };
+                            novels.push(novel);
+                        });
+                        return [2 /*return*/, novels];
+                }
+            });
+        });
+    };
+    return LnMTLPlugin;
+}());
+exports.default = new LnMTLPlugin();
+var ParsingState;
+(function (ParsingState) {
+    ParsingState[ParsingState["Idle"] = 0] = "Idle";
+    ParsingState[ParsingState["InFooter"] = 1] = "InFooter";
+    ParsingState[ParsingState["InScript"] = 2] = "InScript";
+    ParsingState[ParsingState["InDescription"] = 3] = "InDescription";
+    ParsingState[ParsingState["InSource"] = 4] = "InSource";
+    ParsingState[ParsingState["InPanelKey"] = 5] = "InPanelKey";
+    ParsingState[ParsingState["InPanelValue"] = 6] = "InPanelValue";
+    ParsingState[ParsingState["InGenres"] = 7] = "InGenres";
+    ParsingState[ParsingState["Novel"] = 8] = "Novel";
+    ParsingState[ParsingState["Chapter"] = 9] = "Chapter";
+})(ParsingState || (ParsingState = {}));

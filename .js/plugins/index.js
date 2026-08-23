@@ -180,6 +180,7 @@ var AnimesHoy12_madara_1 = __importDefault(require("@plugins/spanish/AnimesHoy12
 var LightNovelDaily_hotnovelpub_1 = __importDefault(require("@plugins/spanish/LightNovelDaily[hotnovelpub]"));
 var MTLNovel_ES__mtlnovel_1 = __importDefault(require("@plugins/spanish/MTLNovel(ES)[mtlnovel]"));
 var NOVA_1 = __importDefault(require("@plugins/spanish/NOVA"));
+var PanchoNovels_1 = __importDefault(require("@plugins/spanish/PanchoNovels"));
 var PanchoTranslations_madara_1 = __importDefault(require("@plugins/spanish/PanchoTranslations[madara]"));
 var TC_Sega_lightnovelwp_1 = __importDefault(require("@plugins/spanish/TC&Sega[lightnovelwp]"));
 var TraduccionesAmistosas_madara_1 = __importDefault(require("@plugins/spanish/TraduccionesAmistosas[madara]"));
@@ -188,7 +189,8 @@ var novelasligera_1 = __importDefault(require("@plugins/spanish/novelasligera"))
 var novelawuxia_1 = __importDefault(require("@plugins/spanish/novelawuxia"));
 var novelyra_1 = __importDefault(require("@plugins/spanish/novelyra"));
 var oasistranslations_1 = __importDefault(require("@plugins/spanish/oasistranslations"));
-var panchonovels_1 = __importDefault(require("@plugins/spanish/panchonovels"));
+var ritiscan_1 = __importDefault(require("@plugins/spanish/ritiscan"));
+var ritto_1 = __importDefault(require("@plugins/spanish/ritto"));
 var rncalation_1 = __importDefault(require("@plugins/spanish/rncalation"));
 var skynovels_1 = __importDefault(require("@plugins/spanish/skynovels"));
 var tunovelaligera_1 = __importDefault(require("@plugins/spanish/tunovelaligera"));
@@ -393,6 +395,7 @@ var PLUGINS = [
     LightNovelDaily_hotnovelpub_1.default,
     MTLNovel_ES__mtlnovel_1.default,
     NOVA_1.default,
+    PanchoNovels_1.default,
     PanchoTranslations_madara_1.default,
     TC_Sega_lightnovelwp_1.default,
     TraduccionesAmistosas_madara_1.default,
@@ -401,7 +404,8 @@ var PLUGINS = [
     novelawuxia_1.default,
     novelyra_1.default,
     oasistranslations_1.default,
-    panchonovels_1.default,
+    ritiscan_1.default,
+    ritto_1.default,
     rncalation_1.default,
     skynovels_1.default,
     tunovelaligera_1.default,

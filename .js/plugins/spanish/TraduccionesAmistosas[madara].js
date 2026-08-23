@@ -1,1 +1,486 @@
-var t=this&&this.__awaiter||function(t,e,r,a){return new(r||(r=Promise))((function(n,i){function s(t){try{c(a.next(t))}catch(t){i(t)}}function o(t){try{c(a.throw(t))}catch(t){i(t)}}function c(t){var e;t.done?n(t.value):(e=t.value,e instanceof r?e:new r((function(t){t(e)}))).then(s,o)}c((a=a.apply(t,e||[])).next())}))},e=this&&this.__generator||function(t,e){var r,a,n,i={label:0,sent:function(){if(1&n[0])throw n[1];return n[1]},trys:[],ops:[]},s=Object.create(("function"==typeof Iterator?Iterator:Object).prototype);return s.next=o(0),s.throw=o(1),s.return=o(2),"function"==typeof Symbol&&(s[Symbol.iterator]=function(){return this}),s;function o(o){return function(c){return function(o){if(r)throw new TypeError("Generator is already executing.");for(;s&&(s=0,o[0]&&(i=0)),i;)try{if(r=1,a&&(n=2&o[0]?a.return:o[0]?a.throw||((n=a.return)&&n.call(a),0):a.next)&&!(n=n.call(a,o[1])).done)return n;switch(a=0,n&&(o=[2&o[0],n.value]),o[0]){case 0:case 1:n=o;break;case 4:return i.label++,{value:o[1],done:!1};case 5:i.label++,a=o[1],o=[0];continue;case 7:o=i.ops.pop(),i.trys.pop();continue;default:if(!(n=i.trys,(n=n.length>0&&n[n.length-1])||6!==o[0]&&2!==o[0])){i=0;continue}if(3===o[0]&&(!n||o[1]>n[0]&&o[1]<n[3])){i.label=o[1];break}if(6===o[0]&&i.label<n[1]){i.label=n[1],n=o;break}if(n&&i.label<n[2]){i.label=n[2],i.ops.push(o);break}n[2]&&i.ops.pop(),i.trys.pop();continue}o=e.call(t,i)}catch(t){o=[6,t],a=0}finally{r=n=0}if(5&o[0])throw o[1];return{value:o[0]?o[1]:void 0,done:!0}}([o,c])}}},r=this&&this.__importDefault||function(t){return t&&t.__esModule?t:{default:t}};Object.defineProperty(exports,"__esModule",{value:!0}),exports.MadaraPlugin=void 0;var a=require("@libs/fetch"),n=require("cheerio"),i=require("@libs/defaultCover"),s=require("@libs/novelStatus"),o=r(require("dayjs")),c=require("@libs/storage"),u=function(t,e){return new RegExp(e.join("|")).test(t)},l=function(){function r(t){var e,r;this.hideLocked=c.storage.get("hideLocked"),this.parseData=function(t){var e,r=(0,o.default)(),a=(null===(e=t.match(/\d+/))||void 0===e?void 0:e[0])||"",n=parseInt(a,10);if(!a)return t;if(u(t,["detik","segundo","second","วินาที"]))r=r.subtract(n,"second");else if(u(t,["menit","dakika","min","minute","minuto","นาที","دقائق"]))r=r.subtract(n,"minute");else if(u(t,["jam","saat","heure","hora","hour","ชั่วโมง","giờ","ore","ساعة","小时"]))r=r.subtract(n,"hours");else if(u(t,["hari","gün","jour","día","dia","day","วัน","ngày","giorni","أيام","天"]))r=r.subtract(n,"days");else if(u(t,["week","semana"]))r=r.subtract(n,"week");else if(u(t,["month","mes"]))r=r.subtract(n,"month");else{if(!u(t,["year","año"]))return"Invalid Date"!==(0,o.default)(t).format("LL")?(0,o.default)(t).format("LL"):t;r=r.subtract(n,"year")}return r.format("LL")},this.id=t.id,this.name=t.sourceName,this.icon="multisrc/madara/".concat(t.id.toLowerCase(),"/icon.png"),this.site=t.sourceSite;var a=(null===(e=t.options)||void 0===e?void 0:e.versionIncrements)||0;this.version="2.2.".concat(a),this.options=t.options,this.filters=t.filters,(null===(r=this.options)||void 0===r?void 0:r.hasLocked)&&(this.pluginSettings={hideLocked:{value:"",label:"Hide locked chapters",type:"Switch"}})}return r.prototype.translateDragontea=function(t){var e;if("dragontea"!==this.id)return t;var r=(0,n.load)((null===(e=t.html())||void 0===e?void 0:e.replace("\n","").replace(/<br\s*\/?>/g,"\n"))||"");return t.html(r.html()),t.find("*").addBack().contents().filter((function(t,e){return 3===e.nodeType})).each((function(t,e){var a=r(e),n=a.text().normalize("NFD").split("").map((function(t){var e=t.normalize("NFC"),r="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(e);return r>=0?"zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA"[r]+t.slice(e.length):t})).join("");a.replaceWith(n.replace("\n","<br>"))})),t},r.prototype.getHostname=function(t){var e=(t=t.split("/")[2]).split(".");return e.pop(),e.join(".")},r.prototype.getCheerio=function(r,i){return t(this,void 0,void 0,(function(){var t,s,o,c;return e(this,(function(e){switch(e.label){case 0:return[4,(0,a.fetchApi)(r)];case 1:if(!(t=e.sent()).ok&&1!=i)throw new Error("Could not reach site ("+t.status+") try to open in webview.");return o=n.load,[4,t.text()];case 2:if(s=o.apply(void 0,[e.sent()]),c=s("title").text().trim(),this.getHostname(r)!=this.getHostname(t.url)||"Bot Verification"==c||"You are being redirected..."==c||"Un instant..."==c||"Just a moment..."==c||"Redirecting..."==c)throw new Error("Captcha error, please open in webview");return[2,s]}}))}))},r.prototype.parseNovels=function(t){var e=[];return t(".manga-title-badges").remove(),t(".page-item-detail, .c-tabs-item__content").each((function(r,a){var n=t(a).find(".post-title").text().trim(),s=t(a).find(".post-title").find("a").attr("href")||"";if(n&&s){var o=t(a).find("img"),c={name:n,cover:o.attr("data-src")||o.attr("src")||o.attr("data-lazy-srcset")||i.defaultCover,path:s.replace(/https?:\/\/.*?\//,"")};e.push(c)}})),e},r.prototype.popularNovels=function(r,a){return t(this,arguments,void 0,(function(t,r){var a,n,i,s,o,c,u=r.filters,l=r.showLatestNovels;return e(this,(function(e){switch(e.label){case 0:for(n in a=this.site+"/page/"+t+"/?s=&post_type=wp-manga",u||(u=this.filters||{}),l&&(a+="&m_orderby=latest"),u)if("object"==typeof u[n].value)for(i=0,s=u[n].value;i<s.length;i++)o=s[i],a+="&".concat(n,"=").concat(o);else u[n].value&&(a+="&".concat(n,"=").concat(u[n].value));return[4,this.getCheerio(a,1!=t)];case 1:return c=e.sent(),[2,this.parseNovels(c)]}}))}))},r.prototype.parseNovel=function(r){return t(this,void 0,void 0,(function(){var t,c,u,l,h,p,d,m,f=this;return e(this,(function(e){switch(e.label){case 0:return[4,this.getCheerio(this.site+r,!1)];case 1:return(t=e.sent())(".manga-title-badges, #manga-title span").remove(),(c={path:r,name:t(".post-title h1").text().trim()||t("#manga-title h1").text().trim()||t(".manga-title").text().trim()||""}).cover=t(".summary_image > a > img").attr("data-lazy-src")||t(".summary_image > a > img").attr("data-src")||t(".summary_image > a > img").attr("src")||i.defaultCover,t(".post-content_item, .post-content").each((function(){var e=t(this).find("h5").text().trim(),r=t(this).find(".summary-content")||t(this).find(".summary_content");switch(e){case"Genre(s)":case"Genre":case"Tags(s)":case"Tag(s)":case"Tags":case"Género(s)":case"Kategori":case"التصنيفات":c.genres?c.genres+=", "+r.find("a").map((function(e,r){return t(r).text()})).get().join(", "):c.genres=r.find("a").map((function(e,r){return t(r).text()})).get().join(", ");break;case"Author(s)":case"Author":case"Autor(es)":case"المؤلف":case"المؤلف (ين)":c.author=r.text().trim();break;case"Status":case"Novel":case"Estado":case"Durum":c.status=r.text().trim().includes("OnGoing")||r.text().trim().includes("مستمرة")?s.NovelStatus.Ongoing:s.NovelStatus.Completed;break;case"Artist(s)":c.artist=r.text().trim()}})),c.genres||(c.genres=t(".genres-content").text().trim()),c.status||(c.status=t(".manga-status").text().trim().includes("OnGoing")?s.NovelStatus.Ongoing:s.NovelStatus.Completed),c.author||(c.author=t(".manga-author a").text().trim()),c.rating||(c.rating=parseFloat(t(".post-rating span").text().trim())),c.author||(c.author=t(".manga-authors").text().trim()),t("div.summary__content .code-block,script,noscript").remove(),c.summary=this.translateDragontea(t("div.summary__content")).text().trim()||t("#tab-manga-about").text().trim()||t('.post-content_item h5:contains("Summary")').next().find("span").map((function(e,r){return t(r).text()})).get().join("\n\n").trim()||t(".manga-summary p").map((function(e,r){return t(r).text()})).get().join("\n\n").trim()||t(".manga-excerpt p").map((function(e,r){return t(r).text()})).get().join("\n\n").trim(),u=[],l="",(null===(m=this.options)||void 0===m?void 0:m.useNewChapterEndpoint)?[4,(0,a.fetchApi)(this.site+r+"ajax/chapters/",{method:"POST",referrer:this.site+r}).then((function(t){return t.text()}))]:[3,3];case 2:return l=e.sent(),[3,5];case 3:return h=t(".rating-post-id").attr("value")||t("#manga-chapters-holder").attr("data-id")||"",(p=new FormData).append("action","manga_get_chapters"),p.append("manga",h),[4,(0,a.fetchApi)(this.site+"wp-admin/admin-ajax.php",{method:"POST",body:p}).then((function(t){return t.text()}))];case 4:l=e.sent(),e.label=5;case 5:return"0"!==l&&(t=(0,n.load)(l)),d=t(".wp-manga-chapter").length,t(".wp-manga-chapter").each((function(e,r){var a=t(r).find("a").text().trim(),n=r.attribs.class.includes("premium-block");n&&(a="🔒 "+a);var i=t(r).find("span.chapter-release-date").text().trim();i=i?f.parseData(i):(0,o.default)().format("LL");var s=t(r).find("a").attr("href")||"";!s||"#"==s||n&&f.hideLocked||u.push({name:a,path:s.replace(/https?:\/\/.*?\//,""),releaseTime:i||null,chapterNumber:d-e})})),c.chapters=u.reverse(),[2,c]}}))}))},r.prototype.parseChapter=function(r){return t(this,void 0,void 0,(function(){var t,a,n;return e(this,(function(e){switch(e.label){case 0:return[4,this.getCheerio(this.site+r,!1)];case 1:return t=e.sent(),a=t(".text-left")||t(".text-right")||t(".entry-content")||t(".c-blog-post > div > div:nth-child(2)"),null===(n=this.options)||void 0===n||n.customJs,[2,this.translateDragontea(a).html()||""]}}))}))},r.prototype.searchNovels=function(r,a){return t(this,void 0,void 0,(function(){var t,n;return e(this,(function(e){switch(e.label){case 0:return t=this.site+"/page/"+a+"/?s="+encodeURIComponent(r)+"&post_type=wp-manga",[4,this.getCheerio(t,!0)];case 1:return n=e.sent(),[2,this.parseNovels(n)]}}))}))},r}();exports.MadaraPlugin=l;var h=new l({id:"traducciones",sourceSite:"https://traduccionesamistosas.topmanhuas.org/",sourceName:"Traducciones Amistosas",options:{useNewChapterEndpoint:!0,lang:"Spanish"}});exports.default=h;
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MadaraPlugin = void 0;
+var fetch_1 = require("@libs/fetch");
+var cheerio_1 = require("cheerio");
+var defaultCover_1 = require("@libs/defaultCover");
+var novelStatus_1 = require("@libs/novelStatus");
+var dayjs_1 = __importDefault(require("dayjs"));
+var storage_1 = require("@libs/storage");
+var includesAny = function (str, keywords) {
+    return new RegExp(keywords.join('|')).test(str);
+};
+var MadaraPlugin = /** @class */ (function () {
+    function MadaraPlugin(metadata) {
+        var _a, _b;
+        this.hideLocked = storage_1.storage.get('hideLocked');
+        this.parseData = function (date) {
+            var _a;
+            var dayJSDate = (0, dayjs_1.default)(); // today
+            var timeAgo = ((_a = date.match(/\d+/)) === null || _a === void 0 ? void 0 : _a[0]) || '';
+            var timeAgoInt = parseInt(timeAgo, 10);
+            if (!timeAgo)
+                return date; // there is no number!
+            if (includesAny(date, ['detik', 'segundo', 'second', 'วินาที'])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'second'); // go back N seconds
+            }
+            else if (includesAny(date, [
+                'menit',
+                'dakika',
+                'min',
+                'minute',
+                'minuto',
+                'นาที',
+                'دقائق',
+            ])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'minute'); // go back N minute
+            }
+            else if (includesAny(date, [
+                'jam',
+                'saat',
+                'heure',
+                'hora',
+                'hour',
+                'ชั่วโมง',
+                'giờ',
+                'ore',
+                'ساعة',
+                '小时',
+            ])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'hours'); // go back N hours
+            }
+            else if (includesAny(date, [
+                'hari',
+                'gün',
+                'jour',
+                'día',
+                'dia',
+                'day',
+                'วัน',
+                'ngày',
+                'giorni',
+                'أيام',
+                '天',
+            ])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'days'); // go back N days
+            }
+            else if (includesAny(date, ['week', 'semana'])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'week'); // go back N a week
+            }
+            else if (includesAny(date, ['month', 'mes'])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'month'); // go back N months
+            }
+            else if (includesAny(date, ['year', 'año'])) {
+                dayJSDate = dayJSDate.subtract(timeAgoInt, 'year'); // go back N years
+            }
+            else {
+                if ((0, dayjs_1.default)(date).format('LL') !== 'Invalid Date') {
+                    return (0, dayjs_1.default)(date).format('LL');
+                }
+                return date;
+            }
+            return dayJSDate.format('LL');
+        };
+        this.id = metadata.id;
+        this.name = metadata.sourceName;
+        this.icon = "multisrc/madara/".concat(metadata.id.toLowerCase(), "/icon.png");
+        this.site = metadata.sourceSite;
+        var versionIncrements = ((_a = metadata.options) === null || _a === void 0 ? void 0 : _a.versionIncrements) || 0;
+        this.version = "2.2.".concat(versionIncrements);
+        this.options = metadata.options;
+        this.filters = metadata.filters;
+        if ((_b = this.options) === null || _b === void 0 ? void 0 : _b.hasLocked) {
+            this.pluginSettings = {
+                hideLocked: {
+                    value: '',
+                    label: 'Hide locked chapters',
+                    type: 'Switch',
+                },
+            };
+        }
+    }
+    MadaraPlugin.prototype.translateDragontea = function (text) {
+        var _a;
+        if (this.id !== 'dragontea')
+            return text;
+        var $ = (0, cheerio_1.load)(((_a = text
+            .html()) === null || _a === void 0 ? void 0 : _a.replace('\n', '').replace(/<br\s*\/?>/g, '\n')) || '');
+        var reverseAlpha = 'zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA';
+        var forwardAlpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        text.html($.html());
+        text
+            .find('*')
+            .addBack()
+            .contents()
+            .filter(function (_, el) { return el.nodeType === 3; })
+            .each(function (_, el) {
+            var $el = $(el);
+            var translated = $el
+                .text()
+                .normalize('NFD')
+                .split('')
+                .map(function (char) {
+                var base = char.normalize('NFC');
+                var idx = forwardAlpha.indexOf(base);
+                return idx >= 0
+                    ? reverseAlpha[idx] + char.slice(base.length)
+                    : char;
+            })
+                .join('');
+            $el.replaceWith(translated.replace('\n', '<br>'));
+        });
+        return text;
+    };
+    MadaraPlugin.prototype.getHostname = function (url) {
+        url = url.split('/')[2];
+        var url_parts = url.split('.');
+        url_parts.pop(); // remove TLD
+        return url_parts.join('.');
+    };
+    MadaraPlugin.prototype.getCheerio = function (url, search) {
+        return __awaiter(this, void 0, void 0, function () {
+            var r, $, _a, title;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        r = _b.sent();
+                        if (!r.ok && search != true)
+                            throw new Error('Could not reach site (' + r.status + ') try to open in webview.');
+                        _a = cheerio_1.load;
+                        return [4 /*yield*/, r.text()];
+                    case 2:
+                        $ = _a.apply(void 0, [_b.sent()]);
+                        title = $('title').text().trim();
+                        if (this.getHostname(url) != this.getHostname(r.url) ||
+                            title == 'Bot Verification' ||
+                            title == 'You are being redirected...' ||
+                            title == 'Un instant...' ||
+                            title == 'Just a moment...' ||
+                            title == 'Redirecting...')
+                            throw new Error('Captcha error, please open in webview');
+                        return [2 /*return*/, $];
+                }
+            });
+        });
+    };
+    MadaraPlugin.prototype.parseNovels = function (loadedCheerio) {
+        var novels = [];
+        loadedCheerio('.manga-title-badges').remove();
+        loadedCheerio('.page-item-detail, .c-tabs-item__content').each(function (index, element) {
+            var novelName = loadedCheerio(element)
+                .find('.post-title')
+                .text()
+                .trim();
+            var novelUrl = loadedCheerio(element).find('.post-title').find('a').attr('href') ||
+                '';
+            if (!novelName || !novelUrl)
+                return;
+            var image = loadedCheerio(element).find('img');
+            var novelCover = image.attr('data-src') ||
+                image.attr('src') ||
+                image.attr('data-lazy-srcset') ||
+                defaultCover_1.defaultCover;
+            var novel = {
+                name: novelName,
+                cover: novelCover,
+                path: novelUrl.replace(/https?:\/\/.*?\//, ''),
+            };
+            novels.push(novel);
+        });
+        return novels;
+    };
+    MadaraPlugin.prototype.popularNovels = function (pageNo_1, _a) {
+        return __awaiter(this, arguments, void 0, function (pageNo, _b) {
+            var url, key, _i, _c, value, loadedCheerio;
+            var filters = _b.filters, showLatestNovels = _b.showLatestNovels;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        url = this.site + '/page/' + pageNo + '/?s=&post_type=wp-manga';
+                        if (!filters)
+                            filters = this.filters || {};
+                        if (showLatestNovels)
+                            url += '&m_orderby=latest';
+                        for (key in filters) {
+                            if (typeof filters[key].value === 'object')
+                                for (_i = 0, _c = filters[key].value; _i < _c.length; _i++) {
+                                    value = _c[_i];
+                                    url += "&".concat(key, "=").concat(value);
+                                }
+                            else if (filters[key].value)
+                                url += "&".concat(key, "=").concat(filters[key].value);
+                        }
+                        return [4 /*yield*/, this.getCheerio(url, pageNo != 1)];
+                    case 1:
+                        loadedCheerio = _d.sent();
+                        return [2 /*return*/, this.parseNovels(loadedCheerio)];
+                }
+            });
+        });
+    };
+    MadaraPlugin.prototype.parseNovel = function (novelPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var loadedCheerio, novel, chapters, html, novelId, formData, totalChapters;
+            var _this = this;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.getCheerio(this.site + novelPath, false)];
+                    case 1:
+                        loadedCheerio = _b.sent();
+                        loadedCheerio('.manga-title-badges, #manga-title span').remove();
+                        novel = {
+                            path: novelPath,
+                            name: loadedCheerio('.post-title h1').text().trim() ||
+                                loadedCheerio('#manga-title h1').text().trim() ||
+                                loadedCheerio('.manga-title').text().trim() ||
+                                '',
+                        };
+                        novel.cover =
+                            loadedCheerio('.summary_image > a > img').attr('data-lazy-src') ||
+                                loadedCheerio('.summary_image > a > img').attr('data-src') ||
+                                loadedCheerio('.summary_image > a > img').attr('src') ||
+                                defaultCover_1.defaultCover;
+                        loadedCheerio('.post-content_item, .post-content').each(function () {
+                            var detailName = loadedCheerio(this).find('h5').text().trim();
+                            var detail = loadedCheerio(this).find('.summary-content') ||
+                                loadedCheerio(this).find('.summary_content');
+                            switch (detailName) {
+                                case 'Genre(s)':
+                                case 'Genre':
+                                case 'Tags(s)':
+                                case 'Tag(s)':
+                                case 'Tags':
+                                case 'Género(s)':
+                                case 'Kategori':
+                                case 'التصنيفات':
+                                    if (novel.genres)
+                                        novel.genres +=
+                                            ', ' +
+                                                detail
+                                                    .find('a')
+                                                    .map(function (i, el) { return loadedCheerio(el).text(); })
+                                                    .get()
+                                                    .join(', ');
+                                    else
+                                        novel.genres = detail
+                                            .find('a')
+                                            .map(function (i, el) { return loadedCheerio(el).text(); })
+                                            .get()
+                                            .join(', ');
+                                    break;
+                                case 'Author(s)':
+                                case 'Author':
+                                case 'Autor(es)':
+                                case 'المؤلف':
+                                case 'المؤلف (ين)':
+                                    novel.author = detail.text().trim();
+                                    break;
+                                case 'Status':
+                                case 'Novel':
+                                case 'Estado':
+                                case 'Durum':
+                                    novel.status =
+                                        detail.text().trim().includes('OnGoing') ||
+                                            detail.text().trim().includes('مستمرة')
+                                            ? novelStatus_1.NovelStatus.Ongoing
+                                            : novelStatus_1.NovelStatus.Completed;
+                                    break;
+                                case 'Artist(s)':
+                                    novel.artist = detail.text().trim();
+                                    break;
+                            }
+                        });
+                        // Checks for "Madara NovelHub" version
+                        {
+                            if (!novel.genres)
+                                novel.genres = loadedCheerio('.genres-content').text().trim();
+                            if (!novel.status)
+                                novel.status = loadedCheerio('.manga-status')
+                                    .text()
+                                    .trim()
+                                    .includes('OnGoing')
+                                    ? novelStatus_1.NovelStatus.Ongoing
+                                    : novelStatus_1.NovelStatus.Completed;
+                            if (!novel.author)
+                                novel.author = loadedCheerio('.manga-author a').text().trim();
+                            if (!novel.rating)
+                                novel.rating = parseFloat(loadedCheerio('.post-rating span').text().trim());
+                        }
+                        if (!novel.author)
+                            novel.author = loadedCheerio('.manga-authors').text().trim();
+                        loadedCheerio('div.summary__content .code-block,script,noscript').remove();
+                        novel.summary =
+                            this.translateDragontea(loadedCheerio('div.summary__content'))
+                                .text()
+                                .trim() ||
+                                loadedCheerio('#tab-manga-about').text().trim() ||
+                                loadedCheerio('.post-content_item h5:contains("Summary")')
+                                    .next()
+                                    .find('span')
+                                    .map(function (i, el) { return loadedCheerio(el).text(); })
+                                    .get()
+                                    .join('\n\n')
+                                    .trim() ||
+                                loadedCheerio('.manga-summary p')
+                                    .map(function (i, el) { return loadedCheerio(el).text(); })
+                                    .get()
+                                    .join('\n\n')
+                                    .trim() ||
+                                loadedCheerio('.manga-excerpt p')
+                                    .map(function (i, el) { return loadedCheerio(el).text(); })
+                                    .get()
+                                    .join('\n\n')
+                                    .trim();
+                        chapters = [];
+                        html = '';
+                        if (!((_a = this.options) === null || _a === void 0 ? void 0 : _a.useNewChapterEndpoint)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(this.site + novelPath + 'ajax/chapters/', {
+                                method: 'POST',
+                                referrer: this.site + novelPath,
+                            }).then(function (res) { return res.text(); })];
+                    case 2:
+                        html = _b.sent();
+                        return [3 /*break*/, 5];
+                    case 3:
+                        novelId = loadedCheerio('.rating-post-id').attr('value') ||
+                            loadedCheerio('#manga-chapters-holder').attr('data-id') ||
+                            '';
+                        formData = new FormData();
+                        formData.append('action', 'manga_get_chapters');
+                        formData.append('manga', novelId);
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(this.site + 'wp-admin/admin-ajax.php', {
+                                method: 'POST',
+                                body: formData,
+                            }).then(function (res) { return res.text(); })];
+                    case 4:
+                        html = _b.sent();
+                        _b.label = 5;
+                    case 5:
+                        if (html !== '0') {
+                            loadedCheerio = (0, cheerio_1.load)(html);
+                        }
+                        totalChapters = loadedCheerio('.wp-manga-chapter').length;
+                        loadedCheerio('.wp-manga-chapter').each(function (chapterIndex, element) {
+                            var chapterName = loadedCheerio(element).find('a').text().trim();
+                            var locked = element.attribs['class'].includes('premium-block');
+                            if (locked) {
+                                chapterName = '🔒 ' + chapterName;
+                            }
+                            var releaseDate = loadedCheerio(element)
+                                .find('span.chapter-release-date')
+                                .text()
+                                .trim();
+                            if (releaseDate) {
+                                releaseDate = _this.parseData(releaseDate);
+                            }
+                            else {
+                                releaseDate = (0, dayjs_1.default)().format('LL');
+                            }
+                            var chapterUrl = loadedCheerio(element).find('a').attr('href') || '';
+                            if (chapterUrl && chapterUrl != '#' && !(locked && _this.hideLocked)) {
+                                chapters.push({
+                                    name: chapterName,
+                                    path: chapterUrl.replace(/https?:\/\/.*?\//, ''),
+                                    releaseTime: releaseDate || null,
+                                    chapterNumber: totalChapters - chapterIndex,
+                                });
+                            }
+                        });
+                        novel.chapters = chapters.reverse();
+                        return [2 /*return*/, novel];
+                }
+            });
+        });
+    };
+    MadaraPlugin.prototype.parseChapter = function (chapterPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var loadedCheerio, chapterText;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.getCheerio(this.site + chapterPath, false)];
+                    case 1:
+                        loadedCheerio = _b.sent();
+                        chapterText = loadedCheerio('.text-left') ||
+                            loadedCheerio('.text-right') ||
+                            loadedCheerio('.entry-content') ||
+                            loadedCheerio('.c-blog-post > div > div:nth-child(2)');
+                        if ((_a = this.options) === null || _a === void 0 ? void 0 : _a.customJs) {
+                            try {
+                            }
+                            catch (error) {
+                                console.error('Error executing customJs:', error);
+                                throw error;
+                            }
+                        }
+                        return [2 /*return*/, this.translateDragontea(chapterText).html() || ''];
+                }
+            });
+        });
+    };
+    MadaraPlugin.prototype.searchNovels = function (searchTerm, pageNo) {
+        return __awaiter(this, void 0, void 0, function () {
+            var url, loadedCheerio;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = this.site +
+                            '/page/' +
+                            pageNo +
+                            '/?s=' +
+                            encodeURIComponent(searchTerm) +
+                            '&post_type=wp-manga';
+                        return [4 /*yield*/, this.getCheerio(url, true)];
+                    case 1:
+                        loadedCheerio = _a.sent();
+                        return [2 /*return*/, this.parseNovels(loadedCheerio)];
+                }
+            });
+        });
+    };
+    return MadaraPlugin;
+}());
+exports.MadaraPlugin = MadaraPlugin;
+var plugin = new MadaraPlugin({ "id": "traducciones", "sourceSite": "https://traduccionesamistosas.topmanhuas.org/", "sourceName": "Traducciones Amistosas", "options": { "useNewChapterEndpoint": true, "lang": "Spanish" } });
+exports.default = plugin;

@@ -1,1 +1,252 @@
-var e=this&&this.__awaiter||function(e,t,o,n){return new(o||(o=Promise))((function(r,a){function i(e){try{p(n.next(e))}catch(e){a(e)}}function s(e){try{p(n.throw(e))}catch(e){a(e)}}function p(e){var t;e.done?r(e.value):(t=e.value,t instanceof o?t:new o((function(e){e(t)}))).then(i,s)}p((n=n.apply(e,t||[])).next())}))},t=this&&this.__generator||function(e,t){var o,n,r,a={label:0,sent:function(){if(1&r[0])throw r[1];return r[1]},trys:[],ops:[]},i=Object.create(("function"==typeof Iterator?Iterator:Object).prototype);return i.next=s(0),i.throw=s(1),i.return=s(2),"function"==typeof Symbol&&(i[Symbol.iterator]=function(){return this}),i;function s(s){return function(p){return function(s){if(o)throw new TypeError("Generator is already executing.");for(;i&&(i=0,s[0]&&(a=0)),a;)try{if(o=1,n&&(r=2&s[0]?n.return:s[0]?n.throw||((r=n.return)&&r.call(n),0):n.next)&&!(r=r.call(n,s[1])).done)return r;switch(n=0,r&&(s=[2&s[0],r.value]),s[0]){case 0:case 1:r=s;break;case 4:return a.label++,{value:s[1],done:!1};case 5:a.label++,n=s[1],s=[0];continue;case 7:s=a.ops.pop(),a.trys.pop();continue;default:if(!(r=a.trys,(r=r.length>0&&r[r.length-1])||6!==s[0]&&2!==s[0])){a=0;continue}if(3===s[0]&&(!r||s[1]>r[0]&&s[1]<r[3])){a.label=s[1];break}if(6===s[0]&&a.label<r[1]){a.label=r[1],r=s;break}if(r&&a.label<r[2]){a.label=r[2],a.ops.push(s);break}r[2]&&a.ops.pop(),a.trys.pop();continue}s=t.call(e,a)}catch(e){s=[6,e],n=0}finally{o=r=0}if(5&s[0])throw s[1];return{value:s[0]?s[1]:void 0,done:!0}}([s,p])}}},o=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(exports,"__esModule",{value:!0}),exports.NovelCoolPlugin=void 0;var n=require("@libs/fetch"),r=require("@libs/novelStatus"),a=require("@libs/filterInputs"),i=o(require("dayjs")),s=function(){function o(e){var t,o=this;this.resolveUrl=function(e,t){return o.site+(t?"/novel/":"/chapter/")+e.split("?id=")[0]},this.id=e.id,this.name=e.sourceName,this.site=e.sourceSite,this.icon="multisrc/novelcool/novelcool/icon.png",this.mainUrl="https://api.novelcool.com",this.version="1.0.0",this.options=null!==(t=e.options)&&void 0!==t?t:{},this.filters={sortby:{label:"Order by",value:"hot",options:[{label:"Hottest",value:"hot"},{label:"Latest",value:"latest"},{label:"New Books",value:"new_book"}],type:a.FilterTypes.Picker}}}return o.prototype.popularNovels=function(o,r){return e(this,arguments,void 0,(function(e,o){var r,a,i,s,p=o.filters,c=o.showLatestNovels;return t(this,(function(t){switch(t.label){case 0:return r=c?"latest":(null===(s=null==p?void 0:p.sortby)||void 0===s?void 0:s.value)||"hot",[4,(0,n.fetchApi)(this.mainUrl+"/elite/"+r,{headers:{"User-Agent":this.options.app.userAgent,"Content-Type":"application/x-www-form-urlencoded"},method:"post",body:new URLSearchParams({appId:this.options.app.appId,secret:this.options.app.secret,package_name:this.options.app.package_name,lc_type:"novel",lang:this.options.langCode,page:e.toString(),page_size:"20"}).toString()}).then((function(e){return e.json()}))];case 1:return a=t.sent().list,i=[],a.forEach((function(e){return i.push({name:e.name,cover:e.cover,path:e.visit_path+"?id="+e.id})})),[2,i]}}))}))},o.prototype.parseNovel=function(o){return e(this,void 0,void 0,(function(){var e,a,s,p;return t(this,(function(t){switch(t.label){case 0:return e=o.split("?id=")[1],[4,(0,n.fetchApi)(this.mainUrl+"/book/info/",{headers:{"User-Agent":this.options.app.userAgent,"Content-Type":"application/x-www-form-urlencoded"},method:"post",body:new URLSearchParams({book_id:e,appId:this.options.app.appId,secret:this.options.app.secret,package_name:this.options.app.package_name,lang:this.options.langCode}).toString()}).then((function(e){return e.json()}))];case 1:return a=t.sent().info,s={path:o,name:a.name,cover:a.cover,genres:a.category_list.join(","),summary:a.intro,author:a.author,artist:a.artist,status:"YES"===a.completed?r.NovelStatus.Completed:r.NovelStatus.Ongoing,rating:a.rate_star&&parseFloat(a.rate_star)||void 0},p=[],[4,(0,n.fetchApi)(this.mainUrl+"/chapter/book_list/",{headers:{"User-Agent":this.options.app.userAgent,"Content-Type":"application/x-www-form-urlencoded"},method:"post",body:new URLSearchParams({book_id:e,appId:this.options.app.appId,secret:this.options.app.secret,package_name:this.options.app.package_name,lang:this.options.langCode}).toString()}).then((function(e){return e.json()}))];case 2:return t.sent().list.forEach((function(e){e.is_locked||p.push({name:e.title,path:e.book_id+"/"+e.id,releaseTime:(0,i.default)(1e3*parseInt(e.last_modify,10)).format("LLL"),chapterNumber:parseInt(e.order_id,10)})})),s.chapters=p.reverse(),[2,s]}}))}))},o.prototype.parseChapter=function(o){return e(this,void 0,void 0,(function(){var e,r;return t(this,(function(t){switch(t.label){case 0:return e=o.split("/"),r=e[1],[4,(0,n.fetchApi)(this.mainUrl+"/chapter/info/",{headers:{"User-Agent":this.options.app.userAgent,"Content-Type":"application/x-www-form-urlencoded"},method:"post",body:new URLSearchParams({chapter_id:r,appId:this.options.app.appId,secret:this.options.app.secret,package_name:this.options.app.package_name,lang:this.options.langCode}).toString()}).then((function(e){return e.json()}))];case 1:return[2,t.sent().info.content]}}))}))},o.prototype.searchNovels=function(o,r){return e(this,void 0,void 0,(function(){var e,a;return t(this,(function(t){switch(t.label){case 0:return[4,(0,n.fetchApi)(this.mainUrl+"/book/search/",{headers:{"User-Agent":this.options.app.userAgent,"Content-Type":"application/x-www-form-urlencoded"},method:"post",body:new URLSearchParams({appId:this.options.app.appId,secret:this.options.app.secret,package_name:this.options.app.package_name,keyword:o,lc_type:"novel",lang:this.options.langCode,page:r.toString(),page_size:"20"}).toString()}).then((function(e){return e.json()}))];case 1:return e=t.sent().list,a=[],e.forEach((function(e){return a.push({name:e.name,cover:e.cover,path:e.visit_path+"?id="+e.id})})),[2,a]}}))}))},o}();exports.NovelCoolPlugin=s;var p=new s({id:"novelcool-ru",sourceName:"NovelCool (RU)",sourceSite:"https://ru.novelcool.com",options:{lang:"Russian",langCode:"ru",app:{userAgent:"Android/Package:com.zuoyou.novel - Version Name:2.3 - Phone Info:sdk_gphone_x86_64(Android Version:13)",package_name:"com.zuoyou.novel",appId:"202201290625004",secret:"c73a8590641781f203660afca1d37ada"}}});exports.default=p;
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NovelCoolPlugin = void 0;
+var fetch_1 = require("@libs/fetch");
+var novelStatus_1 = require("@libs/novelStatus");
+var filterInputs_1 = require("@libs/filterInputs");
+var dayjs_1 = __importDefault(require("dayjs"));
+var NovelCoolPlugin = /** @class */ (function () {
+    function NovelCoolPlugin(metadata) {
+        var _this = this;
+        var _a;
+        this.resolveUrl = function (path, isNovel) {
+            return _this.site + (isNovel ? '/novel/' : '/chapter/') + path.split('?id=')[0];
+        };
+        this.id = metadata.id;
+        this.name = metadata.sourceName;
+        this.site = metadata.sourceSite;
+        this.icon = 'multisrc/novelcool/novelcool/icon.png';
+        this.mainUrl = 'https://api.novelcool.com';
+        this.version = '1.0.0';
+        this.options = (_a = metadata.options) !== null && _a !== void 0 ? _a : {};
+        this.filters = {
+            sortby: {
+                label: 'Order by',
+                value: 'hot',
+                options: [
+                    { label: 'Hottest', value: 'hot' },
+                    { label: 'Latest', value: 'latest' },
+                    { label: 'New Books', value: 'new_book' },
+                ],
+                type: filterInputs_1.FilterTypes.Picker,
+            },
+        };
+    }
+    NovelCoolPlugin.prototype.popularNovels = function (page_1, _a) {
+        return __awaiter(this, arguments, void 0, function (page, _b) {
+            var sortby, list, novels;
+            var _c;
+            var filters = _b.filters, showLatestNovels = _b.showLatestNovels;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        sortby = showLatestNovels
+                            ? 'latest'
+                            : ((_c = filters === null || filters === void 0 ? void 0 : filters.sortby) === null || _c === void 0 ? void 0 : _c.value) || 'hot';
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(this.mainUrl + '/elite/' + sortby, {
+                                headers: {
+                                    'User-Agent': this.options.app.userAgent,
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                method: 'post',
+                                body: new URLSearchParams({
+                                    appId: this.options.app.appId,
+                                    secret: this.options.app.secret,
+                                    package_name: this.options.app.package_name,
+                                    lc_type: 'novel',
+                                    lang: this.options.langCode,
+                                    page: page.toString(),
+                                    page_size: '20',
+                                }).toString(),
+                            }).then(function (res) { return res.json(); })];
+                    case 1:
+                        list = (_d.sent()).list;
+                        novels = [];
+                        list.forEach(function (novel) {
+                            return novels.push({
+                                name: novel.name,
+                                cover: novel.cover,
+                                path: novel.visit_path + '?id=' + novel.id,
+                            });
+                        });
+                        return [2 /*return*/, novels];
+                }
+            });
+        });
+    };
+    NovelCoolPlugin.prototype.parseNovel = function (novelPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var book_id, info, novel, chapters, list;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        book_id = novelPath.split('?id=')[1];
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(this.mainUrl + '/book/info/', {
+                                headers: {
+                                    'User-Agent': this.options.app.userAgent,
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                method: 'post',
+                                body: new URLSearchParams({
+                                    book_id: book_id,
+                                    appId: this.options.app.appId,
+                                    secret: this.options.app.secret,
+                                    package_name: this.options.app.package_name,
+                                    lang: this.options.langCode,
+                                }).toString(),
+                            }).then(function (res) { return res.json(); })];
+                    case 1:
+                        info = (_a.sent()).info;
+                        novel = {
+                            path: novelPath,
+                            name: info.name,
+                            cover: info.cover,
+                            genres: info.category_list.join(','),
+                            summary: info.intro,
+                            author: info.author,
+                            artist: info.artist,
+                            status: info.completed === 'YES' ? novelStatus_1.NovelStatus.Completed : novelStatus_1.NovelStatus.Ongoing,
+                            rating: (info.rate_star && parseFloat(info.rate_star)) || undefined,
+                        };
+                        chapters = [];
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(this.mainUrl + '/chapter/book_list/', {
+                                headers: {
+                                    'User-Agent': this.options.app.userAgent,
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                method: 'post',
+                                body: new URLSearchParams({
+                                    book_id: book_id,
+                                    appId: this.options.app.appId,
+                                    secret: this.options.app.secret,
+                                    package_name: this.options.app.package_name,
+                                    lang: this.options.langCode,
+                                }).toString(),
+                            }).then(function (res) { return res.json(); })];
+                    case 2:
+                        list = (_a.sent()).list;
+                        list.forEach(function (chapter) {
+                            if (!chapter.is_locked) {
+                                chapters.push({
+                                    name: chapter.title,
+                                    path: chapter.book_id + '/' + chapter.id,
+                                    releaseTime: (0, dayjs_1.default)(parseInt(chapter.last_modify, 10) * 1000).format('LLL'),
+                                    chapterNumber: parseInt(chapter.order_id, 10),
+                                });
+                            }
+                        });
+                        novel.chapters = chapters.reverse();
+                        return [2 /*return*/, novel];
+                }
+            });
+        });
+    };
+    NovelCoolPlugin.prototype.parseChapter = function (chapterPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, chapter_id, info;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = chapterPath.split('/'), chapter_id = _a[1];
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(this.mainUrl + '/chapter/info/', {
+                                headers: {
+                                    'User-Agent': this.options.app.userAgent,
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                method: 'post',
+                                body: new URLSearchParams({
+                                    chapter_id: chapter_id,
+                                    appId: this.options.app.appId,
+                                    secret: this.options.app.secret,
+                                    package_name: this.options.app.package_name,
+                                    lang: this.options.langCode,
+                                }).toString(),
+                            }).then(function (res) { return res.json(); })];
+                    case 1:
+                        info = (_b.sent()).info;
+                        return [2 /*return*/, info.content];
+                }
+            });
+        });
+    };
+    NovelCoolPlugin.prototype.searchNovels = function (searchTerm, pageNo) {
+        return __awaiter(this, void 0, void 0, function () {
+            var list, novels;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, fetch_1.fetchApi)(this.mainUrl + '/book/search/', {
+                            headers: {
+                                'User-Agent': this.options.app.userAgent,
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            method: 'post',
+                            body: new URLSearchParams({
+                                appId: this.options.app.appId,
+                                secret: this.options.app.secret,
+                                package_name: this.options.app.package_name,
+                                keyword: searchTerm,
+                                lc_type: 'novel',
+                                lang: this.options.langCode,
+                                page: pageNo.toString(),
+                                page_size: '20',
+                            }).toString(),
+                        }).then(function (res) { return res.json(); })];
+                    case 1:
+                        list = (_a.sent()).list;
+                        novels = [];
+                        list.forEach(function (novel) {
+                            return novels.push({
+                                name: novel.name,
+                                cover: novel.cover,
+                                path: novel.visit_path + '?id=' + novel.id,
+                            });
+                        });
+                        return [2 /*return*/, novels];
+                }
+            });
+        });
+    };
+    return NovelCoolPlugin;
+}());
+exports.NovelCoolPlugin = NovelCoolPlugin;
+var plugin = new NovelCoolPlugin({ "id": "novelcool-ru", "sourceName": "NovelCool (RU)", "sourceSite": "https://ru.novelcool.com", "options": { "lang": "Russian", "langCode": "ru", "app": { "userAgent": "Android/Package:com.zuoyou.novel - Version Name:2.3 - Phone Info:sdk_gphone_x86_64(Android Version:13)", "package_name": "com.zuoyou.novel", "appId": "202201290625004", "secret": "c73a8590641781f203660afca1d37ada" } } });
+exports.default = plugin;

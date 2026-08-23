@@ -1,1 +1,382 @@
-var e=this&&this.__awaiter||function(e,t,n,r){return new(n||(n=Promise))((function(a,i){function o(e){try{l(r.next(e))}catch(e){i(e)}}function s(e){try{l(r.throw(e))}catch(e){i(e)}}function l(e){var t;e.done?a(e.value):(t=e.value,t instanceof n?t:new n((function(e){e(t)}))).then(o,s)}l((r=r.apply(e,t||[])).next())}))},t=this&&this.__generator||function(e,t){var n,r,a,i={label:0,sent:function(){if(1&a[0])throw a[1];return a[1]},trys:[],ops:[]},o=Object.create(("function"==typeof Iterator?Iterator:Object).prototype);return o.next=s(0),o.throw=s(1),o.return=s(2),"function"==typeof Symbol&&(o[Symbol.iterator]=function(){return this}),o;function s(s){return function(l){return function(s){if(n)throw new TypeError("Generator is already executing.");for(;o&&(o=0,s[0]&&(i=0)),i;)try{if(n=1,r&&(a=2&s[0]?r.return:s[0]?r.throw||((a=r.return)&&a.call(r),0):r.next)&&!(a=a.call(r,s[1])).done)return a;switch(r=0,a&&(s=[2&s[0],a.value]),s[0]){case 0:case 1:a=s;break;case 4:return i.label++,{value:s[1],done:!1};case 5:i.label++,r=s[1],s=[0];continue;case 7:s=i.ops.pop(),i.trys.pop();continue;default:if(!(a=i.trys,(a=a.length>0&&a[a.length-1])||6!==s[0]&&2!==s[0])){i=0;continue}if(3===s[0]&&(!a||s[1]>a[0]&&s[1]<a[3])){i.label=s[1];break}if(6===s[0]&&i.label<a[1]){i.label=a[1],a=s;break}if(a&&i.label<a[2]){i.label=a[2],i.ops.push(s);break}a[2]&&i.ops.pop(),i.trys.pop();continue}s=t.call(e,i)}catch(e){s=[6,e],r=0}finally{n=a=0}if(5&s[0])throw s[1];return{value:s[0]?s[1]:void 0,done:!0}}([s,l])}}};Object.defineProperty(exports,"__esModule",{value:!0});var n=require("cheerio"),r=require("@libs/fetch"),a=require("@libs/filterInputs"),i=require("@libs/novelStatus"),o=require("@libs/storage"),s=require("@libs/defaultCover"),l=function(){function l(){this.id="genesistudio",this.name="Genesis",this.icon="src/en/genesis/icon.png",this.customCSS="src/en/genesis/customCSS.css",this.site="https://genesistudio.com",this.api="https://api.genesistudio.com",this.version="2.0.1",this.hideLocked=o.storage.get("hideLocked"),this.pluginSettings={hideLocked:{value:"",label:"Hide locked chapters",type:"Switch"}},this.imageRequestInit={headers:{referrer:this.site}},this.filters={sort:{label:"Sort Results By",value:"Date",options:[{label:"Date",value:"Date"},{label:"Views",value:"Views"}],type:a.FilterTypes.Picker},genres:{label:"Genres",value:[],options:[{label:"Academy",value:"21"},{label:"Action",value:"1"},{label:"Adventure",value:"15"},{label:"Calm Protagonist",value:"22"},{label:"Comedy",value:"2"},{label:"Cultivation",value:"25"},{label:"Drama",value:"3"},{label:"Fantasy",value:"5"},{label:"Harem",value:"11"},{label:"Idol",value:"20"},{label:"Martial Arts",value:"6"},{label:"Modern",value:"4"},{label:"Modern Fantasy",value:"27"},{label:"Mystery",value:"8"},{label:"Psychological",value:"10"},{label:"Romance",value:"9"},{label:"School Life",value:"13"},{label:"Sci-fi",value:"24"},{label:"Slice of Life",value:"7"},{label:"Supernatural",value:"14"},{label:"Tragedy",value:"12"},{label:"Transmigration",value:"23"},{label:"Yandere",value:"26"}],type:a.FilterTypes.CheckboxGroup}}}return l.prototype.parseNovelJSON=function(){return e(this,void 0,void 0,(function(){var e,n,a=this;return t(this,(function(t){switch(t.label){case 0:return e=new URLSearchParams({status:"published",fields:'["id","novel_title","cover","abbreviation"]',limit:"-1"}),n="".concat(this.site,"/api/directus/novels?").concat(e.toString()),[4,(0,r.fetchApi)(n).then((function(e){return e.json()}))];case 1:return[2,t.sent().map((function(e){return{name:e.novel_title,path:"/novels/".concat(e.abbreviation).trim(),cover:"".concat(a.api,"/storage/v1/object/public/directus/").concat(e.cover,".png")}}))]}}))}))},l.prototype.popularNovels=function(n){return e(this,void 0,void 0,(function(){return t(this,(function(e){return 1!==n?[2,[]]:[2,this.parseNovelJSON()]}))}))},l.prototype.getCoverUrl=function(n){return e(this,void 0,void 0,(function(){var e;return t(this,(function(t){switch(t.label){case 0:return[4,(0,r.fetchApi)("".concat(this.site,"/api/directus-file/").concat(n)).then((function(e){return e.json()})).then((function(e){return e.type?e.type.split("/")[1].replace("jpeg","jpg"):"png"})).catch((function(){return"png"}))];case 1:return e=t.sent(),[2,"".concat(this.api,"/storage/v1/object/public/directus/").concat(n,".").concat(e)]}}))}))},l.prototype.parseNovel=function(n){return e(this,void 0,void 0,(function(){var e,a,o,l,c,u,h,p,v,f,d;return t(this,(function(t){switch(t.label){case 0:return e=n.replace("/novels/",""),a="".concat(this.site,"/api/directus/novels/by-abbreviation/").concat(e),[4,(0,r.fetchApi)(a)];case 1:return[4,t.sent().json()];case 2:return o=t.sent(),p={name:o.novel_title,path:n,summary:o.synopsis,author:o.author},o.cover?[4,this.getCoverUrl(o.cover)]:[3,4];case 3:return c=t.sent(),[3,5];case 4:c=s.defaultCover,t.label=5;case 5:return p.cover=c,p.genres=null===(v=o.genres)||void 0===v?void 0:v.map((function(e){var t;return null===(t=e.genres_id)||void 0===t?void 0:t.label})).filter((function(e){return e})).join(","),l=p,u={ongoing:i.NovelStatus.Ongoing,hiatus:i.NovelStatus.OnHiatus,dropped:i.NovelStatus.Cancelled,cancelled:i.NovelStatus.Cancelled,completed:i.NovelStatus.Completed,unknown:i.NovelStatus.Unknown},l.status=null!==(d=u[(null===(f=o.serialization)||void 0===f?void 0:f.toLowerCase())||""])&&void 0!==d?d:i.NovelStatus.Unknown,h=l,[4,this.extractChapters(o.id)];case 6:return h.chapters=t.sent(),[2,l]}}))}))},l.prototype.extractChapters=function(n){return e(this,void 0,void 0,(function(){var e,a,i=this;return t(this,(function(t){switch(t.label){case 0:return e="".concat(this.site,"/api/novels-chapter/").concat(n),[4,(0,r.fetchApi)(e)];case 1:return[4,t.sent().json()];case 2:return a=t.sent(),[2,a.data.chapters.map((function(e){var t=e.chapter_title,n="/viewer/".concat(e.id),r=!e.isUnlocked;if(i.hideLocked&&r)return null;var a=r?"🔒 "+t:t,o=e.chapter_number;return n?{name:a,path:n,chapterNumber:Number(o)}:null})).filter((function(e){return null!==e}))]}}))}))},l.prototype.parseChapter=function(a){return e(this,void 0,void 0,(function(){var e,i,o,s,l,c,u,h,p,v,f,d,b,y,g,m,w,S,C,_,N,k;return t(this,(function(t){switch(t.label){case 0:return e="".concat(this.site).concat(a),i=a.replace("/viewer/",""),[4,(0,r.fetchApi)(e)];case 1:return o=t.sent(),l=n.load,[4,o.text()];case 2:s=l.apply(void 0,[t.sent()]),h=[],s("head script[src]").each((function(e,t){var n=s(t).attr("src");h.includes(n)||h.push(n)})),v=0,f=h,t.label=3;case 3:return v<f.length?(d=f[v],[4,(0,r.fetchApi)("".concat(this.site).concat(d))]):[3,7];case 4:return[4,t.sent().text()];case 5:if((b=t.sent()).includes("sb_publishable"))return p=b,[3,7];t.label=6;case 6:return v++,[3,3];case 7:if(!p)throw new Error("Failed to find API Key");for(y=p.split(";"),g=0,m=y;g<m.length;g++)if((C=m[g]).includes("sb_publishable")){p=C;break}for(y=p.split('"'),w=0,S=y;w<S.length;w++)(C=S[w]).includes("https")?c=C:C.includes("sb_publishable")&&(u=C);return _="".concat(c,"/rest/v1/chapters"),N=new URLSearchParams({select:"id,chapter_title,chapter_number,chapter_content,status,novel",id:"eq.".concat(i),status:"eq.released"}),[4,(0,r.fetchApi)("".concat(_,"?").concat(N),{method:"GET",headers:{Referer:this.site,apikey:u,"x-client-info":"supabase-ssr/0.7.0 createBrowserClient"}})];case 8:return[4,t.sent().json()];case 9:return k=t.sent(),[2,k[0].chapter_content.replaceAll("\n","<br/>")]}}))}))},l.prototype.searchNovels=function(n,r){return e(this,void 0,void 0,(function(){var e,a,i=this;return t(this,(function(t){switch(t.label){case 0:return 1!==r?[2,[]]:[4,this.parseNovelJSON()];case 1:return e=t.sent(),a=this.normalize(n),[2,e.filter((function(e){return i.normalize(e.name).includes(a)}))]}}))}))},l.prototype.normalize=function(e){return e.toLowerCase().replace(/[^a-z0-9]/g,"")},l}();exports.default=new l;
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var cheerio_1 = require("cheerio");
+var fetch_1 = require("@libs/fetch");
+var filterInputs_1 = require("@libs/filterInputs");
+var novelStatus_1 = require("@libs/novelStatus");
+var storage_1 = require("@libs/storage");
+var defaultCover_1 = require("@libs/defaultCover");
+var Genesis = /** @class */ (function () {
+    function Genesis() {
+        this.id = 'genesistudio';
+        this.name = 'Genesis';
+        this.icon = 'src/en/genesis/icon.png';
+        this.customCSS = 'src/en/genesis/customCSS.css';
+        this.site = 'https://genesistudio.com';
+        this.api = 'https://api.genesistudio.com';
+        this.version = '2.0.1';
+        this.hideLocked = storage_1.storage.get('hideLocked');
+        this.pluginSettings = {
+            hideLocked: {
+                value: '',
+                label: 'Hide locked chapters',
+                type: 'Switch',
+            },
+        };
+        this.imageRequestInit = {
+            headers: {
+                'referrer': this.site,
+            },
+        };
+        // due to the low amount of novels, using filters kinda overkill
+        // unless we apply filters to cached results
+        this.filters = {
+            sort: {
+                label: 'Sort Results By',
+                value: 'Date',
+                options: [
+                    { label: 'Date', value: 'Date' },
+                    { label: 'Views', value: 'Views' },
+                ],
+                type: filterInputs_1.FilterTypes.Picker,
+            },
+            // storyStatus: {
+            //   label: 'Status',
+            //   value: 'All',
+            //   options: [
+            //     { label: 'All', value: 'All' },
+            //     { label: 'Ongoing', value: 'Ongoing' },
+            //     { label: 'Completed', value: 'Completed' },
+            //   ],
+            //   type: FilterTypes.Picker,
+            // },
+            genres: {
+                label: 'Genres',
+                value: [],
+                options: [
+                    { 'label': 'Academy', 'value': '21' },
+                    { 'label': 'Action', 'value': '1' },
+                    { 'label': 'Adventure', 'value': '15' },
+                    { 'label': 'Calm Protagonist', 'value': '22' },
+                    { 'label': 'Comedy', 'value': '2' },
+                    { 'label': 'Cultivation', 'value': '25' },
+                    { 'label': 'Drama', 'value': '3' },
+                    { 'label': 'Fantasy', 'value': '5' },
+                    { 'label': 'Harem', 'value': '11' },
+                    { 'label': 'Idol', 'value': '20' },
+                    { 'label': 'Martial Arts', 'value': '6' },
+                    { 'label': 'Modern', 'value': '4' },
+                    { 'label': 'Modern Fantasy', 'value': '27' },
+                    { 'label': 'Mystery', 'value': '8' },
+                    { 'label': 'Psychological', 'value': '10' },
+                    { 'label': 'Romance', 'value': '9' },
+                    { 'label': 'School Life', 'value': '13' },
+                    { 'label': 'Sci-fi', 'value': '24' },
+                    { 'label': 'Slice of Life', 'value': '7' },
+                    { 'label': 'Supernatural', 'value': '14' },
+                    { 'label': 'Tragedy', 'value': '12' },
+                    { 'label': 'Transmigration', 'value': '23' },
+                    { 'label': 'Yandere', 'value': '26' },
+                ],
+                type: filterInputs_1.FilterTypes.CheckboxGroup,
+            },
+        };
+    }
+    Genesis.prototype.parseNovelJSON = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, link, json;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        params = new URLSearchParams({
+                            status: 'published',
+                            fields: '["id","novel_title","cover","abbreviation"]',
+                            limit: '-1',
+                        });
+                        link = "".concat(this.site, "/api/directus/novels?").concat(params.toString());
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(link).then(function (r) { return r.json(); })];
+                    case 1:
+                        json = _a.sent();
+                        return [2 /*return*/, json.map(function (novel) { return ({
+                                name: novel.novel_title,
+                                path: "/novels/".concat(novel.abbreviation).trim(),
+                                cover: "".concat(_this.api, "/storage/v1/object/public/directus/").concat(novel.cover, ".png"),
+                            }); })];
+                }
+            });
+        });
+    };
+    Genesis.prototype.popularNovels = function (pageNo) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                // There is only one page of results, and no known page function, so do not try
+                if (pageNo !== 1)
+                    return [2 /*return*/, []];
+                return [2 /*return*/, this.parseNovelJSON()];
+            });
+        });
+    };
+    Genesis.prototype.getCoverUrl = function (coverId) {
+        return __awaiter(this, void 0, void 0, function () {
+            var ext;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, fetch_1.fetchApi)("".concat(this.site, "/api/directus-file/").concat(coverId))
+                            .then(function (res) { return res.json(); })
+                            .then(function (data) {
+                            return data.type ? data.type.split('/')[1].replace('jpeg', 'jpg') : 'png';
+                        })
+                            .catch(function () { return 'png'; })];
+                    case 1:
+                        ext = _a.sent();
+                        return [2 /*return*/, "".concat(this.api, "/storage/v1/object/public/directus/").concat(coverId, ".").concat(ext)];
+                }
+            });
+        });
+    };
+    Genesis.prototype.parseNovel = function (novelPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var abbreviation, url, raw, json, novel, _a, map, _b;
+            var _c;
+            var _d, _e, _f;
+            return __generator(this, function (_g) {
+                switch (_g.label) {
+                    case 0:
+                        abbreviation = novelPath.replace('/novels/', '');
+                        url = "".concat(this.site, "/api/directus/novels/by-abbreviation/").concat(abbreviation);
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        raw = _g.sent();
+                        return [4 /*yield*/, raw.json()];
+                    case 2:
+                        json = _g.sent();
+                        _c = {
+                            name: json.novel_title,
+                            path: novelPath,
+                            summary: json.synopsis,
+                            author: json.author
+                        };
+                        if (!json.cover) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.getCoverUrl(json.cover)];
+                    case 3:
+                        _a = _g.sent();
+                        return [3 /*break*/, 5];
+                    case 4:
+                        _a = defaultCover_1.defaultCover;
+                        _g.label = 5;
+                    case 5:
+                        novel = (_c.cover = _a,
+                            _c.genres = (_d = json.genres) === null || _d === void 0 ? void 0 : _d.map(function (g) { var _a; return (_a = g.genres_id) === null || _a === void 0 ? void 0 : _a.label; }).filter(function (l) { return l; }).join(','),
+                            _c);
+                        map = {
+                            ongoing: novelStatus_1.NovelStatus.Ongoing,
+                            hiatus: novelStatus_1.NovelStatus.OnHiatus,
+                            dropped: novelStatus_1.NovelStatus.Cancelled,
+                            cancelled: novelStatus_1.NovelStatus.Cancelled,
+                            completed: novelStatus_1.NovelStatus.Completed,
+                            unknown: novelStatus_1.NovelStatus.Unknown,
+                        };
+                        novel.status =
+                            (_f = map[((_e = json.serialization) === null || _e === void 0 ? void 0 : _e.toLowerCase()) || '']) !== null && _f !== void 0 ? _f : novelStatus_1.NovelStatus.Unknown;
+                        // Parse the chapters if available and assign them to the novel object
+                        _b = novel;
+                        return [4 /*yield*/, this.extractChapters(json.id)];
+                    case 6:
+                        // Parse the chapters if available and assign them to the novel object
+                        _b.chapters = _g.sent();
+                        return [2 /*return*/, novel];
+                }
+            });
+        });
+    };
+    // Helper function to extract and format chapters
+    Genesis.prototype.extractChapters = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var url, raw, json, chapters;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = "".concat(this.site, "/api/novels-chapter/").concat(id);
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        raw = _a.sent();
+                        return [4 /*yield*/, raw.json()];
+                    case 2:
+                        json = _a.sent();
+                        chapters = json.data.chapters
+                            .map(function (index) {
+                            var title = index.chapter_title;
+                            var chapterPath = "/viewer/".concat(index.id);
+                            var isLocked = !index.isUnlocked;
+                            if (_this.hideLocked && isLocked)
+                                return null;
+                            var chapterName = isLocked ? '🔒 ' + title : title;
+                            var chapterNum = index.chapter_number;
+                            if (!chapterPath)
+                                return null;
+                            return {
+                                name: chapterName,
+                                path: chapterPath,
+                                chapterNumber: Number(chapterNum),
+                            };
+                        })
+                            .filter(function (chapter) { return chapter !== null; });
+                        return [2 /*return*/, chapters];
+                }
+            });
+        });
+    };
+    Genesis.prototype.parseChapter = function (chapterPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var url, id, raw, $, _a, external_api, apikey, URLs, code, _i, URLs_1, src, script, raw_1, arr, _b, arr_1, seg, _c, arr_2, seg, path, search, chQuery, json, ch;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        url = "".concat(this.site).concat(chapterPath);
+                        id = chapterPath.replace('/viewer/', '');
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        raw = _d.sent();
+                        _a = cheerio_1.load;
+                        return [4 /*yield*/, raw.text()];
+                    case 2:
+                        $ = _a.apply(void 0, [_d.sent()]);
+                        URLs = [];
+                        $('head script[src]').each(function (_, el) {
+                            var src = $(el).attr('src');
+                            if (!URLs.includes(src)) {
+                                URLs.push(src);
+                            }
+                        });
+                        _i = 0, URLs_1 = URLs;
+                        _d.label = 3;
+                    case 3:
+                        if (!(_i < URLs_1.length)) return [3 /*break*/, 7];
+                        src = URLs_1[_i];
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)("".concat(this.site).concat(src))];
+                    case 4:
+                        script = _d.sent();
+                        return [4 /*yield*/, script.text()];
+                    case 5:
+                        raw_1 = _d.sent();
+                        if (raw_1.includes('sb_publishable')) {
+                            code = raw_1;
+                            return [3 /*break*/, 7];
+                        }
+                        _d.label = 6;
+                    case 6:
+                        _i++;
+                        return [3 /*break*/, 3];
+                    case 7:
+                        if (!code) {
+                            throw new Error('Failed to find API Key');
+                        }
+                        arr = code.split(';');
+                        for (_b = 0, arr_1 = arr; _b < arr_1.length; _b++) {
+                            seg = arr_1[_b];
+                            if (seg.includes('sb_publishable')) {
+                                code = seg;
+                                break;
+                            }
+                        }
+                        arr = code.split('"');
+                        for (_c = 0, arr_2 = arr; _c < arr_2.length; _c++) {
+                            seg = arr_2[_c];
+                            if (seg.includes('https')) {
+                                external_api = seg;
+                                continue;
+                            }
+                            if (seg.includes('sb_publishable')) {
+                                apikey = seg;
+                                continue;
+                            }
+                        }
+                        path = "".concat(external_api, "/rest/v1/chapters");
+                        search = new URLSearchParams({
+                            select: 'id,chapter_title,chapter_number,chapter_content,status,novel',
+                            id: "eq.".concat(id),
+                            status: 'eq.released',
+                        });
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)("".concat(path, "?").concat(search), {
+                                method: 'GET',
+                                headers: {
+                                    // Cookie: 'csrftoken=' + csrftoken,
+                                    Referer: this.site,
+                                    'apikey': apikey,
+                                    'x-client-info': 'supabase-ssr/0.7.0 createBrowserClient',
+                                },
+                            })];
+                    case 8:
+                        chQuery = _d.sent();
+                        return [4 /*yield*/, chQuery.json()];
+                    case 9:
+                        json = _d.sent();
+                        ch = json[0].chapter_content.replaceAll('\n', '<br/>');
+                        return [2 /*return*/, ch];
+                }
+            });
+        });
+    };
+    Genesis.prototype.searchNovels = function (searchTerm, pageNo) {
+        return __awaiter(this, void 0, void 0, function () {
+            var novels, query;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (pageNo !== 1)
+                            return [2 /*return*/, []];
+                        return [4 /*yield*/, this.parseNovelJSON()];
+                    case 1:
+                        novels = _a.sent();
+                        query = this.normalize(searchTerm);
+                        return [2 /*return*/, novels.filter(function (novel) { return _this.normalize(novel.name).includes(query); })];
+                }
+            });
+        });
+    };
+    // grabbed from Witch Cult Translations
+    Genesis.prototype.normalize = function (str) {
+        return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    };
+    return Genesis;
+}());
+exports.default = new Genesis();
