@@ -1,4 +1,6 @@
-import { Plugin } from '@typings/plugin';
+import { Plugin } from '@/types/plugin';
+
+import { FilterTypes, Filters } from '@libs/filterInputs';
 
 import { fetchApi } from '@libs/fetch';
 
@@ -8,12 +10,6 @@ const SITE = 'https://novelyra.com/';
 
 const MAX_TRANSLATION_CHARS = 2000;
 
-/**
- * Traduce texto usando la API pública de Google Translate.
- *
- * Se mantiene independiente del scraper principal para que,
- * si la traducción falla, el contenido original siga disponible.
- */
 async function translateText(text: string): Promise<string> {
   if (!text || text.trim() === '') {
     return '';
@@ -45,10 +41,6 @@ async function translateText(text: string): Promise<string> {
   }
 }
 
-/**
- * Divide el texto en bloques pequeños para evitar
- * exceder los límites de la API de traducción.
- */
 async function translateParagraphs(paragraphs: string[]): Promise<string[]> {
   const translatedParagraphs: string[] = [];
 
@@ -112,88 +104,153 @@ class Novelyra implements Plugin.PluginBase {
 
   version = '2.0.0';
 
-  async popularNovels(pageNo: number): Promise<Plugin.NovelItem[]> {
-    const page = Math.max(1, pageNo || 1);
+  filters: Filters = {
+    genres: {
+      type: FilterTypes.Picker,
+      label: 'Géneros',
+      value: '',
+      options: [
+        { label: 'Todos', value: '' },
+        { label: 'Acción', value: 'accion' },
+        { label: 'Aventura', value: 'aventura' },
+        { label: 'Fantasía', value: 'fantasia' },
+        { label: 'Artes Marciales', value: 'artes-marciales' },
+        { label: 'Harén', value: 'haren' },
+        { label: 'Romance', value: 'romance' },
+        { label: 'Sobrenatural', value: 'sobrenatural' },
+        { label: 'Xuanhuan', value: 'xuanhuan' },
+        { label: 'Xianxia', value: 'xianxia' },
+        { label: 'Comedia', value: 'comedia' },
+        { label: 'Ciencia Ficción', value: 'ciencia-ficcion' },
+        { label: 'Misterio', value: 'misterio' },
+        { label: 'Maduro', value: 'maduro' },
+        { label: 'Psicológico', value: 'psicologico' },
+        { label: 'Shounen', value: 'shounen' },
+        { label: 'Reencarnación', value: 'reencarnacion' },
+        { label: 'Mecha', value: 'mecha' },
+        { label: 'Vida Escolar', value: 'vida-escolar' },
+        { label: 'Josei', value: 'josei' },
+        { label: 'Drama', value: 'drama' },
+        { label: 'Urbano', value: 'urbano' },
+        { label: 'Oriental', value: 'oriental' },
+        { label: 'Horror', value: 'horror' },
+        { label: 'Tragedia', value: 'tragedia' },
+        { label: 'Juegos', value: 'juegos' },
+      ],
+    },
 
-    const urls = [
-      page === 1 ? this.site : `${this.site}?page=${page}`,
-      `${this.site}browse.php?page=${page}`,
-    ];
+    browse: {
+      type: FilterTypes.Picker,
+      label: 'Novelas Populares',
+      value: 'browse.php',
+      options: [
+        {
+          label: 'Todas las Novelas',
+          value: 'browse.php',
+        },
+        {
+          label: '🔥 Hoy',
+          value: 'popular.php?period=today',
+        },
+        {
+          label: '📅 Este Mes',
+          value: 'popular.php?period=month',
+        },
+        {
+          label: '👑 De Siempre',
+          value: 'popular.php?period=alltime',
+        },
+      ],
+    },
+  } satisfies Filters;
 
-    for (const url of urls) {
-      try {
-        const res = await fetchApi(url);
+  private loadNovels(
+    loadedCheerio: ReturnType<typeof loadCheerio>,
+    selector: string,
+  ): Plugin.NovelItem[] {
+    const novels: Plugin.NovelItem[] = [];
 
-        if (!res.ok) {
-          continue;
+    loadedCheerio(selector).each((_, element) => {
+      const novel = loadedCheerio(element);
+
+      const name =
+        novel.find('h3').first().text().trim() ||
+        novel.find('.novel-title').first().text().trim();
+
+      const path =
+        novel.find('a').first().attr('href')?.trim().replace(this.site, '') ||
+        '';
+
+      const cover = novel.find('img').first().attr('src')?.trim() || '';
+
+      if (!name || !path) {
+        return;
+      }
+
+      const duplicate = novels.some(item => item.path === path);
+
+      if (!duplicate) {
+        novels.push({
+          name,
+          path,
+          cover,
+        });
+      }
+    });
+
+    return novels;
+  }
+
+  async popularNovels(
+    pageNo: number,
+    { showLatestNovels, filters }: Plugin.PopularNovelsOptions<Filters>,
+  ): Promise<Plugin.NovelItem[]> {
+    let url = this.site;
+
+    let selector = '#novelas .novel-card';
+
+    const genre = filters?.genres?.value as string | undefined;
+
+    const browse = filters?.browse?.value as string | undefined;
+
+    if (!showLatestNovels) {
+      if (browse?.startsWith('popular.php')) {
+        url = `${this.site}${browse}`;
+
+        selector = '.popular-item';
+      } else {
+        const params = new URLSearchParams();
+
+        params.append('page', String(pageNo));
+
+        if (genre) {
+          params.append('genre', genre);
         }
 
-        const body = await res.text();
+        url = `${this.site}${browse || 'browse.php'}` + `?${params.toString()}`;
 
-        const $ = loadCheerio(body);
-
-        const novels: Plugin.NovelItem[] = [];
-
-        const selectors = [
-          '#novelas .novel-card',
-          '.novels-grid .novel-card',
-          '.novel-card',
-          '.popular-item',
-          'a.group.block.min-w-0',
-        ];
-
-        for (const selector of selectors) {
-          $(selector).each((_, element) => {
-            const item = $(element);
-
-            const link = item.is('a') ? item : item.find('a').first();
-
-            const name =
-              item.find('h3').first().text().trim() ||
-              item.find('.novel-title').first().text().trim() ||
-              link.text().trim();
-
-            const path = link.attr('href')?.trim() || '';
-
-            const cover = item.find('img').first().attr('src')?.trim() || '';
-
-            if (!name || !path) {
-              return;
-            }
-
-            const normalizedPath = path.replace(this.site, '');
-
-            const duplicate = novels.some(
-              novel => novel.path === normalizedPath,
-            );
-
-            if (!duplicate) {
-              novels.push({
-                name,
-                path: normalizedPath,
-                cover,
-              });
-            }
-          });
-
-          if (novels.length > 0) {
-            break;
-          }
-        }
-
-        if (novels.length > 0) {
-          return novels;
-        }
-      } catch {
-        // Try next URL.
+        selector = '.novels-grid .novel-card';
       }
     }
 
-    return [];
+    const result = await fetchApi(url);
+
+    if (!result.ok) {
+      throw new Error(`HTTP ${result.status}`);
+    }
+
+    const body = await result.text();
+
+    const loadedCheerio = loadCheerio(body);
+
+    return this.loadNovels(loadedCheerio, selector);
   }
 
-  async searchNovels(searchTerm: string): Promise<Plugin.NovelItem[]> {
-    const query = searchTerm.trim();
+  async searchNovels(
+    searchTerm: string,
+    _pageNo: number,
+  ): Promise<Plugin.NovelItem[]> {
+    const query = searchTerm.trim().toLowerCase();
 
     if (!query) {
       return [];
@@ -201,103 +258,70 @@ class Novelyra implements Plugin.PluginBase {
 
     const url = `${this.site}?search=${encodeURIComponent(query)}`;
 
-    try {
-      const res = await fetchApi(url);
+    const result = await fetchApi(url);
 
-      if (!res.ok) {
-        return [];
-      }
-
-      const body = await res.text();
-
-      const $ = loadCheerio(body);
-
-      const novels: Plugin.NovelItem[] = [];
-
-      const selectors = [
-        '#novelas .novel-card',
-        '.novels-grid .novel-card',
-        '.novel-card',
-        'a.group.block.min-w-0',
-      ];
-
-      for (const selector of selectors) {
-        $(selector).each((_, element) => {
-          const item = $(element);
-
-          const link = item.is('a') ? item : item.find('a').first();
-
-          const name =
-            item.find('h3').first().text().trim() ||
-            item.find('.novel-title').first().text().trim() ||
-            link.text().trim();
-
-          const path = link.attr('href')?.trim() || '';
-
-          const cover = item.find('img').first().attr('src')?.trim() || '';
-
-          if (!name || !path) {
-            return;
-          }
-
-          const normalizedPath = path.replace(this.site, '');
-
-          const duplicate = novels.some(novel => novel.path === normalizedPath);
-
-          if (!duplicate) {
-            novels.push({
-              name,
-              path: normalizedPath,
-              cover,
-            });
-          }
-        });
-
-        if (novels.length > 0) {
-          break;
-        }
-      }
-
-      return novels;
-    } catch {
-      return [];
+    if (!result.ok) {
+      throw new Error(`HTTP ${result.status}`);
     }
+
+    const body = await result.text();
+
+    const loadedCheerio = loadCheerio(body);
+
+    return this.loadNovels(loadedCheerio, '#novelas .novel-card');
   }
 
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
     const cleanPath = novelPath.replace(/^\/+/, '');
 
-    const url = `${this.site}${cleanPath}`;
+    const result = await fetchApi(`${this.site}${cleanPath}`);
 
-    const res = await fetchApi(url);
-
-    if (!res.ok) {
-      throw new Error(`Failed to load novel: HTTP ${res.status}`);
+    if (!result.ok) {
+      throw new Error(`HTTP ${result.status}`);
     }
 
-    const body = await res.text();
+    const body = await result.text();
 
-    const $ = loadCheerio(body);
+    const loadedCheerio = loadCheerio(body);
 
-    const name =
-      $('h1').first().text().trim() ||
-      $('h1.novel-title').first().text().trim() ||
-      'Desconocido';
+    const name = loadedCheerio('h1').first().text().trim() || 'Desconocido';
 
     const cover =
-      $('.novel-cover img').first().attr('src') ||
-      $('.novel-card img').first().attr('src') ||
-      $('img.w-32.rounded-xl').first().attr('src') ||
+      loadedCheerio('.novel-cover img').first().attr('src')?.trim() ||
+      loadedCheerio('img').first().attr('src')?.trim() ||
       '';
+
+    const novel: Plugin.SourceNovel = {
+      path: novelPath,
+      name,
+      cover,
+    };
+
+    const genres = loadedCheerio('.novel-meta .novel-genres')
+      .text()
+      .trim()
+      .replace(/\s+/g, ', ');
+
+    if (genres) {
+      novel.genres = genres;
+    }
+
+    const summary = loadedCheerio('.novel-description-detail').text().trim();
+
+    if (summary) {
+      novel.summary = summary;
+    }
 
     const chapters: Plugin.ChapterItem[] = [];
 
-    $('.chapter-item-wrapper').each((_, element) => {
-      const chapter = $(element);
+    loadedCheerio('.chapter-item-wrapper').each((_, element) => {
+      const chapter = loadedCheerio(element);
 
-      const chapterLink = chapter.find('a').first().attr('href')?.trim() || '';
+      const chapterPath =
+        chapter.find('a').first().attr('href')?.trim().replace(this.site, '') ||
+        '';
 
-      if (!chapterLink) {
+      if (!chapterPath) {
         return;
       }
 
@@ -316,162 +340,72 @@ class Novelyra implements Plugin.PluginBase {
 
       const chapterDate = chapter.find('.chapter-date').text().trim();
 
-      const chapterItem: Plugin.ChapterItem = {
+      const item: Plugin.ChapterItem = {
         name: chapterName,
-        path: chapterLink.replace(this.site, ''),
+        path: chapterPath,
         chapterNumber,
       };
 
       if (chapterDate) {
         try {
-          const date = new Date(chapterDate);
+          const parsedDate = new Date(chapterDate);
 
-          if (!Number.isNaN(date.getTime())) {
-            chapterItem.releaseTime = date.toISOString();
+          if (!Number.isNaN(parsedDate.getTime())) {
+            item.releaseTime = parsedDate.toISOString();
           }
         } catch {
           // Ignore invalid dates.
         }
       }
 
-      chapters.push(chapterItem);
+      chapters.push(item);
     });
 
-    // Fallback para estructuras anteriores.
-    if (chapters.length === 0) {
-      $('a[href*="/chapter-"]').each((_, element) => {
-        const link = $(element);
+    novel.chapters = chapters;
 
-        const chapterPath = link.attr('href')?.trim() || '';
-
-        if (!chapterPath) {
-          return;
-        }
-
-        const chapterName =
-          link.find('.chapter-title').text().trim() ||
-          link.find('span.truncate').text().trim() ||
-          link.text().trim();
-
-        const duplicate = chapters.some(
-          chapter => chapter.path === chapterPath.replace(this.site, ''),
-        );
-
-        if (!duplicate) {
-          chapters.push({
-            name: chapterName || `Capítulo ${chapters.length + 1}`,
-            path: chapterPath.replace(this.site, ''),
-            chapterNumber: chapters.length + 1,
-          });
-        }
-      });
-    }
-
-    return {
-      path: novelPath,
-      name,
-      cover,
-      chapters: chapters.reverse(),
-    };
+    return novel;
   }
 
   async parseChapter(chapterPath: string): Promise<string> {
     const cleanPath = chapterPath.replace(/^\/+/, '');
 
-    const url = `${this.site}${cleanPath}`;
+    const result = await fetchApi(`${this.site}${cleanPath}`);
 
-    const res = await fetchApi(url);
-
-    if (!res.ok) {
-      throw new Error(`Failed to load chapter: HTTP ${res.status}`);
+    if (!result.ok) {
+      throw new Error(`HTTP ${result.status}`);
     }
 
-    const body = await res.text();
+    const body = await result.text();
 
-    const $ = loadCheerio(body);
+    const loadedCheerio = loadCheerio(body);
 
-    // Estructura actual de NovelYra.
-    const chapterContent = $('.chapter-content').first();
+    loadedCheerio('script, style, iframe, ins, .chapter-ad').remove();
+
+    const chapterContent = loadedCheerio('.chapter-content').first();
 
     if (chapterContent.length === 0) {
-      // Fallback para estructuras anteriores.
-      const article = $('article').first();
-
-      if (article.length > 0) {
-        article.find('script, style, iframe, ins').remove();
-
-        const paragraphs: string[] = [];
-
-        article.find('p').each((_, element) => {
-          const text = $(element).text().trim();
-
-          if (text) {
-            paragraphs.push(text);
-          }
-        });
-
-        if (paragraphs.length === 0) {
-          const rawText = article.text().trim();
-
-          if (rawText) {
-            paragraphs.push(rawText);
-          }
-        }
-
-        const translated = await translateParagraphs(paragraphs);
-
-        return translated
-          .map(
-            paragraph =>
-              `<p>${paragraph.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`,
-          )
-          .join('');
-      }
-
       return 'Contenido no encontrado';
     }
 
-    chapterContent.find('script, style, iframe, ins, .chapter-ad').remove();
-
     const paragraphs: string[] = [];
 
-    // Primero intentamos párrafos normales.
     chapterContent.find('p').each((_, element) => {
-      const text = $(element).text().trim();
+      const text = loadedCheerio(element).text().trim();
 
       if (text) {
         paragraphs.push(text);
       }
     });
 
-    // Si no existen <p>, recopilamos el contenido por bloques.
-    if (paragraphs.length === 0) {
-      chapterContent.find('div, br').each((_, element) => {
-        const tagName = element.tagName?.toLowerCase();
-
-        if (tagName === 'br') {
-          return;
-        }
-
-        const text = $(element).text().trim();
-
-        if (text) {
-          paragraphs.push(text);
-        }
-      });
-    }
-
-    // Último fallback: texto completo del contenedor.
     if (paragraphs.length === 0) {
       const rawText = chapterContent.text().trim();
 
       if (rawText) {
         paragraphs.push(
-          rawText
+          ...rawText
             .split(/\n+/)
             .map(text => text.trim())
-            .filter(Boolean)
-            .join('\n'),
+            .filter(Boolean),
         );
       }
     }
@@ -480,9 +414,9 @@ class Novelyra implements Plugin.PluginBase {
       return 'Contenido no encontrado';
     }
 
-    const translatedParagraphs = await translateParagraphs(paragraphs);
+    const translated = await translateParagraphs(paragraphs);
 
-    return translatedParagraphs
+    return translated
       .map(
         paragraph =>
           `<p>${paragraph.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`,
