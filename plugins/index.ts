@@ -176,41 +176,43 @@ import p_173 from '@plugins/spanish/AnimesHoy12[madara]';
 import p_174 from '@plugins/spanish/LightNovelDaily[hotnovelpub]';
 import p_175 from '@plugins/spanish/MTLNovel(ES)[mtlnovel]';
 import p_176 from '@plugins/spanish/NOVA';
-import p_177 from '@plugins/spanish/PanchoTranslations[madara]';
-import p_178 from '@plugins/spanish/TC&Sega[lightnovelwp]';
-import p_179 from '@plugins/spanish/TraduccionesAmistosas[madara]';
-import p_180 from '@plugins/spanish/hasutl';
-import p_181 from '@plugins/spanish/novelasligera';
-import p_182 from '@plugins/spanish/novelawuxia';
-import p_183 from '@plugins/spanish/novelyra';
-import p_184 from '@plugins/spanish/oasistranslations';
-import p_185 from '@plugins/spanish/panchonovels';
-import p_186 from '@plugins/spanish/rncalation';
-import p_187 from '@plugins/spanish/skynovels';
-import p_188 from '@plugins/spanish/tunovelaligera';
-import p_189 from '@plugins/spanish/yukitls';
-import p_190 from '@plugins/thai/NovelLucky[madara]';
-import p_191 from '@plugins/thai/NovelPDF[madara]';
-import p_192 from '@plugins/turkish/ArazNovel[madara]';
-import p_193 from '@plugins/turkish/EKTAPLAR[madara]';
-import p_194 from '@plugins/turkish/KodeksLibrary[lightnovelwp]';
-import p_195 from '@plugins/turkish/MangaTR';
-import p_196 from '@plugins/turkish/NABSCANS[madara]';
-import p_197 from '@plugins/turkish/Namevt[lightnovelwp]';
-import p_198 from '@plugins/turkish/NovelTR[lightnovelwp]';
-import p_199 from '@plugins/turkish/Noveloku[madara]';
-import p_200 from '@plugins/turkish/RagnarScans[madara]';
-import p_201 from '@plugins/turkish/ThNovels[hotnovelpub]';
-import p_202 from '@plugins/turkish/TurkceLightNovels[madara]';
-import p_203 from '@plugins/turkish/WebNovelOku[madara]';
-import p_204 from '@plugins/turkish/epiknovel';
-import p_205 from '@plugins/turkish/kakikata[madara]';
-import p_206 from '@plugins/ukrainian/bakainua';
-import p_207 from '@plugins/ukrainian/smakolykytl';
-import p_208 from '@plugins/vietnamese/LNHako';
-import p_209 from '@plugins/vietnamese/lightnovelvn';
-import p_210 from '@plugins/vietnamese/nettruyen';
-import p_211 from '@plugins/vietnamese/truyenss';
+import p_177 from '@plugins/spanish/PanchoNovels';
+import p_178 from '@plugins/spanish/PanchoTranslations[madara]';
+import p_179 from '@plugins/spanish/TC&Sega[lightnovelwp]';
+import p_180 from '@plugins/spanish/TraduccionesAmistosas[madara]';
+import p_181 from '@plugins/spanish/hasutl';
+import p_182 from '@plugins/spanish/novelasligera';
+import p_183 from '@plugins/spanish/novelawuxia';
+import p_184 from '@plugins/spanish/novelyra';
+import p_185 from '@plugins/spanish/oasistranslations';
+import p_186 from '@plugins/spanish/ritiscan';
+import p_187 from '@plugins/spanish/ritto';
+import p_188 from '@plugins/spanish/rncalation';
+import p_189 from '@plugins/spanish/skynovels';
+import p_190 from '@plugins/spanish/tunovelaligera';
+import p_191 from '@plugins/spanish/yukitls';
+import p_192 from '@plugins/thai/NovelLucky[madara]';
+import p_193 from '@plugins/thai/NovelPDF[madara]';
+import p_194 from '@plugins/turkish/ArazNovel[madara]';
+import p_195 from '@plugins/turkish/EKTAPLAR[madara]';
+import p_196 from '@plugins/turkish/KodeksLibrary[lightnovelwp]';
+import p_197 from '@plugins/turkish/MangaTR';
+import p_198 from '@plugins/turkish/NABSCANS[madara]';
+import p_199 from '@plugins/turkish/Namevt[lightnovelwp]';
+import p_200 from '@plugins/turkish/NovelTR[lightnovelwp]';
+import p_201 from '@plugins/turkish/Noveloku[madara]';
+import p_202 from '@plugins/turkish/RagnarScans[madara]';
+import p_203 from '@plugins/turkish/ThNovels[hotnovelpub]';
+import p_204 from '@plugins/turkish/TurkceLightNovels[madara]';
+import p_205 from '@plugins/turkish/WebNovelOku[madara]';
+import p_206 from '@plugins/turkish/epiknovel';
+import p_207 from '@plugins/turkish/kakikata[madara]';
+import p_208 from '@plugins/ukrainian/bakainua';
+import p_209 from '@plugins/ukrainian/smakolykytl';
+import p_210 from '@plugins/vietnamese/LNHako';
+import p_211 from '@plugins/vietnamese/lightnovelvn';
+import p_212 from '@plugins/vietnamese/nettruyen';
+import p_213 from '@plugins/vietnamese/truyenss';
 
 const PLUGINS: Plugin.PluginBase[] = [
   p_0,
@@ -425,5 +427,7 @@ const PLUGINS: Plugin.PluginBase[] = [
   p_209,
   p_210,
   p_211,
+  p_212,
+  p_213,
 ];
 export default PLUGINS;
