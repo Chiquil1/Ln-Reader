@@ -193,8 +193,7 @@ var Novelyra = /** @class */ (function () {
             if (!name || !rawPath) {
                 return;
             }
-            if (rawPath.startsWith('http') &&
-                !rawPath.startsWith(_this.site)) {
+            if (rawPath.startsWith('http') && !rawPath.startsWith(_this.site)) {
                 return;
             }
             var path = rawPath;
@@ -232,18 +231,13 @@ var Novelyra = /** @class */ (function () {
                         page = Math.max(1, pageNo || 1);
                         genre = (_c = filters === null || filters === void 0 ? void 0 : filters.genres) === null || _c === void 0 ? void 0 : _c.value;
                         if (genre) {
-                            url =
-                                "".concat(this.site, "genre/").concat(encodeURIComponent(genre)) +
-                                    "?page=".concat(page);
+                            url = "".concat(this.site, "genre/").concat(encodeURIComponent(genre)) + "?page=".concat(page);
                         }
                         else {
                             url = "".concat(this.site, "?page=").concat(page);
                         }
                         if (showLatestNovels) {
-                            url =
-                                page === 1
-                                    ? this.site
-                                    : "".concat(this.site, "?page=").concat(page);
+                            url = page === 1 ? this.site : "".concat(this.site, "?page=").concat(page);
                         }
                         return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
                     case 1:
@@ -306,8 +300,7 @@ var Novelyra = /** @class */ (function () {
                     case 2:
                         body = _f.sent();
                         loadedCheerio = (0, cheerio_1.load)(body);
-                        name = loadedCheerio('h1').first().text().trim() ||
-                            'Desconocido';
+                        name = loadedCheerio('h1').first().text().trim() || 'Desconocido';
                         cover = ((_a = loadedCheerio('main img').first().attr('src')) === null || _a === void 0 ? void 0 : _a.trim()) ||
                             ((_b = loadedCheerio('img').first().attr('src')) === null || _b === void 0 ? void 0 : _b.trim()) ||
                             '';
@@ -320,13 +313,9 @@ var Novelyra = /** @class */ (function () {
                         if (summary) {
                             titlePrefix = "".concat(name, ":");
                             if (summary.startsWith(titlePrefix)) {
-                                summary = summary
-                                    .slice(titlePrefix.length)
-                                    .trim();
+                                summary = summary.slice(titlePrefix.length).trim();
                             }
-                            summary = summary
-                                .replace(/^Information\s*&\s*Overview\s*/i, '')
-                                .trim();
+                            summary = summary.replace(/^Information\s*&\s*Overview\s*/i, '').trim();
                         }
                         authorMatch = synopsis.match(/Author:\s*(.+?)(?:\s+Genre:|\s+Status:|\s+Platform:|\s+Theme:|$)/i);
                         genreMatch = synopsis.match(/Genre:\s*(.+?)(?:\s+Status:|\s+Platform:|\s+Theme:|$)/i);
@@ -362,28 +351,19 @@ var Novelyra = /** @class */ (function () {
                             }
                             var chapterPath = rawChapterPath;
                             if (chapterPath.startsWith(_this.site)) {
-                                chapterPath =
-                                    chapterPath.slice(_this.site.length);
+                                chapterPath = chapterPath.slice(_this.site.length);
                             }
-                            chapterPath =
-                                chapterPath.replace(/^\/+/, '');
-                            if (!chapterPath ||
-                                seenPaths.has(chapterPath)) {
+                            chapterPath = chapterPath.replace(/^\/+/, '');
+                            if (!chapterPath || seenPaths.has(chapterPath)) {
                                 return;
                             }
                             seenPaths.add(chapterPath);
-                            var text = link
-                                .text()
-                                .trim()
-                                .replace(/\s+/g, ' ');
-                            var chapterName = text ||
-                                "Cap\u00EDtulo ".concat(chapterNumber);
+                            var text = link.text().trim().replace(/\s+/g, ' ');
+                            var chapterName = text || "Cap\u00EDtulo ".concat(chapterNumber);
                             var separatorIndex = chapterName.indexOf(' - ');
                             if (separatorIndex > 0) {
                                 chapterName =
-                                    chapterName
-                                        .slice(0, separatorIndex)
-                                        .trim() ||
+                                    chapterName.slice(0, separatorIndex).trim() ||
                                         "Cap\u00EDtulo ".concat(chapterNumber);
                             }
                             var releaseMatch = text.match(/\b(\d+\s+(?:day|days|week|weeks|month|months|year|years)\s+ago)\b/i);
@@ -394,11 +374,7 @@ var Novelyra = /** @class */ (function () {
                                 releaseTime: releaseMatch === null || releaseMatch === void 0 ? void 0 : releaseMatch[1],
                             });
                         });
-                        chapters.sort(function (first, second) {
-                            var _a, _b;
-                            return ((_a = first.chapterNumber) !== null && _a !== void 0 ? _a : 0) -
-                                ((_b = second.chapterNumber) !== null && _b !== void 0 ? _b : 0);
-                        });
+                        chapters.sort(function (first, second) { var _a, _b; return ((_a = first.chapterNumber) !== null && _a !== void 0 ? _a : 0) - ((_b = second.chapterNumber) !== null && _b !== void 0 ? _b : 0); });
                         novel.chapters = chapters;
                         return [2 /*return*/, novel];
                 }
@@ -432,20 +408,14 @@ var Novelyra = /** @class */ (function () {
                         }
                         paragraphs = [];
                         chapterContent.find('p').each(function (_, element) {
-                            var text = loadedCheerio(element)
-                                .text()
-                                .trim()
-                                .replace(/\s+/g, ' ');
+                            var text = loadedCheerio(element).text().trim().replace(/\s+/g, ' ');
                             if (!text) {
                                 return;
                             }
                             paragraphs.push(text);
                         });
                         if (paragraphs.length === 0) {
-                            rawText = chapterContent
-                                .text()
-                                .trim()
-                                .replace(/\s+/g, ' ');
+                            rawText = chapterContent.text().trim().replace(/\s+/g, ' ');
                             if (rawText) {
                                 paragraphs.push(rawText);
                             }
@@ -458,9 +428,7 @@ var Novelyra = /** @class */ (function () {
                         translated = _a.sent();
                         return [2 /*return*/, translated
                                 .map(function (paragraph) {
-                                return "<p>".concat(paragraph
-                                    .replace(/</g, '&lt;')
-                                    .replace(/>/g, '&gt;'), "</p>");
+                                return "<p>".concat(paragraph.replace(/</g, '&lt;').replace(/>/g, '&gt;'), "</p>");
                             })
                                 .join('')];
                 }
