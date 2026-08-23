@@ -102,7 +102,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.0.1';
+  version = '2.0.2';
 
   filters: Filters = {
     genres: {
@@ -113,73 +113,50 @@ class Novelyra implements Plugin.PluginBase {
         { label: 'Todos', value: '' },
         { label: 'Acción', value: 'accion' },
         { label: 'Aventura', value: 'aventura' },
-        { label: 'Fantasía', value: 'fantasia' },
-        { label: 'Artes Marciales', value: 'artes-marciales' },
-        { label: 'Harén', value: 'haren' },
+        { label: 'Fantasía', value: 'fantasy' },
+        { label: 'Artes Marciales', value: 'martial-arts' },
+        { label: 'Harén', value: 'harem' },
         { label: 'Romance', value: 'romance' },
-        { label: 'Sobrenatural', value: 'sobrenatural' },
+        { label: 'Sobrenatural', value: 'supernatural' },
         { label: 'Xuanhuan', value: 'xuanhuan' },
         { label: 'Xianxia', value: 'xianxia' },
-        { label: 'Comedia', value: 'comedia' },
-        { label: 'Ciencia Ficción', value: 'ciencia-ficcion' },
-        { label: 'Misterio', value: 'misterio' },
-        { label: 'Maduro', value: 'maduro' },
-        { label: 'Psicológico', value: 'psicologico' },
+        { label: 'Comedia', value: 'comedy' },
+        { label: 'Ciencia Ficción', value: 'sci-fi' },
+        { label: 'Misterio', value: 'mystery' },
+        { label: 'Maduro', value: 'mature' },
+        { label: 'Psicológico', value: 'psychological' },
         { label: 'Shounen', value: 'shounen' },
-        { label: 'Reencarnación', value: 'reencarnacion' },
+        { label: 'Reencarnación', value: 'reincarnation' },
         { label: 'Mecha', value: 'mecha' },
-        { label: 'Vida Escolar', value: 'vida-escolar' },
+        { label: 'Vida Escolar', value: 'school-life' },
         { label: 'Josei', value: 'josei' },
         { label: 'Drama', value: 'drama' },
-        { label: 'Urbano', value: 'urbano' },
-        { label: 'Oriental', value: 'oriental' },
+        { label: 'Urbano', value: 'urban' },
+        { label: 'Oriental', value: 'eastern' },
         { label: 'Horror', value: 'horror' },
-        { label: 'Tragedia', value: 'tragedia' },
-        { label: 'Juegos', value: 'juegos' },
-      ],
-    },
-
-    browse: {
-      type: FilterTypes.Picker,
-      label: 'Novelas Populares',
-      value: 'browse.php',
-      options: [
-        {
-          label: 'Todas las Novelas',
-          value: 'browse.php',
-        },
-        {
-          label: '🔥 Hoy',
-          value: 'popular.php?period=today',
-        },
-        {
-          label: '📅 Este Mes',
-          value: 'popular.php?period=month',
-        },
-        {
-          label: '👑 De Siempre',
-          value: 'popular.php?period=alltime',
-        },
+        { label: 'Tragedia', value: 'tragedy' },
+        { label: 'Juegos', value: 'game' },
       ],
     },
   } satisfies Filters;
 
   private loadNovels(
     loadedCheerio: ReturnType<typeof loadCheerio>,
-    selector: string,
   ): Plugin.NovelItem[] {
     const novels: Plugin.NovelItem[] = [];
 
-    loadedCheerio(selector).each((_, element) => {
+    loadedCheerio(
+      '#novelas .novel-card, .novels-grid .novel-card, .novel-card',
+    ).each((_, element) => {
       const novel = loadedCheerio(element);
 
       const name =
         novel.find('h3').first().text().trim() ||
         novel.find('.novel-title').first().text().trim();
 
-      const path =
-        novel.find('a').first().attr('href')?.trim().replace(this.site, '') ||
-        '';
+      const rawPath = novel.find('a').first().attr('href')?.trim() || '';
+
+      const path = rawPath.replace(this.site, '');
 
       const cover = novel.find('img').first().attr('src')?.trim() || '';
 
@@ -187,15 +164,15 @@ class Novelyra implements Plugin.PluginBase {
         return;
       }
 
-      const duplicate = novels.some(item => item.path === path);
-
-      if (!duplicate) {
-        novels.push({
-          name,
-          path,
-          cover,
-        });
+      if (novels.some(item => item.path === path)) {
+        return;
       }
+
+      novels.push({
+        name,
+        path,
+        cover,
+      });
     });
 
     return novels;
@@ -205,32 +182,20 @@ class Novelyra implements Plugin.PluginBase {
     pageNo: number,
     { showLatestNovels, filters }: Plugin.PopularNovelsOptions<Filters>,
   ): Promise<Plugin.NovelItem[]> {
-    let url = this.site;
-
-    let selector = '#novelas .novel-card';
+    const page = Math.max(1, pageNo || 1);
 
     const genre = filters?.genres?.value as string | undefined;
 
-    const browse = filters?.browse?.value as string | undefined;
+    let url: string;
 
-    if (!showLatestNovels) {
-      if (browse?.startsWith('popular.php')) {
-        url = `${this.site}${browse}`;
+    if (genre) {
+      url = `${this.site}genre/${encodeURIComponent(genre)}` + `?page=${page}`;
+    } else {
+      url = `${this.site}?page=${page}`;
+    }
 
-        selector = '.popular-item';
-      } else {
-        const params = new URLSearchParams();
-
-        params.append('page', String(pageNo));
-
-        if (genre) {
-          params.append('genre', genre);
-        }
-
-        url = `${this.site}${browse || 'browse.php'}` + `?${params.toString()}`;
-
-        selector = '.novels-grid .novel-card';
-      }
+    if (showLatestNovels) {
+      url = page === 1 ? this.site : `${this.site}?page=${page}`;
     }
 
     const result = await fetchApi(url);
@@ -243,7 +208,7 @@ class Novelyra implements Plugin.PluginBase {
 
     const loadedCheerio = loadCheerio(body);
 
-    return this.loadNovels(loadedCheerio, selector);
+    return this.loadNovels(loadedCheerio);
   }
 
   async searchNovels(
@@ -268,7 +233,7 @@ class Novelyra implements Plugin.PluginBase {
 
     const loadedCheerio = loadCheerio(body);
 
-    return this.loadNovels(loadedCheerio, '#novelas .novel-card');
+    return this.loadNovels(loadedCheerio);
   }
 
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
@@ -288,41 +253,32 @@ class Novelyra implements Plugin.PluginBase {
 
     const name = loadedCheerio('h1').first().text().trim() || 'Desconocido';
 
-    const cover =
-      loadedCheerio('.novel-cover img').first().attr('src')?.trim() ||
-      loadedCheerio('.novel-card img').first().attr('src')?.trim() ||
-      loadedCheerio('img').first().attr('src')?.trim() ||
-      '';
-
-    const novel: Plugin.SourceNovel = {
-      path: novelPath,
-      name,
-      cover,
-    };
+    const cover = loadedCheerio('img').first().attr('src')?.trim() || '';
 
     const genres = loadedCheerio('.novel-meta .novel-genres')
       .text()
       .trim()
       .replace(/\s+/g, ', ');
 
-    if (genres) {
-      novel.genres = genres;
-    }
-
     const summary = loadedCheerio('.novel-description-detail').text().trim();
 
-    if (summary) {
-      novel.summary = summary;
-    }
+    const novel: Plugin.SourceNovel = {
+      path: novelPath,
+      name,
+      cover,
+      genres,
+      summary,
+    };
 
     const chapters: Plugin.ChapterItem[] = [];
 
     loadedCheerio('.chapter-item-wrapper').each((_, element) => {
       const chapter = loadedCheerio(element);
 
-      const chapterPath =
-        chapter.find('a').first().attr('href')?.trim().replace(this.site, '') ||
-        '';
+      const rawChapterPath =
+        chapter.find('a').first().attr('href')?.trim() || '';
+
+      const chapterPath = rawChapterPath.replace(this.site, '');
 
       if (!chapterPath) {
         return;
@@ -341,27 +297,14 @@ class Novelyra implements Plugin.PluginBase {
         numberText ||
         `Capítulo ${chapterNumber}`;
 
-      const chapterDate = chapter.find('.chapter-date').text().trim();
+      const releaseTime = chapter.find('.chapter-date').text().trim();
 
-      const item: Plugin.ChapterItem = {
+      chapters.push({
         name: chapterName,
         path: chapterPath,
         chapterNumber,
-      };
-
-      if (chapterDate) {
-        try {
-          const parsedDate = new Date(chapterDate);
-
-          if (!Number.isNaN(parsedDate.getTime())) {
-            item.releaseTime = parsedDate.toISOString();
-          }
-        } catch {
-          // Ignore invalid dates.
-        }
-      }
-
-      chapters.push(item);
+        releaseTime: releaseTime || undefined,
+      });
     });
 
     novel.chapters = chapters;
