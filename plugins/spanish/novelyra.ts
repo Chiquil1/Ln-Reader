@@ -11,14 +11,16 @@ const SITE = 'https://novelyra.com/';
 const MAX_TRANSLATION_CHARS = 2000;
 
 async function translateText(text: string): Promise<string> {
-  if (!text || text.trim() === '') {
+  const normalized = text.trim();
+
+  if (!normalized) {
     return '';
   }
 
   try {
     const url =
       'https://translate.googleapis.com/translate_a/single' +
-      `?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(text)}`;
+      `?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(normalized)}`;
 
     const res = await fetchApi(url);
 
@@ -35,10 +37,97 @@ async function translateText(text: string): Promise<string> {
         .join('');
     }
 
-    return text;
+    return normalized;
   } catch {
-    return text;
+    return normalized;
   }
+}
+
+async function translateTextToEnglish(text: string): Promise<string> {
+  const normalized = text.trim();
+
+  if (!normalized) {
+    return '';
+  }
+
+  try {
+    const url =
+      'https://translate.googleapis.com/translate_a/single' +
+      `?client=gtx&sl=es&tl=en&dt=t&q=${encodeURIComponent(normalized)}`;
+
+    const res = await fetchApi(url);
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${url}`);
+    }
+
+    const json = await res.json();
+
+    if (json && json[0]) {
+      return json[0]
+        .map((item: unknown[]) => item[0])
+        .filter(Boolean)
+        .join('');
+    }
+
+    return normalized;
+  } catch {
+    return normalized;
+  }
+}
+
+function normalizeSearchText(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+function getSearchTerms(text: string): string[] {
+  return normalizeSearchText(text).split(/\s+/).filter(Boolean);
+}
+
+function searchTermsMatch(title: string, queryTerms: string[]): boolean {
+  const normalizedTitle = normalizeSearchText(title);
+
+  if (!normalizedTitle || !queryTerms.length) {
+    return false;
+  }
+
+  return queryTerms.every(term => normalizedTitle.includes(term));
+}
+
+function searchScore(title: string, query: string): number {
+  const normalizedTitle = normalizeSearchText(title);
+
+  const normalizedQuery = normalizeSearchText(query);
+
+  if (!normalizedTitle || !normalizedQuery) {
+    return 0;
+  }
+
+  if (normalizedTitle === normalizedQuery) {
+    return 1000;
+  }
+
+  if (normalizedTitle.startsWith(normalizedQuery)) {
+    return 800;
+  }
+
+  if (normalizedTitle.includes(normalizedQuery)) {
+    return 600;
+  }
+
+  const terms = getSearchTerms(query);
+
+  const matchingTerms = terms.filter(term =>
+    normalizedTitle.includes(term),
+  ).length;
+
+  return matchingTerms * 100;
 }
 
 async function translateParagraphs(paragraphs: string[]): Promise<string[]> {
@@ -93,6 +182,20 @@ async function translateParagraphs(paragraphs: string[]): Promise<string[]> {
   return translatedParagraphs;
 }
 
+async function translateShortText(text: string): Promise<string> {
+  const normalizedText = text.trim();
+
+  if (!normalizedText) {
+    return '';
+  }
+
+  return translateText(normalizedText);
+}
+
+async function translateTitles(titles: string[]): Promise<string[]> {
+  return Promise.all(titles.map(title => translateShortText(title)));
+}
+
 class Novelyra implements Plugin.PluginBase {
   id = 'novelyra';
 
@@ -102,7 +205,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.0.2';
+  version = '2.0.4';
 
   filters: Filters = {
     genres: {
@@ -117,51 +220,100 @@ class Novelyra implements Plugin.PluginBase {
         { label: 'Acción', value: 'accion' },
         { label: 'Aventura', value: 'aventura' },
         { label: 'Fantasía', value: 'fantasy' },
-        { label: 'Artes Marciales', value: 'martial-arts' },
+        {
+          label: 'Artes Marciales',
+          value: 'martial-arts',
+        },
         { label: 'Harén', value: 'harem' },
         { label: 'Romance', value: 'romance' },
-        { label: 'Sobrenatural', value: 'supernatural' },
-        { label: 'Xuanhuan', value: 'xuanhuan' },
-        { label: 'Xianxia', value: 'xianxia' },
+        {
+          label: 'Sobrenatural',
+          value: 'supernatural',
+        },
+        {
+          label: 'Xuanhuan',
+          value: 'xuanhuan',
+        },
+        {
+          label: 'Xianxia',
+          value: 'xianxia',
+        },
         { label: 'Comedia', value: 'comedy' },
-        { label: 'Ciencia Ficción', value: 'sci-fi' },
-        { label: 'Misterio', value: 'mystery' },
+        {
+          label: 'Ciencia Ficción',
+          value: 'sci-fi',
+        },
+        {
+          label: 'Misterio',
+          value: 'mystery',
+        },
         { label: 'Maduro', value: 'mature' },
-        { label: 'Psicológico', value: 'psychological' },
+        {
+          label: 'Psicológico',
+          value: 'psychological',
+        },
         { label: 'Shounen', value: 'shounen' },
-        { label: 'Reencarnación', value: 'reincarnation' },
+        {
+          label: 'Reencarnación',
+          value: 'reincarnation',
+        },
         { label: 'Mecha', value: 'mecha' },
-        { label: 'Vida Escolar', value: 'school-life' },
+        {
+          label: 'Vida Escolar',
+          value: 'school-life',
+        },
         { label: 'Josei', value: 'josei' },
         { label: 'Drama', value: 'drama' },
         { label: 'Urbano', value: 'urban' },
-        { label: 'Oriental', value: 'eastern' },
+        {
+          label: 'Oriental',
+          value: 'eastern',
+        },
         { label: 'Horror', value: 'horror' },
-        { label: 'Tragedia', value: 'tragedy' },
+        {
+          label: 'Tragedia',
+          value: 'tragedy',
+        },
         { label: 'Juegos', value: 'game' },
       ],
     },
   } satisfies Filters;
 
-  private loadNovels(
-    loadedCheerio: ReturnType<typeof loadCheerio>,
-  ): Plugin.NovelItem[] {
-    const novels: Plugin.NovelItem[] = [];
+  private extractNovels(loadedCheerio: ReturnType<typeof loadCheerio>): Array<
+    Plugin.NovelItem & {
+      sourceName: string;
+    }
+  > {
+    const novels: Array<
+      Plugin.NovelItem & {
+        sourceName: string;
+      }
+    > = [];
 
-    loadedCheerio('main h3').each((_, element) => {
-      const title = loadedCheerio(element);
+    /*
+     * NovelYra search/browse cards use:
+     *
+     * <a class="group block min-w-0">
+     *   ...
+     *   <h3>Title</h3>
+     * </a>
+     *
+     * This avoids collecting navigation/footer links.
+     */
+    loadedCheerio('main a.group.block.min-w-0').each((_, element) => {
+      const link = loadedCheerio(element);
 
-      const link = title.closest('a');
+      const title = link.find('h3').first();
 
-      if (!link.length) {
+      if (!title.length) {
         return;
       }
 
-      const name = title.text().trim();
+      const sourceName = title.text().trim();
 
       const rawPath = link.attr('href')?.trim() || '';
 
-      if (!name || !rawPath) {
+      if (!sourceName || !rawPath) {
         return;
       }
 
@@ -177,30 +329,49 @@ class Novelyra implements Plugin.PluginBase {
 
       path = path.replace(/^\/+/, '');
 
-      if (!path) {
+      if (!path || novels.some(item => item.path === path)) {
         return;
       }
 
       const image = link.find('img').first();
 
-      const cover =
+      let cover =
         image.attr('src')?.trim() ||
         image.attr('data-src')?.trim() ||
         image.attr('data-lazy-src')?.trim() ||
         '';
 
-      if (novels.some(item => item.path === path)) {
-        return;
+      if (cover && cover.startsWith('/')) {
+        cover = `${this.site}${cover.slice(1)}`;
       }
 
       novels.push({
-        name,
+        name: sourceName,
+        sourceName,
         path,
         cover,
       });
     });
 
     return novels;
+  }
+
+  private async finalizeNovels(
+    novels: Array<
+      Plugin.NovelItem & {
+        sourceName: string;
+      }
+    >,
+  ): Promise<Plugin.NovelItem[]> {
+    const translatedTitles = await translateTitles(
+      novels.map(novel => novel.sourceName),
+    );
+
+    return novels.map((novel, index) => ({
+      name: translatedTitles[index] || novel.sourceName,
+      path: novel.path,
+      cover: novel.cover,
+    }));
   }
 
   async popularNovels(
@@ -214,9 +385,10 @@ class Novelyra implements Plugin.PluginBase {
     let url: string;
 
     if (genre) {
-      url = `${this.site}genre/${encodeURIComponent(genre)}` + `?page=${page}`;
+      url =
+        `${this.site}genre/` + `${encodeURIComponent(genre)}` + `?page=${page}`;
     } else {
-      url = `${this.site}?page=${page}`;
+      url = page === 1 ? this.site : `${this.site}?page=${page}`;
     }
 
     if (showLatestNovels) {
@@ -233,20 +405,40 @@ class Novelyra implements Plugin.PluginBase {
 
     const loadedCheerio = loadCheerio(body);
 
-    return this.loadNovels(loadedCheerio);
+    const novels = this.extractNovels(loadedCheerio);
+
+    return this.finalizeNovels(novels);
   }
 
   async searchNovels(
     searchTerm: string,
-    _pageNo: number,
+    pageNo: number,
   ): Promise<Plugin.NovelItem[]> {
-    const query = searchTerm.trim().toLowerCase();
+    const query = searchTerm.trim();
 
     if (!query) {
       return [];
     }
 
-    const url = `${this.site}?search=${encodeURIComponent(query)}`;
+    /*
+     * NovelYra uses /search?q=...
+     *
+     * Translate Spanish queries to English first,
+     * because the source titles are predominantly English.
+     */
+    const englishQuery = (await translateTextToEnglish(query)).trim();
+
+    const sourceQuery =
+      englishQuery &&
+      normalizeSearchText(englishQuery) !== normalizeSearchText(query)
+        ? englishQuery
+        : query;
+
+    const page = Math.max(1, pageNo || 1);
+
+    const url =
+      `${this.site}search?q=${encodeURIComponent(sourceQuery)}` +
+      (page > 1 ? `&page=${page}` : '');
 
     const result = await fetchApi(url);
 
@@ -258,7 +450,131 @@ class Novelyra implements Plugin.PluginBase {
 
     const loadedCheerio = loadCheerio(body);
 
-    return this.loadNovels(loadedCheerio);
+    const novels = this.extractNovels(loadedCheerio);
+
+    /*
+     * NovelYra's server-side search can return
+     * semantically related but title-irrelevant novels.
+     *
+     * We therefore enforce title relevance locally.
+     */
+    const queryCandidates = [query, sourceQuery].filter(Boolean);
+
+    const scored = novels
+      .map(novel => {
+        const scores = queryCandidates.map(candidate => ({
+          candidate,
+          score: searchScore(novel.sourceName, candidate),
+          matches: searchTermsMatch(
+            novel.sourceName,
+            getSearchTerms(candidate),
+          ),
+        }));
+
+        const best = scores.reduce(
+          (current, value) => (value.score > current.score ? value : current),
+          {
+            candidate: '',
+            score: 0,
+            matches: false,
+          },
+        );
+
+        return {
+          novel,
+          score: best.score,
+          matches: best.matches,
+        };
+      })
+      .filter(item => item.matches && item.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    return this.finalizeNovels(scored.map(item => item.novel));
+  }
+
+  private extractSynopsis(
+    loadedCheerio: ReturnType<typeof loadCheerio>,
+  ): string {
+    const synopsisElement = loadedCheerio('#synopsis').first();
+
+    if (!synopsisElement.length) {
+      return '';
+    }
+
+    /*
+     * Remove UI controls from the synopsis.
+     */
+    synopsisElement.find('button, script, style').remove();
+
+    /*
+     * Preserve line structure before turning
+     * the HTML into text.
+     */
+    synopsisElement.find('br').replaceWith('\n');
+
+    synopsisElement.find('p, div').each((_, element) => {
+      const current = loadedCheerio(element).text();
+
+      if (current.trim() && !current.endsWith('\n')) {
+        loadedCheerio(element).append('\n');
+      }
+    });
+
+    const lines = synopsisElement
+      .text()
+      .split(/\r?\n/)
+      .map(line =>
+        line
+          .replace(/\u00a0/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim(),
+      )
+      .filter(Boolean);
+
+    if (!lines.length) {
+      return '';
+    }
+
+    /*
+     * Drop metadata before Premise.
+     *
+     * We want the actual descriptive content:
+     * Premise + Original Synopsis + following
+     * descriptive paragraphs.
+     */
+    const premiseIndex = lines.findIndex(line => /^Premise\s*:/i.test(line));
+
+    let summaryLines = premiseIndex >= 0 ? lines.slice(premiseIndex) : lines;
+
+    /*
+     * Remove leading metadata in case the page
+     * uses a slightly different ordering.
+     */
+    summaryLines = summaryLines.filter(
+      line =>
+        !/^Author\s*:/i.test(line) &&
+        !/^Genre\s*:/i.test(line) &&
+        !/^Status\s*:/i.test(line) &&
+        !/^Platform\s*:/i.test(line) &&
+        !/^Core Theme\s*:/i.test(line),
+    );
+
+    /*
+     * Stop before recommendation/marketing headings
+     * that are outside the actual synopsis.
+     */
+    const stopIndex = summaryLines.findIndex(
+      line =>
+        /^Why\s+/i.test(line) ||
+        /^What\s+Makes\s+/i.test(line) ||
+        /^Why\s+".+"\s+is\s+Different/i.test(line),
+    );
+
+    if (stopIndex >= 0) {
+      summaryLines = summaryLines.slice(0, stopIndex);
+    }
+
+    return summaryLines.join('\n');
   }
 
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
@@ -276,40 +592,52 @@ class Novelyra implements Plugin.PluginBase {
 
     const loadedCheerio = loadCheerio(body);
 
-    const name = loadedCheerio('h1').first().text().trim() || 'Desconocido';
+    const sourceName =
+      loadedCheerio('h1').first().text().trim() || 'Desconocido';
 
-    const cover =
+    const name = await translateShortText(sourceName);
+
+    let cover =
+      loadedCheerio('#synopsis img').first().attr('src')?.trim() ||
       loadedCheerio('main img').first().attr('src')?.trim() ||
       loadedCheerio('img').first().attr('src')?.trim() ||
       '';
 
-    const synopsis = loadedCheerio('#synopsis')
-      .first()
-      .text()
-      .trim()
-      .replace(/\s+/g, ' ');
-
-    let summary = synopsis;
-
-    if (summary) {
-      const titlePrefix = `${name}:`;
-
-      if (summary.startsWith(titlePrefix)) {
-        summary = summary.slice(titlePrefix.length).trim();
-      }
-
-      summary = summary.replace(/^Information\s*&\s*Overview\s*/i, '').trim();
+    if (cover && cover.startsWith('/')) {
+      cover = `${this.site}${cover.slice(1)}`;
     }
 
-    const authorMatch = synopsis.match(
+    const synopsisText = loadedCheerio('#synopsis')
+      .first()
+      .text()
+      .replace(/\u00a0/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const summarySource = this.extractSynopsis(loadedCheerio);
+
+    let summary = summarySource;
+
+    if (summary) {
+      const summaryParagraphs = summary
+        .split(/\r?\n/)
+        .map(text => text.trim())
+        .filter(Boolean);
+
+      const translatedSummary = await translateParagraphs(summaryParagraphs);
+
+      summary = translatedSummary.join('\n\n').trim() || summary;
+    }
+
+    const authorMatch = synopsisText.match(
       /Author:\s*(.+?)(?:\s+Genre:|\s+Status:|\s+Platform:|\s+Theme:|$)/i,
     );
 
-    const genreMatch = synopsis.match(
+    const genreMatch = synopsisText.match(
       /Genre:\s*(.+?)(?:\s+Status:|\s+Platform:|\s+Theme:|$)/i,
     );
 
-    const statusMatch = synopsis.match(
+    const statusMatch = synopsisText.match(
       /Status:\s*(.+?)(?:\s+Platform:|\s+Theme:|$)/i,
     );
 
@@ -321,11 +649,17 @@ class Novelyra implements Plugin.PluginBase {
 
     const novel: Plugin.SourceNovel = {
       path: novelPath,
+
       name,
+
       cover,
+
       summary,
+
       author,
+
       genres,
+
       status,
     };
 
@@ -374,6 +708,13 @@ class Novelyra implements Plugin.PluginBase {
 
       let chapterName = text || `Capítulo ${chapterNumber}`;
 
+      /*
+       * NovelYra:
+       * "Chapter 1 - Shadow Slave Chapter 1"
+       *
+       * Keep just:
+       * "Chapter 1"
+       */
       const separatorIndex = chapterName.indexOf(' - ');
 
       if (separatorIndex > 0) {
@@ -419,8 +760,6 @@ class Novelyra implements Plugin.PluginBase {
 
     const loadedCheerio = loadCheerio(body);
 
-    // El contenido real del capítulo está dentro de <article>.
-    // Eliminamos elementos que no forman parte del texto.
     loadedCheerio(
       'script, style, iframe, ins, nav, header, footer, aside',
     ).remove();
@@ -436,11 +775,9 @@ class Novelyra implements Plugin.PluginBase {
     chapterContent.find('p').each((_, element) => {
       const text = loadedCheerio(element).text().trim().replace(/\s+/g, ' ');
 
-      if (!text) {
-        return;
+      if (text) {
+        paragraphs.push(text);
       }
-
-      paragraphs.push(text);
     });
 
     if (paragraphs.length === 0) {
@@ -455,7 +792,6 @@ class Novelyra implements Plugin.PluginBase {
       return 'Contenido no encontrado';
     }
 
-    // Utiliza el traductor integrado del plugin.
     const translated = await translateParagraphs(paragraphs);
 
     return translated

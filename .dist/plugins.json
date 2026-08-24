@@ -1986,7 +1986,7 @@
 		"name": "Novelyra",
 		"site": "https://novelyra.com/",
 		"lang": "Español",
-		"version": "1.3.0",
+		"version": "2.0.2",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/novelyra.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/https://novelyra.com/favicon.ico"
 	},
@@ -2005,7 +2005,7 @@
 		"site": "https://panchonovels.online/",
 		"lang": "Español",
 		"version": "1.1.0",
-		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/panchonovels.js",
+		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/PanchoNovels.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/https://panchonovels.online/favicon.ico"
 	},
 	{
@@ -2025,6 +2025,24 @@
 		"version": "1.0.0",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/novelawuxia.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/reinowuxia/icon.png"
+	},
+	{
+		"id": "ritiscan",
+		"name": "Rit'i Scan",
+		"site": "https://riti-scan.com/",
+		"lang": "Español",
+		"version": "2.0.6",
+		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/ritiscan.js",
+		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/src/es/ritiscan/icon.png"
+	},
+	{
+		"id": "ritto",
+		"name": "Ritto",
+		"site": "https://ritto.cc/",
+		"lang": "Español",
+		"version": "1.0.4",
+		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/.js/plugins/spanish/ritto.js",
+		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/main/public/static/https://ritto.cc/logo/ritto1w.png"
 	},
 	{
 		"id": "rncalation",
