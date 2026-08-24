@@ -129,24 +129,19 @@ function normalizeSearchText(text) {
         .replace(/\s+/g, ' ');
 }
 function getSearchTerms(text) {
-    return normalizeSearchText(text)
-        .split(/\s+/)
-        .filter(Boolean);
+    return normalizeSearchText(text).split(/\s+/).filter(Boolean);
 }
 function searchTermsMatch(title, queryTerms) {
     var normalizedTitle = normalizeSearchText(title);
     if (!normalizedTitle || !queryTerms.length) {
         return false;
     }
-    return queryTerms.every(function (term) {
-        return normalizedTitle.includes(term);
-    });
+    return queryTerms.every(function (term) { return normalizedTitle.includes(term); });
 }
 function searchScore(title, query) {
     var normalizedTitle = normalizeSearchText(title);
     var normalizedQuery = normalizeSearchText(query);
-    if (!normalizedTitle ||
-        !normalizedQuery) {
+    if (!normalizedTitle || !normalizedQuery) {
         return 0;
     }
     if (normalizedTitle === normalizedQuery) {
@@ -182,8 +177,8 @@ function translateParagraphs(paragraphs) {
                         return [3 /*break*/, 5];
                     }
                     separator = currentBatch === '' ? '' : '\n';
-                    if (!("".concat(currentBatch).concat(separator).concat(normalizedParagraph)
-                        .length > MAX_TRANSLATION_CHARS)) return [3 /*break*/, 4];
+                    if (!("".concat(currentBatch).concat(separator).concat(normalizedParagraph).length >
+                        MAX_TRANSLATION_CHARS)) return [3 /*break*/, 4];
                     if (!(currentBatch !== '')) return [3 /*break*/, 3];
                     return [4 /*yield*/, translateText(currentBatch)];
                 case 2:
@@ -194,8 +189,7 @@ function translateParagraphs(paragraphs) {
                         .filter(Boolean));
                     _a.label = 3;
                 case 3:
-                    currentBatch =
-                        normalizedParagraph;
+                    currentBatch = normalizedParagraph;
                     return [3 /*break*/, 5];
                 case 4:
                     currentBatch =
@@ -236,9 +230,7 @@ function translateShortText(text) {
 function translateTitles(titles) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            return [2 /*return*/, Promise.all(titles.map(function (title) {
-                    return translateShortText(title);
-                }))];
+            return [2 /*return*/, Promise.all(titles.map(function (title) { return translateShortText(title); }))];
         });
     });
 }
@@ -343,8 +335,7 @@ var Novelyra = /** @class */ (function () {
             if (!sourceName || !rawPath) {
                 return;
             }
-            if (rawPath.startsWith('http') &&
-                !rawPath.startsWith(_this.site)) {
+            if (rawPath.startsWith('http') && !rawPath.startsWith(_this.site)) {
                 return;
             }
             var path = rawPath;
@@ -352,21 +343,16 @@ var Novelyra = /** @class */ (function () {
                 path = path.slice(_this.site.length);
             }
             path = path.replace(/^\/+/, '');
-            if (!path ||
-                novels.some(function (item) { return item.path === path; })) {
+            if (!path || novels.some(function (item) { return item.path === path; })) {
                 return;
             }
             var image = link.find('img').first();
             var cover = ((_b = image.attr('src')) === null || _b === void 0 ? void 0 : _b.trim()) ||
-                ((_c = image
-                    .attr('data-src')) === null || _c === void 0 ? void 0 : _c.trim()) ||
-                ((_d = image
-                    .attr('data-lazy-src')) === null || _d === void 0 ? void 0 : _d.trim()) ||
+                ((_c = image.attr('data-src')) === null || _c === void 0 ? void 0 : _c.trim()) ||
+                ((_d = image.attr('data-lazy-src')) === null || _d === void 0 ? void 0 : _d.trim()) ||
                 '';
-            if (cover &&
-                cover.startsWith('/')) {
-                cover =
-                    "".concat(_this.site).concat(cover.slice(1));
+            if (cover && cover.startsWith('/')) {
+                cover = "".concat(_this.site).concat(cover.slice(1));
             }
             novels.push({
                 name: sourceName,
@@ -386,8 +372,7 @@ var Novelyra = /** @class */ (function () {
                     case 1:
                         translatedTitles = _a.sent();
                         return [2 /*return*/, novels.map(function (novel, index) { return ({
-                                name: translatedTitles[index] ||
-                                    novel.sourceName,
+                                name: translatedTitles[index] || novel.sourceName,
                                 path: novel.path,
                                 cover: novel.cover,
                             }); })];
@@ -407,21 +392,13 @@ var Novelyra = /** @class */ (function () {
                         genre = (_c = filters === null || filters === void 0 ? void 0 : filters.genres) === null || _c === void 0 ? void 0 : _c.value;
                         if (genre) {
                             url =
-                                "".concat(this.site, "genre/") +
-                                    "".concat(encodeURIComponent(genre)) +
-                                    "?page=".concat(page);
+                                "".concat(this.site, "genre/") + "".concat(encodeURIComponent(genre)) + "?page=".concat(page);
                         }
                         else {
-                            url =
-                                page === 1
-                                    ? this.site
-                                    : "".concat(this.site, "?page=").concat(page);
+                            url = page === 1 ? this.site : "".concat(this.site, "?page=").concat(page);
                         }
                         if (showLatestNovels) {
-                            url =
-                                page === 1
-                                    ? this.site
-                                    : "".concat(this.site, "?page=").concat(page);
+                            url = page === 1 ? this.site : "".concat(this.site, "?page=").concat(page);
                         }
                         return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
                     case 1:
@@ -453,15 +430,12 @@ var Novelyra = /** @class */ (function () {
                     case 1:
                         englishQuery = (_a.sent()).trim();
                         sourceQuery = englishQuery &&
-                            normalizeSearchText(englishQuery) !==
-                                normalizeSearchText(query)
+                            normalizeSearchText(englishQuery) !== normalizeSearchText(query)
                             ? englishQuery
                             : query;
                         page = Math.max(1, pageNo || 1);
                         url = "".concat(this.site, "search?q=").concat(encodeURIComponent(sourceQuery)) +
-                            (page > 1
-                                ? "&page=".concat(page)
-                                : '');
+                            (page > 1 ? "&page=".concat(page) : '');
                         return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
                     case 2:
                         result = _a.sent();
@@ -473,10 +447,7 @@ var Novelyra = /** @class */ (function () {
                         body = _a.sent();
                         loadedCheerio = (0, cheerio_1.load)(body);
                         novels = this.extractNovels(loadedCheerio);
-                        queryCandidates = [
-                            query,
-                            sourceQuery,
-                        ].filter(Boolean);
+                        queryCandidates = [query, sourceQuery].filter(Boolean);
                         scored = novels
                             .map(function (novel) {
                             var scores = queryCandidates.map(function (candidate) { return ({
@@ -484,12 +455,7 @@ var Novelyra = /** @class */ (function () {
                                 score: searchScore(novel.sourceName, candidate),
                                 matches: searchTermsMatch(novel.sourceName, getSearchTerms(candidate)),
                             }); });
-                            var best = scores.reduce(function (current, value) {
-                                return value.score >
-                                    current.score
-                                    ? value
-                                    : current;
-                            }, {
+                            var best = scores.reduce(function (current, value) { return (value.score > current.score ? value : current); }, {
                                 candidate: '',
                                 score: 0,
                                 matches: false,
@@ -500,13 +466,8 @@ var Novelyra = /** @class */ (function () {
                                 matches: best.matches,
                             };
                         })
-                            .filter(function (item) {
-                            return item.matches &&
-                                item.score > 0;
-                        })
-                            .sort(function (a, b) {
-                            return b.score - a.score;
-                        });
+                            .filter(function (item) { return item.matches && item.score > 0; })
+                            .sort(function (a, b) { return b.score - a.score; });
                         return [2 /*return*/, this.finalizeNovels(scored.map(function (item) { return item.novel; }))];
                 }
             });
@@ -520,22 +481,15 @@ var Novelyra = /** @class */ (function () {
         /*
          * Remove UI controls from the synopsis.
          */
-        synopsisElement
-            .find('button, script, style')
-            .remove();
+        synopsisElement.find('button, script, style').remove();
         /*
          * Preserve line structure before turning
          * the HTML into text.
          */
-        synopsisElement
-            .find('br')
-            .replaceWith('\n');
-        synopsisElement
-            .find('p, div')
-            .each(function (_, element) {
+        synopsisElement.find('br').replaceWith('\n');
+        synopsisElement.find('p, div').each(function (_, element) {
             var current = loadedCheerio(element).text();
-            if (current.trim() &&
-                !current.endsWith('\n')) {
+            if (current.trim() && !current.endsWith('\n')) {
                 loadedCheerio(element).append('\n');
             }
         });
@@ -559,24 +513,19 @@ var Novelyra = /** @class */ (function () {
          * Premise + Original Synopsis + following
          * descriptive paragraphs.
          */
-        var premiseIndex = lines.findIndex(function (line) {
-            return /^Premise\s*:/i.test(line);
-        });
-        var summaryLines = premiseIndex >= 0
-            ? lines.slice(premiseIndex)
-            : lines;
+        var premiseIndex = lines.findIndex(function (line) { return /^Premise\s*:/i.test(line); });
+        var summaryLines = premiseIndex >= 0 ? lines.slice(premiseIndex) : lines;
         /*
          * Remove leading metadata in case the page
          * uses a slightly different ordering.
          */
-        summaryLines =
-            summaryLines.filter(function (line) {
-                return !/^Author\s*:/i.test(line) &&
-                    !/^Genre\s*:/i.test(line) &&
-                    !/^Status\s*:/i.test(line) &&
-                    !/^Platform\s*:/i.test(line) &&
-                    !/^Core Theme\s*:/i.test(line);
-            });
+        summaryLines = summaryLines.filter(function (line) {
+            return !/^Author\s*:/i.test(line) &&
+                !/^Genre\s*:/i.test(line) &&
+                !/^Status\s*:/i.test(line) &&
+                !/^Platform\s*:/i.test(line) &&
+                !/^Core Theme\s*:/i.test(line);
+        });
         /*
          * Stop before recommendation/marketing headings
          * that are outside the actual synopsis.
@@ -587,8 +536,7 @@ var Novelyra = /** @class */ (function () {
                 /^Why\s+".+"\s+is\s+Different/i.test(line);
         });
         if (stopIndex >= 0) {
-            summaryLines =
-                summaryLines.slice(0, stopIndex);
+            summaryLines = summaryLines.slice(0, stopIndex);
         }
         return summaryLines.join('\n');
     };
@@ -612,28 +560,16 @@ var Novelyra = /** @class */ (function () {
                     case 2:
                         body = _g.sent();
                         loadedCheerio = (0, cheerio_1.load)(body);
-                        sourceName = loadedCheerio('h1')
-                            .first()
-                            .text()
-                            .trim() ||
-                            'Desconocido';
+                        sourceName = loadedCheerio('h1').first().text().trim() || 'Desconocido';
                         return [4 /*yield*/, translateShortText(sourceName)];
                     case 3:
                         name = _g.sent();
-                        cover = ((_a = loadedCheerio('#synopsis img')
-                            .first()
-                            .attr('src')) === null || _a === void 0 ? void 0 : _a.trim()) ||
-                            ((_b = loadedCheerio('main img')
-                                .first()
-                                .attr('src')) === null || _b === void 0 ? void 0 : _b.trim()) ||
-                            ((_c = loadedCheerio('img')
-                                .first()
-                                .attr('src')) === null || _c === void 0 ? void 0 : _c.trim()) ||
+                        cover = ((_a = loadedCheerio('#synopsis img').first().attr('src')) === null || _a === void 0 ? void 0 : _a.trim()) ||
+                            ((_b = loadedCheerio('main img').first().attr('src')) === null || _b === void 0 ? void 0 : _b.trim()) ||
+                            ((_c = loadedCheerio('img').first().attr('src')) === null || _c === void 0 ? void 0 : _c.trim()) ||
                             '';
-                        if (cover &&
-                            cover.startsWith('/')) {
-                            cover =
-                                "".concat(this.site).concat(cover.slice(1));
+                        if (cover && cover.startsWith('/')) {
+                            cover = "".concat(this.site).concat(cover.slice(1));
                         }
                         synopsisText = loadedCheerio('#synopsis')
                             .first()
@@ -646,28 +582,20 @@ var Novelyra = /** @class */ (function () {
                         if (!summary) return [3 /*break*/, 5];
                         summaryParagraphs = summary
                             .split(/\r?\n/)
-                            .map(function (text) {
-                            return text.trim();
-                        })
+                            .map(function (text) { return text.trim(); })
                             .filter(Boolean);
                         return [4 /*yield*/, translateParagraphs(summaryParagraphs)];
                     case 4:
                         translatedSummary = _g.sent();
-                        summary =
-                            translatedSummary
-                                .join('\n\n')
-                                .trim() ||
-                                summary;
+                        summary = translatedSummary.join('\n\n').trim() || summary;
                         _g.label = 5;
                     case 5:
                         authorMatch = synopsisText.match(/Author:\s*(.+?)(?:\s+Genre:|\s+Status:|\s+Platform:|\s+Theme:|$)/i);
                         genreMatch = synopsisText.match(/Genre:\s*(.+?)(?:\s+Status:|\s+Platform:|\s+Theme:|$)/i);
                         statusMatch = synopsisText.match(/Status:\s*(.+?)(?:\s+Platform:|\s+Theme:|$)/i);
-                        author = ((_d = authorMatch === null || authorMatch === void 0 ? void 0 : authorMatch[1]) === null || _d === void 0 ? void 0 : _d.trim()) ||
-                            '';
+                        author = ((_d = authorMatch === null || authorMatch === void 0 ? void 0 : authorMatch[1]) === null || _d === void 0 ? void 0 : _d.trim()) || '';
                         genres = ((_e = genreMatch === null || genreMatch === void 0 ? void 0 : genreMatch[1]) === null || _e === void 0 ? void 0 : _e.trim().replace(/\s+/g, ', ')) || '';
-                        status = ((_f = statusMatch === null || statusMatch === void 0 ? void 0 : statusMatch[1]) === null || _f === void 0 ? void 0 : _f.trim()) ||
-                            '';
+                        status = ((_f = statusMatch === null || statusMatch === void 0 ? void 0 : statusMatch[1]) === null || _f === void 0 ? void 0 : _f.trim()) || '';
                         novel = {
                             path: novelPath,
                             name: name,
@@ -682,8 +610,7 @@ var Novelyra = /** @class */ (function () {
                         loadedCheerio('a[href*="/chapter-"]').each(function (_, element) {
                             var _a;
                             var link = loadedCheerio(element);
-                            var rawChapterPath = ((_a = link
-                                .attr('href')) === null || _a === void 0 ? void 0 : _a.trim()) || '';
+                            var rawChapterPath = ((_a = link.attr('href')) === null || _a === void 0 ? void 0 : _a.trim()) || '';
                             if (!rawChapterPath) {
                                 return;
                             }
@@ -697,22 +624,15 @@ var Novelyra = /** @class */ (function () {
                             }
                             var chapterPath = rawChapterPath;
                             if (chapterPath.startsWith(_this.site)) {
-                                chapterPath =
-                                    chapterPath.slice(_this.site.length);
+                                chapterPath = chapterPath.slice(_this.site.length);
                             }
-                            chapterPath =
-                                chapterPath.replace(/^\/+/, '');
-                            if (!chapterPath ||
-                                seenPaths.has(chapterPath)) {
+                            chapterPath = chapterPath.replace(/^\/+/, '');
+                            if (!chapterPath || seenPaths.has(chapterPath)) {
                                 return;
                             }
                             seenPaths.add(chapterPath);
-                            var text = link
-                                .text()
-                                .trim()
-                                .replace(/\s+/g, ' ');
-                            var chapterName = text ||
-                                "Cap\u00EDtulo ".concat(chapterNumber);
+                            var text = link.text().trim().replace(/\s+/g, ' ');
+                            var chapterName = text || "Cap\u00EDtulo ".concat(chapterNumber);
                             /*
                              * NovelYra:
                              * "Chapter 1 - Shadow Slave Chapter 1"
@@ -723,9 +643,7 @@ var Novelyra = /** @class */ (function () {
                             var separatorIndex = chapterName.indexOf(' - ');
                             if (separatorIndex > 0) {
                                 chapterName =
-                                    chapterName
-                                        .slice(0, separatorIndex)
-                                        .trim() ||
+                                    chapterName.slice(0, separatorIndex).trim() ||
                                         "Cap\u00EDtulo ".concat(chapterNumber);
                             }
                             var releaseMatch = text.match(/\b(\d+\s+(?:day|days|week|weeks|month|months|year|years)\s+ago)\b/i);
@@ -736,13 +654,8 @@ var Novelyra = /** @class */ (function () {
                                 releaseTime: releaseMatch === null || releaseMatch === void 0 ? void 0 : releaseMatch[1],
                             });
                         });
-                        chapters.sort(function (first, second) {
-                            var _a, _b;
-                            return ((_a = first.chapterNumber) !== null && _a !== void 0 ? _a : 0) -
-                                ((_b = second.chapterNumber) !== null && _b !== void 0 ? _b : 0);
-                        });
-                        novel.chapters =
-                            chapters;
+                        chapters.sort(function (first, second) { var _a, _b; return ((_a = first.chapterNumber) !== null && _a !== void 0 ? _a : 0) - ((_b = second.chapterNumber) !== null && _b !== void 0 ? _b : 0); });
+                        novel.chapters = chapters;
                         return [2 /*return*/, novel];
                 }
             });
@@ -772,22 +685,14 @@ var Novelyra = /** @class */ (function () {
                             return [2 /*return*/, 'Contenido no encontrado'];
                         }
                         paragraphs = [];
-                        chapterContent
-                            .find('p')
-                            .each(function (_, element) {
-                            var text = loadedCheerio(element)
-                                .text()
-                                .trim()
-                                .replace(/\s+/g, ' ');
+                        chapterContent.find('p').each(function (_, element) {
+                            var text = loadedCheerio(element).text().trim().replace(/\s+/g, ' ');
                             if (text) {
                                 paragraphs.push(text);
                             }
                         });
                         if (paragraphs.length === 0) {
-                            rawText = chapterContent
-                                .text()
-                                .trim()
-                                .replace(/\s+/g, ' ');
+                            rawText = chapterContent.text().trim().replace(/\s+/g, ' ');
                             if (rawText) {
                                 paragraphs.push(rawText);
                             }
@@ -800,9 +705,7 @@ var Novelyra = /** @class */ (function () {
                         translated = _a.sent();
                         return [2 /*return*/, translated
                                 .map(function (paragraph) {
-                                return "<p>".concat(paragraph
-                                    .replace(/</g, '&lt;')
-                                    .replace(/>/g, '&gt;'), "</p>");
+                                return "<p>".concat(paragraph.replace(/</g, '&lt;').replace(/>/g, '&gt;'), "</p>");
                             })
                                 .join('')];
                 }
