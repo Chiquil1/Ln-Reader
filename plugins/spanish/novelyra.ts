@@ -8,75 +8,36 @@ import { load as loadCheerio } from 'cheerio';
 
 const SITE = 'https://novelyra.com/';
 
+// Configuración de traducción universal
+interface TranslationConfig {
+  enabled: boolean;
+  provider: 'google' | 'deepl' | 'libretranslate';
+  targetLang: string;
+  sourceLang: string;
+  apiKey?: string;
+  batchSize: number;
+  cacheEnabled: boolean;
+  fallbackProvider?: 'google' | 'deepl' | 'libretranslate';
+}
+
+const DEFAULT_TRANSLATION_CONFIG: TranslationConfig = {
+  enabled: true,
+  provider: 'google',
+  targetLang: 'es',
+  sourceLang: 'auto',
+  batchSize: 10,
+  cacheEnabled: true,
+  fallbackProvider: 'libretranslate',
+};
+
 const MAX_TRANSLATION_CHARS = 2000;
+const MAX_PARAGRAPH_LENGTH = 1800;
 
-async function translateText(text: string): Promise<string> {
-  const normalized = text.trim();
+// Cache de traducciones en memoria
+const translationCache = new Map<string, string>();
 
-  if (!normalized) {
-    return '';
-  }
-
-  try {
-    const url =
-      'https://translate.googleapis.com/translate_a/single' +
-      `?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(normalized)}`;
-
-    const res = await fetchApi(url);
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${url}`);
-    }
-
-    const json = await res.json();
-
-    if (json && json[0]) {
-      return json[0]
-        .map((item: unknown[]) => item[0])
-        .filter(Boolean)
-        .join('');
-    }
-
-    return normalized;
-  } catch {
-    return normalized;
-  }
-}
-
-async function translateTextToEnglish(text: string): Promise<string> {
-  const normalized = text.trim();
-
-  if (!normalized) {
-    return '';
-  }
-
-  try {
-    const url =
-      'https://translate.googleapis.com/translate_a/single' +
-      `?client=gtx&sl=es&tl=en&dt=t&q=${encodeURIComponent(normalized)}`;
-
-    const res = await fetchApi(url);
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${url}`);
-    }
-
-    const json = await res.json();
-
-    if (json && json[0]) {
-      return json[0]
-        .map((item: unknown[]) => item[0])
-        .filter(Boolean)
-        .join('');
-    }
-
-    return normalized;
-  } catch {
-    return normalized;
-  }
-}
-
-function normalizeSearchText(text: string): string {
+// Utilidades de normalización
+function normalizeText(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFD')
@@ -87,11 +48,11 @@ function normalizeSearchText(text: string): string {
 }
 
 function getSearchTerms(text: string): string[] {
-  return normalizeSearchText(text).split(/\s+/).filter(Boolean);
+  return normalizeText(text).split(/\s+/).filter(Boolean);
 }
 
 function searchTermsMatch(title: string, queryTerms: string[]): boolean {
-  const normalizedTitle = normalizeSearchText(title);
+  const normalizedTitle = normalizeText(title);
 
   if (!normalizedTitle || !queryTerms.length) {
     return false;
@@ -101,9 +62,8 @@ function searchTermsMatch(title: string, queryTerms: string[]): boolean {
 }
 
 function searchScore(title: string, query: string): number {
-  const normalizedTitle = normalizeSearchText(title);
-
-  const normalizedQuery = normalizeSearchText(query);
+  const normalizedTitle = normalizeText(title);
+  const normalizedQuery = normalizeText(query);
 
   if (!normalizedTitle || !normalizedQuery) {
     return 0;
@@ -130,7 +90,141 @@ function searchScore(title: string, query: string): number {
   return matchingTerms * 100;
 }
 
-async function translateParagraphs(paragraphs: string[]): Promise<string[]> {
+// Traducción universal con soporte multi-proveedor y cache
+async function translateText(
+  text: string,
+  targetLang: string = 'es',
+  sourceLang: string = 'auto',
+  config: TranslationConfig = DEFAULT_TRANSLATION_CONFIG,
+): Promise<string> {
+  const normalized = text.trim();
+
+  if (!normalized) {
+    return '';
+  }
+
+  const cacheKey = `${sourceLang}:${targetLang}:${normalized}`;
+
+  if (config.cacheEnabled && translationCache.has(cacheKey)) {
+    return translationCache.get(cacheKey)!;
+  }
+
+  const providers = [
+    {
+      name: config.provider,
+      url: getProviderUrl(
+        config.provider,
+        normalized,
+        sourceLang,
+        targetLang,
+        config.apiKey,
+      ),
+    },
+    ...(config.fallbackProvider
+      ? [
+          {
+            name: config.fallbackProvider,
+            url: getProviderUrl(
+              config.fallbackProvider,
+              normalized,
+              sourceLang,
+              targetLang,
+              config.apiKey,
+            ),
+          },
+        ]
+      : []),
+  ];
+
+  for (const provider of providers) {
+    try {
+      const res = await fetchApi(provider.url);
+
+      if (!res.ok) {
+        continue;
+      }
+
+      const json = await res.json();
+      let translated = extractTranslation(json, provider.name);
+
+      if (translated && translated !== normalized) {
+        if (config.cacheEnabled) {
+          translationCache.set(cacheKey, translated);
+        }
+        return translated;
+      }
+    } catch {
+      // Try next provider
+    }
+  }
+
+  return text; // Fallback to original
+}
+
+function getProviderUrl(
+  provider: string,
+  text: string,
+  sourceLang: string,
+  targetLang: string,
+  apiKey?: string,
+): string {
+  const encoded = encodeURIComponent(text);
+
+  switch (provider) {
+    case 'google':
+      return `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encoded}`;
+    case 'deepl':
+      return `https://api-free.deepl.com/v2/translate?auth_key=${apiKey}&text=${encodeURIComponent(text)}&target_lang=${targetLang.toUpperCase()}&source_lang=${sourceLang === 'auto' ? '' : sourceLang}`;
+    case 'libretranslate':
+      return `https://libretranslate.de/translate?q=${encodeURIComponent(text)}&source=${sourceLang}&target=${targetLang}&format=text`;
+    default:
+      return `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encoded}`;
+  }
+}
+
+function extractTranslation(json: unknown, provider: string): string | null {
+  try {
+    switch (provider) {
+      case 'google':
+        if (Array.isArray(json) && json[0] && Array.isArray(json[0])) {
+          return json[0]
+            .map((item: unknown[]) => item[0])
+            .filter(Boolean)
+            .join('');
+        }
+        break;
+      case 'deepl':
+        if (
+          typeof json === 'object' &&
+          json !== null &&
+          'translations' in json
+        ) {
+          return (
+            (json as { translations: { text: string }[] }).translations[0]
+              ?.text || null
+          );
+        }
+        break;
+      case 'libretranslate':
+        if (
+          typeof json === 'object' &&
+          json !== null &&
+          'translatedText' in json
+        ) {
+          return (json as { translatedText: string }).translatedText;
+        }
+        break;
+    }
+  } catch {
+    // Ignore extraction errors
+  }
+  return null;
+}
+
+async function translateParagraphs(
+  paragraphs: string[],
+  config: TranslationConfig = DEFAULT_TRANSLATION_CONFIG,
+): Promise<string[]> {
   const translatedParagraphs: string[] = [];
 
   let currentBatch = '';
@@ -145,11 +239,15 @@ async function translateParagraphs(paragraphs: string[]): Promise<string[]> {
     const separator = currentBatch === '' ? '' : '\n';
 
     if (
-      `${currentBatch}${separator}${normalizedParagraph}`.length >
-      MAX_TRANSLATION_CHARS
+      `${currentBatch}${separator}${normalizedParagraph}`.length > 2000 // MAX_TRANSLATION_CHARS
     ) {
       if (currentBatch !== '') {
-        const translatedBatch = await translateText(currentBatch);
+        const translatedBatch = await translateText(
+          currentBatch,
+          undefined,
+          undefined,
+          DEFAULT_TRANSLATION_CONFIG,
+        );
 
         translatedParagraphs.push(
           ...translatedBatch
@@ -169,7 +267,12 @@ async function translateParagraphs(paragraphs: string[]): Promise<string[]> {
   }
 
   if (currentBatch !== '') {
-    const translatedBatch = await translateText(currentBatch);
+    const translatedBatch = await translateText(
+      currentBatch,
+      undefined,
+      undefined,
+      DEFAULT_TRANSLATION_CONFIG,
+    );
 
     translatedParagraphs.push(
       ...translatedBatch
@@ -196,6 +299,68 @@ async function translateTitles(titles: string[]): Promise<string[]> {
   return Promise.all(titles.map(title => translateShortText(title)));
 }
 
+// Limpieza avanzada de texto para TTS
+function cleanTextForTts(text: string): string {
+  return (
+    text
+      // Eliminar caracteres invisibles
+      .replace(/[\u200B-\u200D\uFEFF\u200E\u200F\u202A-\u202E]/g, '')
+      // Normalizar barras múltiples
+      .replace(/[\\/]{2,}/g, '')
+      // Normalizar guiones
+      .replace(/[—––─]/g, '-')
+      // Eliminar caracteres decorativos
+      .replace(/[*_~|•♦¤°]/g, '')
+      // Normalizar puntos suspensivos
+      .replace(/\.{4,}/g, '...')
+      // Normalizar espacios múltiples
+      .replace(/ {2,}/g, ' ')
+      // Normalizar saltos de línea múltiples
+      .replace(/\n\s*\n/g, '\n')
+      .trim()
+  );
+}
+
+// Parsear tiempo relativo a fecha absoluta
+function parseRelativeTime(text: string): Date | null {
+  const match = text.match(
+    /\b(\d+)\s+(day|days|week|weeks|month|months|year|years|día|días|semana|semanas|mes|meses|año|años)\s+ago\b/i,
+  );
+
+  if (!match) {
+    return null;
+  }
+
+  const value = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
+
+  const now = new Date();
+
+  if (unit.startsWith('day') || unit.startsWith('día')) {
+    return new Date(now.getTime() - value * 24 * 60 * 60 * 1000);
+  }
+  if (unit.startsWith('week') || unit.startsWith('semana')) {
+    return new Date(now.getTime() - value * 7 * 24 * 60 * 60 * 1000);
+  }
+  if (unit.startsWith('month') || unit.startsWith('mes')) {
+    return new Date(now.getTime() - value * 30 * 24 * 60 * 60 * 1000);
+  }
+  if (unit.startsWith('year') || unit.startsWith('año')) {
+    return new Date(now.getTime() - value * 365 * 24 * 60 * 60 * 1000);
+  }
+
+  return null;
+}
+
+// Extraer número de capítulo de URL
+function extractChapterNumberFromUrl(url: string): number | null {
+  const match = url.match(/\/chapter-(\d+)(?:\/)?(?:[?#].*)?$/i);
+  if (match) {
+    return parseInt(match[1], 10);
+  }
+  return null;
+}
+
 class Novelyra implements Plugin.PluginBase {
   id = 'novelyra';
 
@@ -205,7 +370,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.0.4';
+  version = '2.1.0';
 
   filters: Filters = {
     genres: {
@@ -290,16 +455,6 @@ class Novelyra implements Plugin.PluginBase {
       }
     > = [];
 
-    /*
-     * NovelYra search/browse cards use:
-     *
-     * <a class="group block min-w-0">
-     *   ...
-     *   <h3>Title</h3>
-     * </a>
-     *
-     * This avoids collecting navigation/footer links.
-     */
     loadedCheerio('main a.group.block.min-w-0').each((_, element) => {
       const link = loadedCheerio(element);
 
@@ -420,12 +575,6 @@ class Novelyra implements Plugin.PluginBase {
       return [];
     }
 
-    /*
-     * NovelYra uses /search?q=...
-     *
-     * Translate Spanish queries to English first,
-     * because the source titles are predominantly English.
-     */
     const englishQuery = (await translateTextToEnglish(query)).trim();
 
     const sourceQuery =
@@ -452,12 +601,6 @@ class Novelyra implements Plugin.PluginBase {
 
     const novels = this.extractNovels(loadedCheerio);
 
-    /*
-     * NovelYra's server-side search can return
-     * semantically related but title-irrelevant novels.
-     *
-     * We therefore enforce title relevance locally.
-     */
     const queryCandidates = [query, sourceQuery].filter(Boolean);
 
     const scored = novels
@@ -501,15 +644,8 @@ class Novelyra implements Plugin.PluginBase {
       return '';
     }
 
-    /*
-     * Remove UI controls from the synopsis.
-     */
     synopsisElement.find('button, script, style').remove();
 
-    /*
-     * Preserve line structure before turning
-     * the HTML into text.
-     */
     synopsisElement.find('br').replaceWith('\n');
 
     synopsisElement.find('p, div').each((_, element) => {
@@ -535,21 +671,10 @@ class Novelyra implements Plugin.PluginBase {
       return '';
     }
 
-    /*
-     * Drop metadata before Premise.
-     *
-     * We want the actual descriptive content:
-     * Premise + Original Synopsis + following
-     * descriptive paragraphs.
-     */
     const premiseIndex = lines.findIndex(line => /^Premise\s*:/i.test(line));
 
     let summaryLines = premiseIndex >= 0 ? lines.slice(premiseIndex) : lines;
 
-    /*
-     * Remove leading metadata in case the page
-     * uses a slightly different ordering.
-     */
     summaryLines = summaryLines.filter(
       line =>
         !/^Author\s*:/i.test(line) &&
@@ -559,10 +684,6 @@ class Novelyra implements Plugin.PluginBase {
         !/^Core Theme\s*:/i.test(line),
     );
 
-    /*
-     * Stop before recommendation/marketing headings
-     * that are outside the actual synopsis.
-     */
     const stopIndex = summaryLines.findIndex(
       line =>
         /^Why\s+/i.test(line) ||
@@ -642,29 +763,20 @@ class Novelyra implements Plugin.PluginBase {
     );
 
     const author = authorMatch?.[1]?.trim() || '';
-
     const genres = genreMatch?.[1]?.trim().replace(/\s+/g, ', ') || '';
-
     const status = statusMatch?.[1]?.trim() || '';
 
     const novel: Plugin.SourceNovel = {
       path: novelPath,
-
       name,
-
       cover,
-
       summary,
-
       author,
-
       genres,
-
       status,
     };
 
     const chapters: Plugin.ChapterItem[] = [];
-
     const seenPaths = new Set<string>();
 
     loadedCheerio('a[href*="/chapter-"]').each((_, element) => {
@@ -676,17 +788,9 @@ class Novelyra implements Plugin.PluginBase {
         return;
       }
 
-      const chapterMatch = rawChapterPath.match(
-        /\/chapter-(\d+)(?:\/)?(?:[?#].*)?$/i,
-      );
+      const chapterNumber = extractChapterNumberFromUrl(rawChapterPath);
 
-      if (!chapterMatch) {
-        return;
-      }
-
-      const chapterNumber = Number(chapterMatch[1]);
-
-      if (!Number.isFinite(chapterNumber)) {
+      if (chapterNumber === null) {
         return;
       }
 
@@ -706,32 +810,27 @@ class Novelyra implements Plugin.PluginBase {
 
       const text = link.text().trim().replace(/\s+/g, ' ');
 
-      let chapterName = text || `Capítulo ${chapterNumber}`;
+      let chapterName = text || `Capítulo ${chapterNumber || 0}`;
 
-      /*
-       * NovelYra:
-       * "Chapter 1 - Shadow Slave Chapter 1"
-       *
-       * Keep just:
-       * "Chapter 1"
-       */
       const separatorIndex = chapterName.indexOf(' - ');
 
       if (separatorIndex > 0) {
         chapterName =
           chapterName.slice(0, separatorIndex).trim() ||
-          `Capítulo ${chapterNumber}`;
+          `Capítulo ${chapterNumber || 0}`;
       }
 
       const releaseMatch = text.match(
-        /\b(\d+\s+(?:day|days|week|weeks|month|months|year|years)\s+ago)\b/i,
+        /\b(\d+\s+(?:day|days|week|weeks|month|months|year|years|día|días|semana|semanas|mes|meses|año|años)\s+ago)\b/i,
       );
 
       chapters.push({
         name: chapterName,
         path: chapterPath,
-        chapterNumber,
-        releaseTime: releaseMatch?.[1],
+        chapterNumber: chapterNumber ?? 0,
+        releaseTime: releaseMatch?.[1]
+          ? parseRelativeTime(releaseMatch[1])?.toISOString()
+          : undefined,
       });
     });
 
@@ -776,7 +875,7 @@ class Novelyra implements Plugin.PluginBase {
       const text = loadedCheerio(element).text().trim().replace(/\s+/g, ' ');
 
       if (text) {
-        paragraphs.push(text);
+        paragraphs.push(cleanTextForTts(text));
       }
     });
 
@@ -784,7 +883,7 @@ class Novelyra implements Plugin.PluginBase {
       const rawText = chapterContent.text().trim().replace(/\s+/g, ' ');
 
       if (rawText) {
-        paragraphs.push(rawText);
+        paragraphs.push(cleanTextForTts(rawText));
       }
     }
 
@@ -797,10 +896,25 @@ class Novelyra implements Plugin.PluginBase {
     return translated
       .map(
         paragraph =>
-          `<p>${paragraph.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`,
+          `<p>${paragraph.replace(/</g, '<').replace(/>/g, '>')}</p>`,
       )
       .join('');
   }
+}
+
+// Funciones de traducción expuestas para reutilización
+async function translateTextToEnglish(text: string): Promise<string> {
+  return translateText(text, 'en', 'auto');
+}
+
+function normalizeSearchText(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
 }
 
 export default new Novelyra();

@@ -6,11 +6,14 @@ let pluginCounter = 0;
 const PLUGIN_DIR = 'plugins';
 
 fs.readdirSync(PLUGIN_DIR)
-  .filter(f => !f.includes('index') && f !== 'multisrc')
+  .filter(f => !f.includes('index') && f !== 'multisrc' && !f.startsWith('.'))
   .forEach(langName => {
     const LANG_DIR = PLUGIN_DIR + '/' + langName;
+    if (!fs.statSync(LANG_DIR).isDirectory()) return;
     fs.readdirSync(LANG_DIR)
-      .filter(f => !f.includes('broken') && !f.startsWith('.'))
+      .filter(
+        f => !f.includes('broken') && !f.startsWith('.') && f.endsWith('.ts'),
+      )
       .forEach(pluginName => {
         content += `import p_${pluginCounter} from '@plugins/${langName}/${pluginName.replace(/\.ts$/, '')}';\n`;
         pluginCounter += 1;
