@@ -14,7 +14,7 @@ Community-driven plugin repository for [LNReader](https://github.com/LNReader/ln
 
 ```bash
 npm install
-npm run dev:start
+npm run dev
 ```
 
 ## Documentation
@@ -29,7 +29,7 @@ npm run dev:start
 ### Web Interface
 
 ```bash
-npm run dev:start
+npm run dev
 ```
 
 Open [localhost:3000](http://localhost:3000) to test plugins interactively. See the [testing guide](./docs/website-tutorial.md) for details.
@@ -49,7 +49,7 @@ https://raw.githubusercontent.com/<username>/<repo>/plugins/<tag>/.dist/plugins.
 **From Localhost:**
 
 ```bash
-npm run serve:dev
+npm run build:compile && npm run build:manifest:dev
 ```
 
 Add `http://10.0.2.2/.dist/plugins.min.json` (Android emulator) to the app. Requires `.env` configuration (see `.env.template`).

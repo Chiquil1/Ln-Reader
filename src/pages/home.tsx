@@ -15,7 +15,8 @@ import SettingsSection from '@/components/settings';
 import ParseChapterSection from '@/components/parse-chapter';
 
 function PluginSidebar() {
-  const { plugin, selectPlugin } = useAppStore(state => state);
+  const plugin = useAppStore(state => state.plugin);
+  const selectPlugin = useAppStore(state => state.selectPlugin);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredPlugins = useMemo(
@@ -87,7 +88,7 @@ function PluginSidebar() {
 }
 
 function Home() {
-  const { plugin } = useAppStore(state => state);
+  const plugin = useAppStore(state => state.plugin);
 
   const [activeTab, setActiveTab] = useState('popular');
 

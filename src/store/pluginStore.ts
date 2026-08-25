@@ -32,11 +32,10 @@ export const PluginStore: StoreCreator<PluginStore> = set => ({
   ...loadPluginFromURL(),
 
   selectPlugin(pluginItem, updateURL = true) {
-    set(state => ({
-      ...state,
+    set({
       pluginItem,
       plugin: getPlugin(pluginItem.id),
-    }));
+    });
 
     if (updateURL) {
       const url = new URL(window.location.href);

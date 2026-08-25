@@ -26,10 +26,7 @@ export const useAppStore = create<AppStore>((set: SetStore, get: GetStore) => ({
   ...NavigationStore(set, get),
   theme: getInitialTheme(),
   setTheme(theme: 'light' | 'dark') {
-    set(state => ({
-      ...state,
-      theme,
-    }));
+    set({ theme });
     localStorage.setItem('theme', theme);
   },
 }));

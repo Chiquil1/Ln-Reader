@@ -2,6 +2,8 @@ import 'cheerio';
 import 'htmlparser2';
 import 'dayjs';
 import 'protobufjs';
+import '@fontsource/geist-sans';
+import '@fontsource/geist-mono';
 import './index.css';
 
 import React from 'react';
@@ -13,15 +15,23 @@ const { fetch: originalFetch } = window;
 
 window.fetch = async (...args) => {
   const [resource, config] = args;
-  if (resource.toString().includes('localhost'))
+  const url = resource.toString();
+
+  // Skip non-HTTP requests (relative paths, blobs, etc.)
+  if (!url.startsWith('http://') && !url.startsWith('https://'))
     return await originalFetch(resource, config);
-  const _res = await originalFetch('http://localhost:3000/' + resource, {
+
+  // Skip localhost requests (Vite HMR, CSS, JS, etc.)
+  if (url.includes('localhost') || url.includes('127.0.0.1'))
+    return await originalFetch(resource, config);
+
+  const _res = await originalFetch('http://localhost:3000/' + url, {
     ...config,
     credentials: 'include',
     mode: 'cors',
   });
   Object.defineProperty(_res, 'url', {
-    value: _res.url.includes('localhost') ? resource.toString() : _res.url,
+    value: _res.url.includes('localhost') ? url : _res.url,
   });
   return _res;
 };

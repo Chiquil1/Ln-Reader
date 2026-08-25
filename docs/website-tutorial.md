@@ -7,7 +7,7 @@ A comprehensive guide to testing your LNReader plugins using the web interface.
 1. **Start the development server:**
 
    ```bash
-   npm run dev:start
+   npm run dev
    ```
 
 2. **Open your browser:**

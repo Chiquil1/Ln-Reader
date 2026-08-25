@@ -1,8 +1,5 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
-@import '@fontsource/geist-sans/index.css';
-@import '@fontsource/geist-mono/index.css';
-
+@import '../node_modules/tw-animate-css/dist/tw-animate.css';
 @custom-variant dark (&:is(.dark *));
 
 :root {

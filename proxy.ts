@@ -114,6 +114,8 @@ const proxyHandlerMiddle: Connect.NextHandleFunction = (req, res) => {
   }
 };
 
+const PROXY_TIMEOUT_MS = 30000;
+
 const proxyRequest: Connect.SimpleHandleFunction = (req, res) => {
   const _url = new URL(req.url || '');
   console.log('\x1b[36m', '----------------');
@@ -126,6 +128,18 @@ const proxyRequest: Connect.SimpleHandleFunction = (req, res) => {
     console.log('\t', '\x1b[32m', name + ':', '\x1b[37m', value);
   });
   console.log('\x1b[36m', '----------------');
+
+  const timeoutId = setTimeout(() => {
+    if (!res.closed) {
+      res.statusCode = 504;
+      res.end('Proxy request timed out');
+    }
+  }, PROXY_TIMEOUT_MS);
+
+  const reqWithTimeout = req as Connect.IncomingMessage & {
+    _proxyTimeoutId?: ReturnType<typeof setTimeout>;
+  };
+  reqWithTimeout._proxyTimeoutId = timeoutId;
 
   if (settings.fetchMode === FetchMode.CURL) {
     let curl = `curl -L '${_url.href}'`;
@@ -184,6 +198,12 @@ const proxyRequest: Connect.SimpleHandleFunction = (req, res) => {
       res,
       { target: _url.origin, selfHandleResponse: true, followRedirects: true },
       err => {
+        const reqWithTimeout = req as Connect.IncomingMessage & {
+          _proxyTimeoutId?: ReturnType<typeof setTimeout>;
+        };
+        if (reqWithTimeout._proxyTimeoutId) {
+          clearTimeout(reqWithTimeout._proxyTimeoutId);
+        }
         console.error('Proxy target error:', err);
         res.statusCode = 500;
         res.end();
@@ -193,6 +213,13 @@ const proxyRequest: Connect.SimpleHandleFunction = (req, res) => {
 };
 
 proxy.on('proxyRes', function (proxyRes, req, res) {
+  const reqWithTimeout = req as Connect.IncomingMessage & {
+    _proxyTimeoutId?: ReturnType<typeof setTimeout>;
+  };
+  if (reqWithTimeout._proxyTimeoutId) {
+    clearTimeout(reqWithTimeout._proxyTimeoutId);
+  }
+
   const statusCode = proxyRes.statusCode || 200;
 
   // Redirect handling
