@@ -9,7 +9,7 @@ import { load as loadCheerio } from 'cheerio';
 const SITE = 'https://novelyra.com/';
 
 // Configuración de traducción universal
-interface TranslationConfig {
+type TranslationConfig = {
   enabled: boolean;
   provider: 'google' | 'deepl' | 'libretranslate';
   targetLang: string;
@@ -18,7 +18,7 @@ interface TranslationConfig {
   batchSize: number;
   cacheEnabled: boolean;
   fallbackProvider?: 'google' | 'deepl' | 'libretranslate';
-}
+};
 
 const DEFAULT_TRANSLATION_CONFIG: TranslationConfig = {
   enabled: true,
@@ -29,9 +29,6 @@ const DEFAULT_TRANSLATION_CONFIG: TranslationConfig = {
   cacheEnabled: true,
   fallbackProvider: 'libretranslate',
 };
-
-const MAX_TRANSLATION_CHARS = 2000;
-const MAX_PARAGRAPH_LENGTH = 1800;
 
 // Cache de traducciones en memoria
 const translationCache = new Map<string, string>();
@@ -93,8 +90,8 @@ function searchScore(title: string, query: string): number {
 // Traducción universal con soporte multi-proveedor y cache
 async function translateText(
   text: string,
-  targetLang: string = 'es',
-  sourceLang: string = 'auto',
+  targetLang = 'es',
+  sourceLang = 'auto',
   config: TranslationConfig = DEFAULT_TRANSLATION_CONFIG,
 ): Promise<string> {
   const normalized = text.trim();
@@ -145,7 +142,7 @@ async function translateText(
       }
 
       const json = await res.json();
-      let translated = extractTranslation(json, provider.name);
+      const translated = extractTranslation(json, provider.name);
 
       if (translated && translated !== normalized) {
         if (config.cacheEnabled) {
@@ -223,7 +220,7 @@ function extractTranslation(json: unknown, provider: string): string | null {
 
 async function translateParagraphs(
   paragraphs: string[],
-  config: TranslationConfig = DEFAULT_TRANSLATION_CONFIG,
+  _config: TranslationConfig = DEFAULT_TRANSLATION_CONFIG,
 ): Promise<string[]> {
   const translatedParagraphs: string[] = [];
 
@@ -370,7 +367,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.1.0';
+  version = '2.2.0';
 
   filters: Filters = {
     genres: {
@@ -444,21 +441,33 @@ class Novelyra implements Plugin.PluginBase {
     },
   } satisfies Filters;
 
-  private extractNovels(loadedCheerio: ReturnType<typeof loadCheerio>): Array<
-    Plugin.NovelItem & {
+  private extractNovels(
+    loadedCheerio: ReturnType<typeof loadCheerio>,
+  ): (Plugin.NovelItem & {
+    sourceName: string;
+  })[] {
+    const novels: (Plugin.NovelItem & {
       sourceName: string;
-    }
-  > {
-    const novels: Array<
-      Plugin.NovelItem & {
-        sourceName: string;
-      }
-    > = [];
+    })[] = [];
 
-    loadedCheerio('main a.group.block.min-w-0').each((_, element) => {
+    const novelLinks = loadedCheerio('main a[href]').filter(
+      function (_, element) {
+        const href = loadedCheerio(element).attr('href')?.trim() || '';
+        const hasImage = loadedCheerio(element).find('img').length > 0;
+        const hasTitle =
+          loadedCheerio(element).find('h3, h2, [class*="title"]').length > 0;
+        return !!(href && hasImage && hasTitle);
+      },
+    );
+
+    novelLinks.each((_, element) => {
       const link = loadedCheerio(element);
 
-      const title = link.find('h3').first();
+      const title = link.find('h3').first().length
+        ? link.find('h3').first()
+        : link.find('h2').first().length
+          ? link.find('h2').first()
+          : link.find('[class*="title"]').first();
 
       if (!title.length) {
         return;
@@ -482,7 +491,7 @@ class Novelyra implements Plugin.PluginBase {
         path = path.slice(this.site.length);
       }
 
-      path = path.replace(/^\/+/, '');
+      path = path.replace(/^\/+/, '').replace(/\/$/, '');
 
       if (!path || novels.some(item => item.path === path)) {
         return;
@@ -512,11 +521,9 @@ class Novelyra implements Plugin.PluginBase {
   }
 
   private async finalizeNovels(
-    novels: Array<
-      Plugin.NovelItem & {
-        sourceName: string;
-      }
-    >,
+    novels: (Plugin.NovelItem & {
+      sourceName: string;
+    })[],
   ): Promise<Plugin.NovelItem[]> {
     const translatedTitles = await translateTitles(
       novels.map(novel => novel.sourceName),
@@ -540,13 +547,10 @@ class Novelyra implements Plugin.PluginBase {
     let url: string;
 
     if (genre) {
-      url =
-        `${this.site}genre/` + `${encodeURIComponent(genre)}` + `?page=${page}`;
-    } else {
+      url = `${this.site}genre/${encodeURIComponent(genre)}?page=${page}`;
+    } else if (showLatestNovels) {
       url = page === 1 ? this.site : `${this.site}?page=${page}`;
-    }
-
-    if (showLatestNovels) {
+    } else {
       url = page === 1 ? this.site : `${this.site}?page=${page}`;
     }
 
@@ -638,13 +642,19 @@ class Novelyra implements Plugin.PluginBase {
   private extractSynopsis(
     loadedCheerio: ReturnType<typeof loadCheerio>,
   ): string {
-    const synopsisElement = loadedCheerio('#synopsis').first();
+    const synopsisElement = loadedCheerio('#synopsis').first().length
+      ? loadedCheerio('#synopsis').first()
+      : loadedCheerio('section:contains("Synopsis")').first().length
+        ? loadedCheerio('section:contains("Synopsis")').first()
+        : loadedCheerio(
+            '[class*="synopsis"], [class*="description"], [class*="summary"]',
+          ).first();
 
     if (!synopsisElement.length) {
       return '';
     }
 
-    synopsisElement.find('button, script, style').remove();
+    synopsisElement.find('button, script, style, nav').remove();
 
     synopsisElement.find('br').replaceWith('\n');
 
@@ -681,14 +691,20 @@ class Novelyra implements Plugin.PluginBase {
         !/^Genre\s*:/i.test(line) &&
         !/^Status\s*:/i.test(line) &&
         !/^Platform\s*:/i.test(line) &&
-        !/^Core Theme\s*:/i.test(line),
+        !/^Core Theme\s*:/i.test(line) &&
+        !/^Type\s*:/i.test(line) &&
+        !/^Year\s*:/i.test(line) &&
+        !/^Chapters\s*:/i.test(line) &&
+        !/^Views\s*:/i.test(line) &&
+        !/^Rating\s*:/i.test(line),
     );
 
     const stopIndex = summaryLines.findIndex(
       line =>
         /^Why\s+/i.test(line) ||
         /^What\s+Makes\s+/i.test(line) ||
-        /^Why\s+".+"\s+is\s+Different/i.test(line),
+        /^Why\s+".+"\s+is\s+Different/i.test(line) ||
+        /^You\s+May\s+Also\s+Like/i.test(line),
     );
 
     if (stopIndex >= 0) {
@@ -699,9 +715,9 @@ class Novelyra implements Plugin.PluginBase {
   }
 
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
-    const cleanPath = novelPath.replace(/^\/+/, '');
+    const cleanPath = novelPath.replace(/^\/+/, '').replace(/\/$/, '');
 
-    const url = `${this.site}${cleanPath}`;
+    const url = `${this.site}${cleanPath}/`;
 
     const result = await fetchApi(url);
 
@@ -719,8 +735,13 @@ class Novelyra implements Plugin.PluginBase {
     const name = await translateShortText(sourceName);
 
     let cover =
+      loadedCheerio('img[src*="cover"], img[alt*="cover"]')
+        .first()
+        .attr('src')
+        ?.trim() ||
       loadedCheerio('#synopsis img').first().attr('src')?.trim() ||
       loadedCheerio('main img').first().attr('src')?.trim() ||
+      loadedCheerio('article img').first().attr('src')?.trim() ||
       loadedCheerio('img').first().attr('src')?.trim() ||
       '';
 
@@ -751,15 +772,15 @@ class Novelyra implements Plugin.PluginBase {
     }
 
     const authorMatch = synopsisText.match(
-      /Author:\s*(.+?)(?:\s+Genre:|\s+Status:|\s+Platform:|\s+Theme:|$)/i,
+      /Author:\s*(.+?)(?:\s+Genre:|\s+Status:|\s+Platform:|\s+Theme:|\s+Type:|\s+Year:|$)/i,
     );
 
     const genreMatch = synopsisText.match(
-      /Genre:\s*(.+?)(?:\s+Status:|\s+Platform:|\s+Theme:|$)/i,
+      /Genre:\s*(.+?)(?:\s+Status:|\s+Platform:|\s+Theme:|\s+Type:|\s+Year:|$)/i,
     );
 
     const statusMatch = synopsisText.match(
-      /Status:\s*(.+?)(?:\s+Platform:|\s+Theme:|$)/i,
+      /Status:\s*(.+?)(?:\s+Platform:|\s+Theme:|\s+Type:|\s+Year:|\s+Chapters:|$)/i,
     );
 
     const author = authorMatch?.[1]?.trim() || '';
@@ -800,7 +821,7 @@ class Novelyra implements Plugin.PluginBase {
         chapterPath = chapterPath.slice(this.site.length);
       }
 
-      chapterPath = chapterPath.replace(/^\/+/, '');
+      chapterPath = chapterPath.replace(/^\/+/, '').replace(/\/$/, '');
 
       if (!chapterPath || seenPaths.has(chapterPath)) {
         return;
@@ -845,9 +866,9 @@ class Novelyra implements Plugin.PluginBase {
   }
 
   async parseChapter(chapterPath: string): Promise<string> {
-    const cleanPath = chapterPath.replace(/^\/+/, '');
+    const cleanPath = chapterPath.replace(/^\/+/, '').replace(/\/$/, '');
 
-    const url = `${this.site}${cleanPath}`;
+    const url = `${this.site}${cleanPath}/`;
 
     const result = await fetchApi(url);
 
@@ -860,10 +881,20 @@ class Novelyra implements Plugin.PluginBase {
     const loadedCheerio = loadCheerio(body);
 
     loadedCheerio(
-      'script, style, iframe, ins, nav, header, footer, aside',
+      'script, style, iframe, ins, nav, header, footer, aside, [class*="ad"], [class*="nav"], [class*="sidebar"], [class*="related"], [class*="recommend"]',
     ).remove();
 
-    const chapterContent = loadedCheerio('article').first();
+    const chapterContent = loadedCheerio('article').first().length
+      ? loadedCheerio('article').first()
+      : loadedCheerio(
+            '[class*="chapter-content"], [class*="entry-content"], [class*="content"]',
+          ).first().length
+        ? loadedCheerio(
+            '[class*="chapter-content"], [class*="entry-content"], [class*="content"]',
+          ).first()
+        : loadedCheerio('main').first().length
+          ? loadedCheerio('main').first()
+          : loadedCheerio('body').first();
 
     if (chapterContent.length === 0) {
       return 'Contenido no encontrado';
@@ -874,7 +905,7 @@ class Novelyra implements Plugin.PluginBase {
     chapterContent.find('p').each((_, element) => {
       const text = loadedCheerio(element).text().trim().replace(/\s+/g, ' ');
 
-      if (text) {
+      if (text && text.length > 10) {
         paragraphs.push(cleanTextForTts(text));
       }
     });
@@ -883,7 +914,15 @@ class Novelyra implements Plugin.PluginBase {
       const rawText = chapterContent.text().trim().replace(/\s+/g, ' ');
 
       if (rawText) {
-        paragraphs.push(cleanTextForTts(rawText));
+        const chunks = rawText.match(/.{1,1800}(?:\s|$)/g) || [rawText];
+
+        for (const chunk of chunks) {
+          const cleaned = cleanTextForTts(chunk.trim());
+
+          if (cleaned) {
+            paragraphs.push(cleaned);
+          }
+        }
       }
     }
 
