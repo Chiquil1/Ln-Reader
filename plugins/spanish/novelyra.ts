@@ -944,17 +944,19 @@ class Novelyra implements Plugin.PluginBase {
       'script, style, iframe, ins, nav, header, footer, aside, [class*="ad"], [class*="nav"], [class*="sidebar"], [class*="related"], [class*="recommend"]',
     ).remove();
 
-    const chapterContent = loadedCheerio('article').first().length
-      ? loadedCheerio('article').first()
-      : loadedCheerio(
-            '[class*="chapter-content"], [class*="entry-content"], [class*="content"]',
-          ).first().length
-        ? loadedCheerio(
-            '[class*="chapter-content"], [class*="entry-content"], [class*="content"]',
-          ).first()
-        : loadedCheerio('main').first().length
-          ? loadedCheerio('main').first()
-          : loadedCheerio('body').first();
+    const chapterContent = loadedCheerio('#chapter-content').first().length
+      ? loadedCheerio('#chapter-content').first()
+      : loadedCheerio('article').first().length
+        ? loadedCheerio('article').first()
+        : loadedCheerio(
+              '[class*="chapter-content"], [class*="entry-content"]',
+            ).first().length
+          ? loadedCheerio(
+              '[class*="chapter-content"], [class*="entry-content"]',
+            ).first()
+          : loadedCheerio('main').first().length
+            ? loadedCheerio('main').first()
+            : loadedCheerio('body').first();
 
     if (chapterContent.length === 0) {
       return 'Contenido no encontrado';
