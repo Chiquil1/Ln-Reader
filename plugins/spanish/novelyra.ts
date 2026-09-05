@@ -367,7 +367,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.2.0';
+  version = '2.3.0';
 
   filters: Filters = {
     genres: {
@@ -714,6 +714,89 @@ class Novelyra implements Plugin.PluginBase {
     return summaryLines.join('\n');
   }
 
+  private extractChaptersFromHtml(
+    loadedCheerio: ReturnType<typeof loadCheerio>,
+  ): Plugin.ChapterItem[] {
+    const chapters: Plugin.ChapterItem[] = [];
+
+    loadedCheerio('a[href*="/chapter-"]').each((_, element) => {
+      const link = loadedCheerio(element);
+
+      const rawChapterPath = link.attr('href')?.trim() || '';
+
+      if (!rawChapterPath) {
+        return;
+      }
+
+      const chapterNumber = extractChapterNumberFromUrl(rawChapterPath);
+
+      if (chapterNumber === null) {
+        return;
+      }
+
+      let chapterPath = rawChapterPath;
+
+      if (chapterPath.startsWith(this.site)) {
+        chapterPath = chapterPath.slice(this.site.length);
+      }
+
+      chapterPath = chapterPath.replace(/^\/+/, '').replace(/\/$/, '');
+
+      if (!chapterPath) {
+        return;
+      }
+
+      const text = link.text().trim().replace(/\s+/g, ' ');
+
+      let chapterName = text || `Capítulo ${chapterNumber || 0}`;
+
+      const separatorIndex = chapterName.indexOf(' - ');
+
+      if (separatorIndex > 0) {
+        chapterName =
+          chapterName.slice(0, separatorIndex).trim() ||
+          `Capítulo ${chapterNumber || 0}`;
+      }
+
+      const releaseMatch = text.match(
+        /\b(\d+\s+(?:day|days|week|weeks|month|months|year|years|día|días|semana|semanas|mes|meses|año|años)\s+ago)\b/i,
+      );
+
+      chapters.push({
+        name: chapterName,
+        path: chapterPath,
+        chapterNumber: chapterNumber ?? 0,
+        releaseTime: releaseMatch?.[1]
+          ? parseRelativeTime(releaseMatch[1])?.toISOString()
+          : undefined,
+      });
+    });
+
+    return chapters;
+  }
+
+  private extractTotalPages(
+    loadedCheerio: ReturnType<typeof loadCheerio>,
+  ): number {
+    const pageLinks = loadedCheerio(
+      'nav[aria-label="Pagination"] a[href*="page="]',
+    );
+    let maxPage = 1;
+
+    pageLinks.each((_, el) => {
+      const href = loadedCheerio(el).attr('href') || '';
+      const match = href.match(/page=(\d+)/);
+      if (match) {
+        const pageNum = parseInt(match[1], 10);
+        if (pageNum > maxPage) {
+          maxPage = pageNum;
+        }
+      }
+    });
+
+    return maxPage;
+  }
+
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
     const cleanPath = novelPath.replace(/^\/+/, '').replace(/\/$/, '');
 
@@ -797,70 +880,47 @@ class Novelyra implements Plugin.PluginBase {
       status,
     };
 
-    const chapters: Plugin.ChapterItem[] = [];
     const seenPaths = new Set<string>();
+    const allChapters = this.extractChaptersFromHtml(loadedCheerio);
 
-    loadedCheerio('a[href*="/chapter-"]').each((_, element) => {
-      const link = loadedCheerio(element);
-
-      const rawChapterPath = link.attr('href')?.trim() || '';
-
-      if (!rawChapterPath) {
-        return;
+    allChapters.forEach(ch => {
+      if (ch.path) {
+        seenPaths.add(ch.path);
       }
-
-      const chapterNumber = extractChapterNumberFromUrl(rawChapterPath);
-
-      if (chapterNumber === null) {
-        return;
-      }
-
-      let chapterPath = rawChapterPath;
-
-      if (chapterPath.startsWith(this.site)) {
-        chapterPath = chapterPath.slice(this.site.length);
-      }
-
-      chapterPath = chapterPath.replace(/^\/+/, '').replace(/\/$/, '');
-
-      if (!chapterPath || seenPaths.has(chapterPath)) {
-        return;
-      }
-
-      seenPaths.add(chapterPath);
-
-      const text = link.text().trim().replace(/\s+/g, ' ');
-
-      let chapterName = text || `Capítulo ${chapterNumber || 0}`;
-
-      const separatorIndex = chapterName.indexOf(' - ');
-
-      if (separatorIndex > 0) {
-        chapterName =
-          chapterName.slice(0, separatorIndex).trim() ||
-          `Capítulo ${chapterNumber || 0}`;
-      }
-
-      const releaseMatch = text.match(
-        /\b(\d+\s+(?:day|days|week|weeks|month|months|year|years|día|días|semana|semanas|mes|meses|año|años)\s+ago)\b/i,
-      );
-
-      chapters.push({
-        name: chapterName,
-        path: chapterPath,
-        chapterNumber: chapterNumber ?? 0,
-        releaseTime: releaseMatch?.[1]
-          ? parseRelativeTime(releaseMatch[1])?.toISOString()
-          : undefined,
-      });
     });
 
-    chapters.sort(
+    const totalPages = this.extractTotalPages(loadedCheerio);
+
+    for (let page = 2; page <= totalPages; page++) {
+      try {
+        const pageUrl = `${this.site}${cleanPath}?page=${page}`;
+        const pageResult = await fetchApi(pageUrl);
+
+        if (!pageResult.ok) {
+          continue;
+        }
+
+        const pageBody = await pageResult.text();
+        const pageHtml = loadCheerio(pageBody);
+        const pageChapters = this.extractChaptersFromHtml(pageHtml);
+
+        for (const ch of pageChapters) {
+          if (ch.path && !seenPaths.has(ch.path)) {
+            seenPaths.add(ch.path);
+            allChapters.push(ch);
+          }
+        }
+      } catch {
+        // Continue with next page on error
+      }
+    }
+
+    allChapters.sort(
       (first, second) =>
         (first.chapterNumber ?? 0) - (second.chapterNumber ?? 0),
     );
 
-    novel.chapters = chapters;
+    novel.chapters = allChapters;
 
     return novel;
   }
