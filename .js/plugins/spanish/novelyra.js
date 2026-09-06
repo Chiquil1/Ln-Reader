@@ -1,1 +1,896 @@
-var e=this&&this.__awaiter||function(e,t,r,n){return new(r||(r=Promise))(function(a,i){function o(e){try{c(n.next(e))}catch(e){i(e)}}function s(e){try{c(n.throw(e))}catch(e){i(e)}}function c(e){var t;e.done?a(e.value):(t=e.value,t instanceof r?t:new r(function(e){e(t)})).then(o,s)}c((n=n.apply(e,t||[])).next())})},t=this&&this.__generator||function(e,t){var r,n,a,i={label:0,sent:function(){if(1&a[0])throw a[1];return a[1]},trys:[],ops:[]},o=Object.create(("function"==typeof Iterator?Iterator:Object).prototype);return o.next=s(0),o.throw=s(1),o.return=s(2),"function"==typeof Symbol&&(o[Symbol.iterator]=function(){return this}),o;function s(s){return function(c){return function(s){if(r)throw new TypeError("Generator is already executing.");for(;o&&(o=0,s[0]&&(i=0)),i;)try{if(r=1,n&&(a=2&s[0]?n.return:s[0]?n.throw||((a=n.return)&&a.call(n),0):n.next)&&!(a=a.call(n,s[1])).done)return a;switch(n=0,a&&(s=[2&s[0],a.value]),s[0]){case 0:case 1:a=s;break;case 4:return i.label++,{value:s[1],done:!1};case 5:i.label++,n=s[1],s=[0];continue;case 7:s=i.ops.pop(),i.trys.pop();continue;default:if(!(a=i.trys,(a=a.length>0&&a[a.length-1])||6!==s[0]&&2!==s[0])){i=0;continue}if(3===s[0]&&(!a||s[1]>a[0]&&s[1]<a[3])){i.label=s[1];break}if(6===s[0]&&i.label<a[1]){i.label=a[1],a=s;break}if(a&&i.label<a[2]){i.label=a[2],i.ops.push(s);break}a[2]&&i.ops.pop(),i.trys.pop();continue}s=t.call(e,i)}catch(e){s=[6,e],n=0}finally{r=a=0}if(5&s[0])throw s[1];return{value:s[0]?s[1]:void 0,done:!0}}([s,c])}}},r=this&&this.__spreadArray||function(e,t,r){if(r||2===arguments.length)for(var n,a=0,i=t.length;a<i;a++)!n&&a in t||(n||(n=Array.prototype.slice.call(t,0,a)),n[a]=t[a]);return e.concat(n||Array.prototype.slice.call(t))};Object.defineProperty(exports,"__esModule",{value:!0});var n=require("@libs/filterInputs"),a=require("@libs/fetch"),i=require("cheerio"),o={enabled:!0,provider:"google",targetLang:"es",sourceLang:"auto",batchSize:10,cacheEnabled:!0,fallbackProvider:"libretranslate"},s=new Map;function c(e){return e.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ")}function l(e){return c(e).split(/\s+/).filter(Boolean)}function u(e,t){var r=c(e),n=c(t);return r&&n?r===n?1e3:r.startsWith(n)?800:r.includes(n)?600:100*l(t).filter(function(e){return r.includes(e)}).length:0}function h(n){return e(this,arguments,void 0,function(e,n,i,c){var l,u,h,p,v,d,m,b,g;return void 0===n&&(n="es"),void 0===i&&(i="auto"),void 0===c&&(c=o),t(this,function(t){switch(t.label){case 0:if(!(l=e.trim()))return[2,""];if(u="".concat(i,":").concat(n,":").concat(l),c.cacheEnabled&&s.has(u))return[2,s.get(u)];h=r([{name:c.provider,url:f(c.provider,l,i,n,c.apiKey)}],c.fallbackProvider?[{name:c.fallbackProvider,url:f(c.fallbackProvider,l,i,n,c.apiKey)}]:[],!0),p=0,v=h,t.label=1;case 1:if(!(p<v.length))return[3,7];d=v[p],t.label=2;case 2:return t.trys.push([2,5,,6]),[4,(0,a.fetchApi)(d.url)];case 3:return(m=t.sent()).ok?[4,m.json()]:[3,6];case 4:return b=t.sent(),g=function(e,t){var r;try{switch(t){case"google":if(Array.isArray(e)&&e[0]&&Array.isArray(e[0]))return e[0].map(function(e){return e[0]}).filter(Boolean).join("");break;case"deepl":if("object"==typeof e&&null!==e&&"translations"in e)return(null===(r=e.translations[0])||void 0===r?void 0:r.text)||null;break;case"libretranslate":if("object"==typeof e&&null!==e&&"translatedText"in e)return e.translatedText}}catch(e){}return null}(b,d.name),g&&g!==l?(c.cacheEnabled&&s.set(u,g),[2,g]):[3,6];case 5:return t.sent(),[3,6];case 6:return p++,[3,1];case 7:return[2,e]}})})}function f(e,t,r,n,a){var i=encodeURIComponent(t);switch(e){case"google":default:return"https://translate.googleapis.com/translate_a/single?client=gtx&sl=".concat(r,"&tl=").concat(n,"&dt=t&q=").concat(i);case"deepl":return"https://api-free.deepl.com/v2/translate?auth_key=".concat(a,"&text=").concat(encodeURIComponent(t),"&target_lang=").concat(n.toUpperCase(),"&source_lang=").concat("auto"===r?"":r);case"libretranslate":return"https://libretranslate.de/translate?q=".concat(encodeURIComponent(t),"&source=").concat(r,"&target=").concat(n,"&format=text")}}function p(r){return e(this,arguments,void 0,function(e,r){var n,a,i,s,c,l,u,f;return void 0===r&&(r=o),t(this,function(t){switch(t.label){case 0:n=[],a="",i=0,s=e,t.label=1;case 1:return i<s.length?(c=s[i],(l=c.trim())?(u=""===a?"":"\n","".concat(a).concat(u).concat(l).length>2e3?""===a?[3,3]:[4,h(a,void 0,void 0,o)]:[3,4]):[3,5]):[3,6];case 2:f=t.sent(),n.push.apply(n,f.split(/\n+/).map(function(e){return e.trim()}).filter(Boolean)),t.label=3;case 3:return a=l,[3,5];case 4:a=""===a?l:"".concat(a,"\n").concat(l),t.label=5;case 5:return i++,[3,1];case 6:return""===a?[3,8]:[4,h(a,void 0,void 0,o)];case 7:f=t.sent(),n.push.apply(n,f.split(/\n+/).map(function(e){return e.trim()}).filter(Boolean)),t.label=8;case 8:return[2,n]}})})}function v(r){return e(this,void 0,void 0,function(){var e;return t(this,function(t){return(e=r.trim())?[2,h(e)]:[2,""]})})}function d(r){return e(this,void 0,void 0,function(){return t(this,function(e){return[2,Promise.all(r.map(function(e){return v(e)}))]})})}function m(e){return e.replace(/[\u200B-\u200D\uFEFF\u200E\u200F\u202A-\u202E]/g,"").replace(/[\\/]{2,}/g,"").replace(/[—––─]/g,"-").replace(/[*_~|•♦¤°]/g,"").replace(/\.{4,}/g,"...").replace(/ {2,}/g," ").replace(/\n\s*\n/g,"\n").trim()}function b(e){var t=e.match(/\b(\d+)\s+(day|days|week|weeks|month|months|year|years|día|días|semana|semanas|mes|meses|año|años)\s+ago\b/i);if(!t)return null;var r=parseInt(t[1],10),n=t[2].toLowerCase(),a=new Date;return n.startsWith("day")||n.startsWith("día")?new Date(a.getTime()-24*r*60*60*1e3):n.startsWith("week")||n.startsWith("semana")?new Date(a.getTime()-7*r*24*60*60*1e3):n.startsWith("month")||n.startsWith("mes")?new Date(a.getTime()-30*r*24*60*60*1e3):n.startsWith("year")||n.startsWith("año")?new Date(a.getTime()-365*r*24*60*60*1e3):null}var g=function(){function r(){this.id="novelyra",this.name="Novelyra",this.icon="https://novelyra.com/favicon.ico",this.site="https://novelyra.com/",this.version="2.1.0",this.filters={genres:{type:n.FilterTypes.Picker,label:"Géneros",value:"",options:[{label:"Todos",value:""},{label:"Acción",value:"accion"},{label:"Aventura",value:"aventura"},{label:"Fantasía",value:"fantasy"},{label:"Artes Marciales",value:"martial-arts"},{label:"Harén",value:"harem"},{label:"Romance",value:"romance"},{label:"Sobrenatural",value:"supernatural"},{label:"Xuanhuan",value:"xuanhuan"},{label:"Xianxia",value:"xianxia"},{label:"Comedia",value:"comedy"},{label:"Ciencia Ficción",value:"sci-fi"},{label:"Misterio",value:"mystery"},{label:"Maduro",value:"mature"},{label:"Psicológico",value:"psychological"},{label:"Shounen",value:"shounen"},{label:"Reencarnación",value:"reincarnation"},{label:"Mecha",value:"mecha"},{label:"Vida Escolar",value:"school-life"},{label:"Josei",value:"josei"},{label:"Drama",value:"drama"},{label:"Urbano",value:"urban"},{label:"Oriental",value:"eastern"},{label:"Horror",value:"horror"},{label:"Tragedia",value:"tragedy"},{label:"Juegos",value:"game"}]}}}return r.prototype.extractNovels=function(e){var t=this,r=[];return e("main a.group.block.min-w-0").each(function(n,a){var i,o,s,c,l=e(a),u=l.find("h3").first();if(u.length){var h=u.text().trim(),f=(null===(i=l.attr("href"))||void 0===i?void 0:i.trim())||"";if(h&&f&&(!f.startsWith("http")||f.startsWith(t.site))){var p=f;if(p.startsWith(t.site)&&(p=p.slice(t.site.length)),(p=p.replace(/^\/+/,""))&&!r.some(function(e){return e.path===p})){var v=l.find("img").first(),d=(null===(o=v.attr("src"))||void 0===o?void 0:o.trim())||(null===(s=v.attr("data-src"))||void 0===s?void 0:s.trim())||(null===(c=v.attr("data-lazy-src"))||void 0===c?void 0:c.trim())||"";d&&d.startsWith("/")&&(d="".concat(t.site).concat(d.slice(1))),r.push({name:h,sourceName:h,path:p,cover:d})}}}}),r},r.prototype.finalizeNovels=function(r){return e(this,void 0,void 0,function(){var e;return t(this,function(t){switch(t.label){case 0:return[4,d(r.map(function(e){return e.sourceName}))];case 1:return e=t.sent(),[2,r.map(function(t,r){return{name:e[r]||t.sourceName,path:t.path,cover:t.cover}})]}})})},r.prototype.popularNovels=function(r,n){return e(this,arguments,void 0,function(e,r){var n,o,s,c,l,u,h,f,p=r.showLatestNovels,v=r.filters;return t(this,function(t){switch(t.label){case 0:return n=Math.max(1,e||1),o=null===(f=null==v?void 0:v.genres)||void 0===f?void 0:f.value,s=o?"".concat(this.site,"genre/")+"".concat(encodeURIComponent(o))+"?page=".concat(n):1===n?this.site:"".concat(this.site,"?page=").concat(n),p&&(s=1===n?this.site:"".concat(this.site,"?page=").concat(n)),[4,(0,a.fetchApi)(s)];case 1:if(!(c=t.sent()).ok)throw new Error("HTTP ".concat(c.status,": ").concat(s));return[4,c.text()];case 2:return l=t.sent(),u=(0,i.load)(l),h=this.extractNovels(u),[2,this.finalizeNovels(h)]}})})},r.prototype.searchNovels=function(r,n){return e(this,void 0,void 0,function(){var e,o,s,h,f,p,v,d,m,b,g;return t(this,function(t){switch(t.label){case 0:return(e=r.trim())?[4,y(e)]:[2,[]];case 1:return o=t.sent().trim(),s=o&&w(o)!==w(e)?o:e,h=Math.max(1,n||1),f="".concat(this.site,"search?q=").concat(encodeURIComponent(s))+(h>1?"&page=".concat(h):""),[4,(0,a.fetchApi)(f)];case 2:if(!(p=t.sent()).ok)throw new Error("HTTP ".concat(p.status,": ").concat(f));return[4,p.text()];case 3:return v=t.sent(),d=(0,i.load)(v),m=this.extractNovels(d),b=[e,s].filter(Boolean),g=m.map(function(e){var t=b.map(function(t){return{candidate:t,score:u(e.sourceName,t),matches:(r=e.sourceName,n=l(t),a=c(r),!(!a||!n.length)&&n.every(function(e){return a.includes(e)}))};var r,n,a}).reduce(function(e,t){return t.score>e.score?t:e},{candidate:"",score:0,matches:!1});return{novel:e,score:t.score,matches:t.matches}}).filter(function(e){return e.matches&&e.score>0}).sort(function(e,t){return t.score-e.score}),[2,this.finalizeNovels(g.map(function(e){return e.novel}))]}})})},r.prototype.extractSynopsis=function(e){var t=e("#synopsis").first();if(!t.length)return"";t.find("button, script, style").remove(),t.find("br").replaceWith("\n"),t.find("p, div").each(function(t,r){var n=e(r).text();n.trim()&&!n.endsWith("\n")&&e(r).append("\n")});var r=t.text().split(/\r?\n/).map(function(e){return e.replace(/\u00a0/g," ").replace(/\s+/g," ").trim()}).filter(Boolean);if(!r.length)return"";var n=r.findIndex(function(e){return/^Premise\s*:/i.test(e)}),a=n>=0?r.slice(n):r,i=(a=a.filter(function(e){return!(/^Author\s*:/i.test(e)||/^Genre\s*:/i.test(e)||/^Status\s*:/i.test(e)||/^Platform\s*:/i.test(e)||/^Core Theme\s*:/i.test(e))})).findIndex(function(e){return/^Why\s+/i.test(e)||/^What\s+Makes\s+/i.test(e)||/^Why\s+".+"\s+is\s+Different/i.test(e)});return i>=0&&(a=a.slice(0,i)),a.join("\n")},r.prototype.parseNovel=function(r){return e(this,void 0,void 0,function(){var e,n,o,s,c,l,u,h,f,d,m,g,y,w,x,k,T,N,W,A,P,C,S,I,_,E,j=this;return t(this,function(t){switch(t.label){case 0:return e=r.replace(/^\/+/,""),n="".concat(this.site).concat(e),[4,(0,a.fetchApi)(n)];case 1:if(!(o=t.sent()).ok)throw new Error("HTTP ".concat(o.status,": ").concat(n));return[4,o.text()];case 2:return s=t.sent(),c=(0,i.load)(s),[4,v(c("h1").first().text().trim()||"Desconocido")];case 3:return l=t.sent(),(u=(null===(P=c("#synopsis img").first().attr("src"))||void 0===P?void 0:P.trim())||(null===(C=c("main img").first().attr("src"))||void 0===C?void 0:C.trim())||(null===(S=c("img").first().attr("src"))||void 0===S?void 0:S.trim())||"")&&u.startsWith("/")&&(u="".concat(this.site).concat(u.slice(1))),h=c("#synopsis").first().text().replace(/\u00a0/g," ").replace(/\s+/g," ").trim(),f=this.extractSynopsis(c),(d=f)?[4,p(d.split(/\r?\n/).map(function(e){return e.trim()}).filter(Boolean))]:[3,5];case 4:m=t.sent(),d=m.join("\n\n").trim()||d,t.label=5;case 5:return g=h.match(/Author:\s*(.+?)(?:\s+Genre:|\s+Status:|\s+Platform:|\s+Theme:|$)/i),y=h.match(/Genre:\s*(.+?)(?:\s+Status:|\s+Platform:|\s+Theme:|$)/i),w=h.match(/Status:\s*(.+?)(?:\s+Platform:|\s+Theme:|$)/i),x=(null===(I=null==g?void 0:g[1])||void 0===I?void 0:I.trim())||"",k=(null===(_=null==y?void 0:y[1])||void 0===_?void 0:_.trim().replace(/\s+/g,", "))||"",T=(null===(E=null==w?void 0:w[1])||void 0===E?void 0:E.trim())||"",N={path:r,name:l,cover:u,summary:d,author:x,genres:k,status:T},W=[],A=new Set,c('a[href*="/chapter-"]').each(function(e,t){var r,n,a=c(t),i=(null===(r=a.attr("href"))||void 0===r?void 0:r.trim())||"";if(i){var o=function(e){var t=e.match(/\/chapter-(\d+)(?:\/)?(?:[?#].*)?$/i);return t?parseInt(t[1],10):null}(i);if(null!==o){var s=i;if(s.startsWith(j.site)&&(s=s.slice(j.site.length)),(s=s.replace(/^\/+/,""))&&!A.has(s)){A.add(s);var l=a.text().trim().replace(/\s+/g," "),u=l||"Capítulo ".concat(o||0),h=u.indexOf(" - ");h>0&&(u=u.slice(0,h).trim()||"Capítulo ".concat(o||0));var f=l.match(/\b(\d+\s+(?:day|days|week|weeks|month|months|year|years|día|días|semana|semanas|mes|meses|año|años)\s+ago)\b/i);W.push({name:u,path:s,chapterNumber:null!=o?o:0,releaseTime:(null==f?void 0:f[1])?null===(n=b(f[1]))||void 0===n?void 0:n.toISOString():void 0})}}}}),W.sort(function(e,t){var r,n;return(null!==(r=e.chapterNumber)&&void 0!==r?r:0)-(null!==(n=t.chapterNumber)&&void 0!==n?n:0)}),N.chapters=W,[2,N]}})})},r.prototype.parseChapter=function(r){return e(this,void 0,void 0,function(){var e,n,o,s,c,l,u,h;return t(this,function(t){switch(t.label){case 0:return e=r.replace(/^\/+/,""),n="".concat(this.site).concat(e),[4,(0,a.fetchApi)(n)];case 1:if(!(o=t.sent()).ok)throw new Error("HTTP ".concat(o.status,": ").concat(n));return[4,o.text()];case 2:return s=t.sent(),(c=(0,i.load)(s))("script, style, iframe, ins, nav, header, footer, aside").remove(),0===(l=c("article").first()).length?[2,"Contenido no encontrado"]:(u=[],l.find("p").each(function(e,t){var r=c(t).text().trim().replace(/\s+/g," ");r&&u.push(m(r))}),0===u.length&&(h=l.text().trim().replace(/\s+/g," "))&&u.push(m(h)),0===u.length?[2,"Contenido no encontrado"]:[4,p(u)]);case 3:return[2,t.sent().map(function(e){return"<p>".concat(e.replace(/</g,"<").replace(/>/g,">"),"</p>")}).join("")]}})})},r}();function y(r){return e(this,void 0,void 0,function(){return t(this,function(e){return[2,h(r,"en","auto")]})})}function w(e){return e.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ")}exports.default=new g;
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var filterInputs_1 = require("@libs/filterInputs");
+var fetch_1 = require("@libs/fetch");
+var cheerio_1 = require("cheerio");
+var SITE = 'https://novelyra.com/';
+var DEFAULT_TRANSLATION_CONFIG = {
+    enabled: true,
+    provider: 'google',
+    targetLang: 'es',
+    sourceLang: 'auto',
+    batchSize: 10,
+    cacheEnabled: true,
+    fallbackProvider: 'libretranslate',
+};
+// Cache de traducciones en memoria
+var translationCache = new Map();
+// Utilidades de normalización
+function normalizeText(text) {
+    return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim()
+        .replace(/\s+/g, ' ');
+}
+function getSearchTerms(text) {
+    return normalizeText(text).split(/\s+/).filter(Boolean);
+}
+function searchTermsMatch(title, queryTerms) {
+    var normalizedTitle = normalizeText(title);
+    if (!normalizedTitle || !queryTerms.length) {
+        return false;
+    }
+    return queryTerms.every(function (term) { return normalizedTitle.includes(term); });
+}
+function searchScore(title, query) {
+    var normalizedTitle = normalizeText(title);
+    var normalizedQuery = normalizeText(query);
+    if (!normalizedTitle || !normalizedQuery) {
+        return 0;
+    }
+    if (normalizedTitle === normalizedQuery) {
+        return 1000;
+    }
+    if (normalizedTitle.startsWith(normalizedQuery)) {
+        return 800;
+    }
+    if (normalizedTitle.includes(normalizedQuery)) {
+        return 600;
+    }
+    var terms = getSearchTerms(query);
+    var matchingTerms = terms.filter(function (term) {
+        return normalizedTitle.includes(term);
+    }).length;
+    return matchingTerms * 100;
+}
+// Traducción universal con soporte multi-proveedor y cache
+function translateText(text_1) {
+    return __awaiter(this, arguments, void 0, function (text, targetLang, sourceLang, config) {
+        var normalized, cacheKey, providers, _i, providers_1, provider, res, json, translated, _a;
+        if (targetLang === void 0) { targetLang = 'es'; }
+        if (sourceLang === void 0) { sourceLang = 'auto'; }
+        if (config === void 0) { config = DEFAULT_TRANSLATION_CONFIG; }
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    normalized = text.trim();
+                    if (!normalized) {
+                        return [2 /*return*/, ''];
+                    }
+                    cacheKey = "".concat(sourceLang, ":").concat(targetLang, ":").concat(normalized);
+                    if (config.cacheEnabled && translationCache.has(cacheKey)) {
+                        return [2 /*return*/, translationCache.get(cacheKey)];
+                    }
+                    providers = __spreadArray([
+                        {
+                            name: config.provider,
+                            url: getProviderUrl(config.provider, normalized, sourceLang, targetLang, config.apiKey),
+                        }
+                    ], (config.fallbackProvider
+                        ? [
+                            {
+                                name: config.fallbackProvider,
+                                url: getProviderUrl(config.fallbackProvider, normalized, sourceLang, targetLang, config.apiKey),
+                            },
+                        ]
+                        : []), true);
+                    _i = 0, providers_1 = providers;
+                    _b.label = 1;
+                case 1:
+                    if (!(_i < providers_1.length)) return [3 /*break*/, 7];
+                    provider = providers_1[_i];
+                    _b.label = 2;
+                case 2:
+                    _b.trys.push([2, 5, , 6]);
+                    return [4 /*yield*/, (0, fetch_1.fetchApi)(provider.url)];
+                case 3:
+                    res = _b.sent();
+                    if (!res.ok) {
+                        return [3 /*break*/, 6];
+                    }
+                    return [4 /*yield*/, res.json()];
+                case 4:
+                    json = _b.sent();
+                    translated = extractTranslation(json, provider.name);
+                    if (translated && translated !== normalized) {
+                        if (config.cacheEnabled) {
+                            translationCache.set(cacheKey, translated);
+                        }
+                        return [2 /*return*/, translated];
+                    }
+                    return [3 /*break*/, 6];
+                case 5:
+                    _a = _b.sent();
+                    return [3 /*break*/, 6];
+                case 6:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 7: return [2 /*return*/, text]; // Fallback to original
+            }
+        });
+    });
+}
+function getProviderUrl(provider, text, sourceLang, targetLang, apiKey) {
+    var encoded = encodeURIComponent(text);
+    switch (provider) {
+        case 'google':
+            return "https://translate.googleapis.com/translate_a/single?client=gtx&sl=".concat(sourceLang, "&tl=").concat(targetLang, "&dt=t&q=").concat(encoded);
+        case 'deepl':
+            return "https://api-free.deepl.com/v2/translate?auth_key=".concat(apiKey, "&text=").concat(encodeURIComponent(text), "&target_lang=").concat(targetLang.toUpperCase(), "&source_lang=").concat(sourceLang === 'auto' ? '' : sourceLang);
+        case 'libretranslate':
+            return "https://libretranslate.de/translate?q=".concat(encodeURIComponent(text), "&source=").concat(sourceLang, "&target=").concat(targetLang, "&format=text");
+        default:
+            return "https://translate.googleapis.com/translate_a/single?client=gtx&sl=".concat(sourceLang, "&tl=").concat(targetLang, "&dt=t&q=").concat(encoded);
+    }
+}
+function extractTranslation(json, provider) {
+    var _a;
+    try {
+        switch (provider) {
+            case 'google':
+                if (Array.isArray(json) && json[0] && Array.isArray(json[0])) {
+                    return json[0]
+                        .map(function (item) { return item[0]; })
+                        .filter(Boolean)
+                        .join('');
+                }
+                break;
+            case 'deepl':
+                if (typeof json === 'object' &&
+                    json !== null &&
+                    'translations' in json) {
+                    return (((_a = json.translations[0]) === null || _a === void 0 ? void 0 : _a.text) || null);
+                }
+                break;
+            case 'libretranslate':
+                if (typeof json === 'object' &&
+                    json !== null &&
+                    'translatedText' in json) {
+                    return json.translatedText;
+                }
+                break;
+        }
+    }
+    catch (_b) {
+        // Ignore extraction errors
+    }
+    return null;
+}
+function translateParagraphs(paragraphs_1) {
+    return __awaiter(this, arguments, void 0, function (paragraphs, _config) {
+        var translatedParagraphs, currentBatch, _i, paragraphs_2, paragraph, normalizedParagraph, separator, translatedBatch, translatedBatch;
+        if (_config === void 0) { _config = DEFAULT_TRANSLATION_CONFIG; }
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    translatedParagraphs = [];
+                    currentBatch = '';
+                    _i = 0, paragraphs_2 = paragraphs;
+                    _a.label = 1;
+                case 1:
+                    if (!(_i < paragraphs_2.length)) return [3 /*break*/, 6];
+                    paragraph = paragraphs_2[_i];
+                    normalizedParagraph = paragraph.trim();
+                    if (!normalizedParagraph) {
+                        return [3 /*break*/, 5];
+                    }
+                    separator = currentBatch === '' ? '' : '\n';
+                    if (!("".concat(currentBatch).concat(separator).concat(normalizedParagraph).length > 2000) // MAX_TRANSLATION_CHARS
+                    ) return [3 /*break*/, 4]; // MAX_TRANSLATION_CHARS
+                    if (!(currentBatch !== '')) return [3 /*break*/, 3];
+                    return [4 /*yield*/, translateText(currentBatch, undefined, undefined, DEFAULT_TRANSLATION_CONFIG)];
+                case 2:
+                    translatedBatch = _a.sent();
+                    translatedParagraphs.push.apply(translatedParagraphs, translatedBatch
+                        .split(/\n+/)
+                        .map(function (text) { return text.trim(); })
+                        .filter(Boolean));
+                    _a.label = 3;
+                case 3:
+                    currentBatch = normalizedParagraph;
+                    return [3 /*break*/, 5];
+                case 4:
+                    currentBatch =
+                        currentBatch === ''
+                            ? normalizedParagraph
+                            : "".concat(currentBatch, "\n").concat(normalizedParagraph);
+                    _a.label = 5;
+                case 5:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 6:
+                    if (!(currentBatch !== '')) return [3 /*break*/, 8];
+                    return [4 /*yield*/, translateText(currentBatch, undefined, undefined, DEFAULT_TRANSLATION_CONFIG)];
+                case 7:
+                    translatedBatch = _a.sent();
+                    translatedParagraphs.push.apply(translatedParagraphs, translatedBatch
+                        .split(/\n+/)
+                        .map(function (text) { return text.trim(); })
+                        .filter(Boolean));
+                    _a.label = 8;
+                case 8: return [2 /*return*/, translatedParagraphs];
+            }
+        });
+    });
+}
+function translateShortText(text) {
+    return __awaiter(this, void 0, void 0, function () {
+        var normalizedText;
+        return __generator(this, function (_a) {
+            normalizedText = text.trim();
+            if (!normalizedText) {
+                return [2 /*return*/, ''];
+            }
+            return [2 /*return*/, translateText(normalizedText)];
+        });
+    });
+}
+function translateTitles(titles) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, Promise.all(titles.map(function (title) { return translateShortText(title); }))];
+        });
+    });
+}
+// Limpieza avanzada de texto para TTS
+function cleanTextForTts(text) {
+    return (text
+        // Eliminar caracteres invisibles
+        .replace(/[\u200B-\u200D\uFEFF\u200E\u200F\u202A-\u202E]/g, '')
+        // Normalizar barras múltiples
+        .replace(/[\\/]{2,}/g, '')
+        // Normalizar guiones
+        .replace(/[—––─]/g, '-')
+        // Eliminar caracteres decorativos
+        .replace(/[*_~|•♦¤°]/g, '')
+        // Normalizar puntos suspensivos
+        .replace(/\.{4,}/g, '...')
+        // Normalizar espacios múltiples
+        .replace(/ {2,}/g, ' ')
+        // Normalizar saltos de línea múltiples
+        .replace(/\n\s*\n/g, '\n')
+        .trim());
+}
+// Parsear tiempo relativo a fecha absoluta
+function parseRelativeTime(text) {
+    var match = text.match(/\b(\d+)\s+(day|days|week|weeks|month|months|year|years|día|días|semana|semanas|mes|meses|año|años)\s+ago\b/i);
+    if (!match) {
+        return null;
+    }
+    var value = parseInt(match[1], 10);
+    var unit = match[2].toLowerCase();
+    var now = new Date();
+    if (unit.startsWith('day') || unit.startsWith('día')) {
+        return new Date(now.getTime() - value * 24 * 60 * 60 * 1000);
+    }
+    if (unit.startsWith('week') || unit.startsWith('semana')) {
+        return new Date(now.getTime() - value * 7 * 24 * 60 * 60 * 1000);
+    }
+    if (unit.startsWith('month') || unit.startsWith('mes')) {
+        return new Date(now.getTime() - value * 30 * 24 * 60 * 60 * 1000);
+    }
+    if (unit.startsWith('year') || unit.startsWith('año')) {
+        return new Date(now.getTime() - value * 365 * 24 * 60 * 60 * 1000);
+    }
+    return null;
+}
+// Extraer número de capítulo de URL
+function extractChapterNumberFromUrl(url) {
+    var match = url.match(/\/chapter-(\d+)(?:\/)?(?:[?#].*)?$/i);
+    if (match) {
+        return parseInt(match[1], 10);
+    }
+    return null;
+}
+var Novelyra = /** @class */ (function () {
+    function Novelyra() {
+        this.id = 'novelyra';
+        this.name = 'Novelyra';
+        this.icon = 'https://novelyra.com/favicon.ico';
+        this.site = SITE;
+        this.version = '2.4.0';
+        this.filters = {
+            genres: {
+                type: filterInputs_1.FilterTypes.Picker,
+                label: 'Géneros',
+                value: '',
+                options: [
+                    { label: 'Todos', value: '' },
+                    { label: 'Acción', value: 'accion' },
+                    { label: 'Aventura', value: 'aventura' },
+                    { label: 'Fantasía', value: 'fantasy' },
+                    {
+                        label: 'Artes Marciales',
+                        value: 'martial-arts',
+                    },
+                    { label: 'Harén', value: 'harem' },
+                    { label: 'Romance', value: 'romance' },
+                    {
+                        label: 'Sobrenatural',
+                        value: 'supernatural',
+                    },
+                    {
+                        label: 'Xuanhuan',
+                        value: 'xuanhuan',
+                    },
+                    {
+                        label: 'Xianxia',
+                        value: 'xianxia',
+                    },
+                    { label: 'Comedia', value: 'comedy' },
+                    {
+                        label: 'Ciencia Ficción',
+                        value: 'sci-fi',
+                    },
+                    {
+                        label: 'Misterio',
+                        value: 'mystery',
+                    },
+                    { label: 'Maduro', value: 'mature' },
+                    {
+                        label: 'Psicológico',
+                        value: 'psychological',
+                    },
+                    { label: 'Shounen', value: 'shounen' },
+                    {
+                        label: 'Reencarnación',
+                        value: 'reincarnation',
+                    },
+                    { label: 'Mecha', value: 'mecha' },
+                    {
+                        label: 'Vida Escolar',
+                        value: 'school-life',
+                    },
+                    { label: 'Josei', value: 'josei' },
+                    { label: 'Drama', value: 'drama' },
+                    { label: 'Urbano', value: 'urban' },
+                    {
+                        label: 'Oriental',
+                        value: 'eastern',
+                    },
+                    { label: 'Horror', value: 'horror' },
+                    {
+                        label: 'Tragedia',
+                        value: 'tragedy',
+                    },
+                    { label: 'Juegos', value: 'game' },
+                ],
+            },
+        };
+    }
+    Novelyra.prototype.extractNovels = function (loadedCheerio) {
+        var _this = this;
+        var novels = [];
+        var novelLinks = loadedCheerio('main a[href]').filter(function (_, element) {
+            var _a;
+            var href = ((_a = loadedCheerio(element).attr('href')) === null || _a === void 0 ? void 0 : _a.trim()) || '';
+            var hasImage = loadedCheerio(element).find('img').length > 0;
+            var hasTitle = loadedCheerio(element).find('h3, h2, [class*="title"]').length > 0;
+            return !!(href && hasImage && hasTitle);
+        });
+        novelLinks.each(function (_, element) {
+            var _a, _b, _c, _d;
+            var link = loadedCheerio(element);
+            var title = link.find('h3').first().length
+                ? link.find('h3').first()
+                : link.find('h2').first().length
+                    ? link.find('h2').first()
+                    : link.find('[class*="title"]').first();
+            if (!title.length) {
+                return;
+            }
+            var sourceName = title.text().trim();
+            var rawPath = ((_a = link.attr('href')) === null || _a === void 0 ? void 0 : _a.trim()) || '';
+            if (!sourceName || !rawPath) {
+                return;
+            }
+            if (rawPath.startsWith('http') && !rawPath.startsWith(_this.site)) {
+                return;
+            }
+            var path = rawPath;
+            if (path.startsWith(_this.site)) {
+                path = path.slice(_this.site.length);
+            }
+            path = path.replace(/^\/+/, '').replace(/\/$/, '');
+            if (!path || novels.some(function (item) { return item.path === path; })) {
+                return;
+            }
+            var image = link.find('img').first();
+            var cover = ((_b = image.attr('src')) === null || _b === void 0 ? void 0 : _b.trim()) ||
+                ((_c = image.attr('data-src')) === null || _c === void 0 ? void 0 : _c.trim()) ||
+                ((_d = image.attr('data-lazy-src')) === null || _d === void 0 ? void 0 : _d.trim()) ||
+                '';
+            if (cover && cover.startsWith('/')) {
+                cover = "".concat(_this.site).concat(cover.slice(1));
+            }
+            novels.push({
+                name: sourceName,
+                sourceName: sourceName,
+                path: path,
+                cover: cover,
+            });
+        });
+        return novels;
+    };
+    Novelyra.prototype.finalizeNovels = function (novels) {
+        return __awaiter(this, void 0, void 0, function () {
+            var translatedTitles;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, translateTitles(novels.map(function (novel) { return novel.sourceName; }))];
+                    case 1:
+                        translatedTitles = _a.sent();
+                        return [2 /*return*/, novels.map(function (novel, index) { return ({
+                                name: translatedTitles[index] || novel.sourceName,
+                                path: novel.path,
+                                cover: novel.cover,
+                            }); })];
+                }
+            });
+        });
+    };
+    Novelyra.prototype.popularNovels = function (pageNo_1, _a) {
+        return __awaiter(this, arguments, void 0, function (pageNo, _b) {
+            var page, genre, url, result, body, loadedCheerio, novels;
+            var _c;
+            var showLatestNovels = _b.showLatestNovels, filters = _b.filters;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        page = Math.max(1, pageNo || 1);
+                        genre = (_c = filters === null || filters === void 0 ? void 0 : filters.genres) === null || _c === void 0 ? void 0 : _c.value;
+                        if (genre) {
+                            url = "".concat(this.site, "genre/").concat(encodeURIComponent(genre), "?page=").concat(page);
+                        }
+                        else if (showLatestNovels) {
+                            url = page === 1 ? this.site : "".concat(this.site, "?page=").concat(page);
+                        }
+                        else {
+                            url = page === 1 ? this.site : "".concat(this.site, "?page=").concat(page);
+                        }
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        result = _d.sent();
+                        if (!result.ok) {
+                            throw new Error("HTTP ".concat(result.status, ": ").concat(url));
+                        }
+                        return [4 /*yield*/, result.text()];
+                    case 2:
+                        body = _d.sent();
+                        loadedCheerio = (0, cheerio_1.load)(body);
+                        novels = this.extractNovels(loadedCheerio);
+                        return [2 /*return*/, this.finalizeNovels(novels)];
+                }
+            });
+        });
+    };
+    Novelyra.prototype.searchNovels = function (searchTerm, pageNo) {
+        return __awaiter(this, void 0, void 0, function () {
+            var query, englishQuery, sourceQuery, page, url, result, body, loadedCheerio, novels, queryCandidates, scored;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        query = searchTerm.trim();
+                        if (!query) {
+                            return [2 /*return*/, []];
+                        }
+                        return [4 /*yield*/, translateTextToEnglish(query)];
+                    case 1:
+                        englishQuery = (_a.sent()).trim();
+                        sourceQuery = englishQuery &&
+                            normalizeSearchText(englishQuery) !== normalizeSearchText(query)
+                            ? englishQuery
+                            : query;
+                        page = Math.max(1, pageNo || 1);
+                        url = "".concat(this.site, "search?q=").concat(encodeURIComponent(sourceQuery)) +
+                            (page > 1 ? "&page=".concat(page) : '');
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 2:
+                        result = _a.sent();
+                        if (!result.ok) {
+                            throw new Error("HTTP ".concat(result.status, ": ").concat(url));
+                        }
+                        return [4 /*yield*/, result.text()];
+                    case 3:
+                        body = _a.sent();
+                        loadedCheerio = (0, cheerio_1.load)(body);
+                        novels = this.extractNovels(loadedCheerio);
+                        queryCandidates = [query, sourceQuery].filter(Boolean);
+                        scored = novels
+                            .map(function (novel) {
+                            var scores = queryCandidates.map(function (candidate) { return ({
+                                candidate: candidate,
+                                score: searchScore(novel.sourceName, candidate),
+                                matches: searchTermsMatch(novel.sourceName, getSearchTerms(candidate)),
+                            }); });
+                            var best = scores.reduce(function (current, value) { return (value.score > current.score ? value : current); }, {
+                                candidate: '',
+                                score: 0,
+                                matches: false,
+                            });
+                            return {
+                                novel: novel,
+                                score: best.score,
+                                matches: best.matches,
+                            };
+                        })
+                            .filter(function (item) { return item.matches && item.score > 0; })
+                            .sort(function (a, b) { return b.score - a.score; });
+                        return [2 /*return*/, this.finalizeNovels(scored.map(function (item) { return item.novel; }))];
+                }
+            });
+        });
+    };
+    Novelyra.prototype.extractSynopsis = function (loadedCheerio) {
+        var synopsisElement = loadedCheerio('#synopsis').first().length
+            ? loadedCheerio('#synopsis').first()
+            : loadedCheerio('section:contains("Synopsis")').first().length
+                ? loadedCheerio('section:contains("Synopsis")').first()
+                : loadedCheerio('[class*="synopsis"], [class*="description"], [class*="summary"]').first();
+        if (!synopsisElement.length) {
+            return '';
+        }
+        synopsisElement.find('button, script, style, nav').remove();
+        synopsisElement.find('br').replaceWith('\n');
+        synopsisElement.find('p, div').each(function (_, element) {
+            var current = loadedCheerio(element).text();
+            if (current.trim() && !current.endsWith('\n')) {
+                loadedCheerio(element).append('\n');
+            }
+        });
+        var lines = synopsisElement
+            .text()
+            .split(/\r?\n/)
+            .map(function (line) {
+            return line
+                .replace(/\u00a0/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        })
+            .filter(Boolean);
+        if (!lines.length) {
+            return '';
+        }
+        var premiseIndex = lines.findIndex(function (line) { return /^Premise\s*:/i.test(line); });
+        var summaryLines = premiseIndex >= 0 ? lines.slice(premiseIndex) : lines;
+        summaryLines = summaryLines.filter(function (line) {
+            return !/^Author\s*:/i.test(line) &&
+                !/^Genre\s*:/i.test(line) &&
+                !/^Status\s*:/i.test(line) &&
+                !/^Platform\s*:/i.test(line) &&
+                !/^Core Theme\s*:/i.test(line) &&
+                !/^Type\s*:/i.test(line) &&
+                !/^Year\s*:/i.test(line) &&
+                !/^Chapters\s*:/i.test(line) &&
+                !/^Views\s*:/i.test(line) &&
+                !/^Rating\s*:/i.test(line);
+        });
+        var stopIndex = summaryLines.findIndex(function (line) {
+            return /^Why\s+/i.test(line) ||
+                /^What\s+Makes\s+/i.test(line) ||
+                /^Why\s+".+"\s+is\s+Different/i.test(line) ||
+                /^You\s+May\s+Also\s+Like/i.test(line);
+        });
+        if (stopIndex >= 0) {
+            summaryLines = summaryLines.slice(0, stopIndex);
+        }
+        return summaryLines.join('\n');
+    };
+    Novelyra.prototype.extractChaptersFromHtml = function (loadedCheerio) {
+        var _this = this;
+        var chapters = [];
+        loadedCheerio('a[href*="/chapter-"]').each(function (_, element) {
+            var _a, _b;
+            var link = loadedCheerio(element);
+            var rawChapterPath = ((_a = link.attr('href')) === null || _a === void 0 ? void 0 : _a.trim()) || '';
+            if (!rawChapterPath) {
+                return;
+            }
+            var chapterNumber = extractChapterNumberFromUrl(rawChapterPath);
+            if (chapterNumber === null) {
+                return;
+            }
+            var chapterPath = rawChapterPath;
+            if (chapterPath.startsWith(_this.site)) {
+                chapterPath = chapterPath.slice(_this.site.length);
+            }
+            chapterPath = chapterPath.replace(/^\/+/, '').replace(/\/$/, '');
+            if (!chapterPath) {
+                return;
+            }
+            var text = link.text().trim().replace(/\s+/g, ' ');
+            var chapterName = text || "Cap\u00EDtulo ".concat(chapterNumber || 0);
+            var separatorIndex = chapterName.indexOf(' - ');
+            if (separatorIndex > 0) {
+                chapterName =
+                    chapterName.slice(0, separatorIndex).trim() ||
+                        "Cap\u00EDtulo ".concat(chapterNumber || 0);
+            }
+            var releaseMatch = text.match(/\b(\d+\s+(?:day|days|week|weeks|month|months|year|years|día|días|semana|semanas|mes|meses|año|años)\s+ago)\b/i);
+            chapters.push({
+                name: chapterName,
+                path: chapterPath,
+                chapterNumber: chapterNumber !== null && chapterNumber !== void 0 ? chapterNumber : 0,
+                releaseTime: (releaseMatch === null || releaseMatch === void 0 ? void 0 : releaseMatch[1])
+                    ? (_b = parseRelativeTime(releaseMatch[1])) === null || _b === void 0 ? void 0 : _b.toISOString()
+                    : undefined,
+            });
+        });
+        return chapters;
+    };
+    Novelyra.prototype.extractTotalPages = function (loadedCheerio) {
+        var pageLinks = loadedCheerio('nav[aria-label="Pagination"] a[href*="page="]');
+        var maxPage = 1;
+        pageLinks.each(function (_, el) {
+            var href = loadedCheerio(el).attr('href') || '';
+            var match = href.match(/page=(\d+)/);
+            if (match) {
+                var pageNum = parseInt(match[1], 10);
+                if (pageNum > maxPage) {
+                    maxPage = pageNum;
+                }
+            }
+        });
+        return maxPage;
+    };
+    Novelyra.prototype.parseNovel = function (novelPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var cleanPath, url, result, body, loadedCheerio, sourceName, name, cover, synopsisText, summarySource, summary, summaryParagraphs, translatedSummary, authorMatch, genreMatch, statusMatch, author, genres, status, novel, seenPaths, allChapters, totalPages, page, pageUrl, pageResult, pageBody, pageHtml, pageChapters, _i, pageChapters_1, ch, _a;
+            var _b, _c, _d, _e, _f, _g, _h, _j;
+            return __generator(this, function (_k) {
+                switch (_k.label) {
+                    case 0:
+                        cleanPath = novelPath.replace(/^\/+/, '').replace(/\/$/, '');
+                        url = "".concat(this.site).concat(cleanPath, "/");
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        result = _k.sent();
+                        if (!result.ok) {
+                            throw new Error("HTTP ".concat(result.status, ": ").concat(url));
+                        }
+                        return [4 /*yield*/, result.text()];
+                    case 2:
+                        body = _k.sent();
+                        loadedCheerio = (0, cheerio_1.load)(body);
+                        sourceName = loadedCheerio('h1').first().text().trim() || 'Desconocido';
+                        return [4 /*yield*/, translateShortText(sourceName)];
+                    case 3:
+                        name = _k.sent();
+                        cover = ((_b = loadedCheerio('img[src*="cover"], img[alt*="cover"]')
+                            .first()
+                            .attr('src')) === null || _b === void 0 ? void 0 : _b.trim()) ||
+                            ((_c = loadedCheerio('#synopsis img').first().attr('src')) === null || _c === void 0 ? void 0 : _c.trim()) ||
+                            ((_d = loadedCheerio('main img').first().attr('src')) === null || _d === void 0 ? void 0 : _d.trim()) ||
+                            ((_e = loadedCheerio('article img').first().attr('src')) === null || _e === void 0 ? void 0 : _e.trim()) ||
+                            ((_f = loadedCheerio('img').first().attr('src')) === null || _f === void 0 ? void 0 : _f.trim()) ||
+                            '';
+                        if (cover && cover.startsWith('/')) {
+                            cover = "".concat(this.site).concat(cover.slice(1));
+                        }
+                        synopsisText = loadedCheerio('#synopsis')
+                            .first()
+                            .text()
+                            .replace(/\u00a0/g, ' ')
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                        summarySource = this.extractSynopsis(loadedCheerio);
+                        summary = summarySource;
+                        if (!summary) return [3 /*break*/, 5];
+                        summaryParagraphs = summary
+                            .split(/\r?\n/)
+                            .map(function (text) { return text.trim(); })
+                            .filter(Boolean);
+                        return [4 /*yield*/, translateParagraphs(summaryParagraphs)];
+                    case 4:
+                        translatedSummary = _k.sent();
+                        summary = translatedSummary.join('\n\n').trim() || summary;
+                        _k.label = 5;
+                    case 5:
+                        authorMatch = synopsisText.match(/Author:\s*(.+?)(?:\s+Genre:|\s+Status:|\s+Platform:|\s+Theme:|\s+Type:|\s+Year:|$)/i);
+                        genreMatch = synopsisText.match(/Genre:\s*(.+?)(?:\s+Status:|\s+Platform:|\s+Theme:|\s+Type:|\s+Year:|$)/i);
+                        statusMatch = synopsisText.match(/Status:\s*(.+?)(?:\s+Platform:|\s+Theme:|\s+Type:|\s+Year:|\s+Chapters:|$)/i);
+                        author = ((_g = authorMatch === null || authorMatch === void 0 ? void 0 : authorMatch[1]) === null || _g === void 0 ? void 0 : _g.trim()) || '';
+                        genres = ((_h = genreMatch === null || genreMatch === void 0 ? void 0 : genreMatch[1]) === null || _h === void 0 ? void 0 : _h.trim().replace(/\s+/g, ', ')) || '';
+                        status = ((_j = statusMatch === null || statusMatch === void 0 ? void 0 : statusMatch[1]) === null || _j === void 0 ? void 0 : _j.trim()) || '';
+                        novel = {
+                            path: novelPath,
+                            name: name,
+                            cover: cover,
+                            summary: summary,
+                            author: author,
+                            genres: genres,
+                            status: status,
+                        };
+                        seenPaths = new Set();
+                        allChapters = this.extractChaptersFromHtml(loadedCheerio);
+                        allChapters.forEach(function (ch) {
+                            if (ch.path) {
+                                seenPaths.add(ch.path);
+                            }
+                        });
+                        totalPages = this.extractTotalPages(loadedCheerio);
+                        page = 2;
+                        _k.label = 6;
+                    case 6:
+                        if (!(page <= totalPages)) return [3 /*break*/, 12];
+                        _k.label = 7;
+                    case 7:
+                        _k.trys.push([7, 10, , 11]);
+                        pageUrl = "".concat(this.site).concat(cleanPath, "?page=").concat(page);
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(pageUrl)];
+                    case 8:
+                        pageResult = _k.sent();
+                        if (!pageResult.ok) {
+                            return [3 /*break*/, 11];
+                        }
+                        return [4 /*yield*/, pageResult.text()];
+                    case 9:
+                        pageBody = _k.sent();
+                        pageHtml = (0, cheerio_1.load)(pageBody);
+                        pageChapters = this.extractChaptersFromHtml(pageHtml);
+                        for (_i = 0, pageChapters_1 = pageChapters; _i < pageChapters_1.length; _i++) {
+                            ch = pageChapters_1[_i];
+                            if (ch.path && !seenPaths.has(ch.path)) {
+                                seenPaths.add(ch.path);
+                                allChapters.push(ch);
+                            }
+                        }
+                        return [3 /*break*/, 11];
+                    case 10:
+                        _a = _k.sent();
+                        return [3 /*break*/, 11];
+                    case 11:
+                        page++;
+                        return [3 /*break*/, 6];
+                    case 12:
+                        allChapters.sort(function (first, second) { var _a, _b; return ((_a = first.chapterNumber) !== null && _a !== void 0 ? _a : 0) - ((_b = second.chapterNumber) !== null && _b !== void 0 ? _b : 0); });
+                        novel.chapters = allChapters;
+                        return [2 /*return*/, novel];
+                }
+            });
+        });
+    };
+    Novelyra.prototype.parseChapter = function (chapterPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var cleanPath, url, result, body, loadedCheerio, chapterContent, paragraphs, rawText, chunks, _i, chunks_1, chunk, cleaned, translated;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        cleanPath = chapterPath.replace(/^\/+/, '').replace(/\/$/, '');
+                        url = "".concat(this.site).concat(cleanPath, "/");
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        result = _a.sent();
+                        if (!result.ok) {
+                            throw new Error("HTTP ".concat(result.status, ": ").concat(url));
+                        }
+                        return [4 /*yield*/, result.text()];
+                    case 2:
+                        body = _a.sent();
+                        loadedCheerio = (0, cheerio_1.load)(body);
+                        loadedCheerio('script, style, iframe, ins, nav, header, footer, aside, [class*="ad"], [class*="nav"], [class*="sidebar"], [class*="related"], [class*="recommend"]').remove();
+                        chapterContent = loadedCheerio('#chapter-content').first().length
+                            ? loadedCheerio('#chapter-content').first()
+                            : loadedCheerio('article').first().length
+                                ? loadedCheerio('article').first()
+                                : loadedCheerio('[class*="chapter-content"], [class*="entry-content"]').first().length
+                                    ? loadedCheerio('[class*="chapter-content"], [class*="entry-content"]').first()
+                                    : loadedCheerio('main').first().length
+                                        ? loadedCheerio('main').first()
+                                        : loadedCheerio('body').first();
+                        if (chapterContent.length === 0) {
+                            return [2 /*return*/, 'Contenido no encontrado'];
+                        }
+                        paragraphs = [];
+                        chapterContent.find('p').each(function (_, element) {
+                            var text = loadedCheerio(element).text().trim().replace(/\s+/g, ' ');
+                            if (text && text.length > 10) {
+                                paragraphs.push(cleanTextForTts(text));
+                            }
+                        });
+                        if (paragraphs.length === 0) {
+                            rawText = chapterContent.text().trim().replace(/\s+/g, ' ');
+                            if (rawText) {
+                                chunks = rawText.match(/.{1,1800}(?:\s|$)/g) || [rawText];
+                                for (_i = 0, chunks_1 = chunks; _i < chunks_1.length; _i++) {
+                                    chunk = chunks_1[_i];
+                                    cleaned = cleanTextForTts(chunk.trim());
+                                    if (cleaned) {
+                                        paragraphs.push(cleaned);
+                                    }
+                                }
+                            }
+                        }
+                        if (paragraphs.length === 0) {
+                            return [2 /*return*/, 'Contenido no encontrado'];
+                        }
+                        return [4 /*yield*/, translateParagraphs(paragraphs)];
+                    case 3:
+                        translated = _a.sent();
+                        return [2 /*return*/, translated
+                                .map(function (paragraph) {
+                                return "<p>".concat(paragraph.replace(/</g, '<').replace(/>/g, '>'), "</p>");
+                            })
+                                .join('')];
+                }
+            });
+        });
+    };
+    return Novelyra;
+}());
+// Funciones de traducción expuestas para reutilización
+function translateTextToEnglish(text) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, translateText(text, 'en', 'auto')];
+        });
+    });
+}
+function normalizeSearchText(text) {
+    return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim()
+        .replace(/\s+/g, ' ');
+}
+exports.default = new Novelyra();
