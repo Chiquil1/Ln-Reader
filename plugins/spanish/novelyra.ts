@@ -246,8 +246,14 @@ async function translateParagraphs(
           DEFAULT_TRANSLATION_CONFIG,
         );
 
+        // Si la traducción falló (devolvió el mismo texto o vacío), usar el original
+        const batchResult =
+          translatedBatch && translatedBatch !== currentBatch
+            ? translatedBatch
+            : currentBatch;
+
         translatedParagraphs.push(
-          ...translatedBatch
+          ...batchResult
             .split(/\n+/)
             .map(text => text.trim())
             .filter(Boolean),
@@ -271,8 +277,14 @@ async function translateParagraphs(
       DEFAULT_TRANSLATION_CONFIG,
     );
 
+    // Si la traducción falló (devolvió el mismo texto o vacío), usar el original
+    const batchResult =
+      translatedBatch && translatedBatch !== currentBatch
+        ? translatedBatch
+        : currentBatch;
+
     translatedParagraphs.push(
-      ...translatedBatch
+      ...batchResult
         .split(/\n+/)
         .map(text => text.trim())
         .filter(Boolean),
@@ -941,7 +953,7 @@ class Novelyra implements Plugin.PluginBase {
     const loadedCheerio = loadCheerio(body);
 
     loadedCheerio(
-      'script, style, iframe, ins, nav, header, footer, aside, [class*="ad"], [class*="nav"], [class*="sidebar"], [class*="related"], [class*="recommend"]',
+      'script, style, iframe, ins, header, footer, aside, [class*="ad"], [class*="sidebar"], [class*="related"], [class*="recommend"]',
     ).remove();
 
     const chapterContent = loadedCheerio('#chapter-content').first().length
@@ -949,10 +961,10 @@ class Novelyra implements Plugin.PluginBase {
       : loadedCheerio('article').first().length
         ? loadedCheerio('article').first()
         : loadedCheerio(
-              '[class*="chapter-content"], [class*="entry-content"]',
+              '[class*="chapter-content"], [class*="entry-content"], [class*="chapter"], [class*="content"]',
             ).first().length
           ? loadedCheerio(
-              '[class*="chapter-content"], [class*="entry-content"]',
+              '[class*="chapter-content"], [class*="entry-content"], [class*="chapter"], [class*="content"]',
             ).first()
           : loadedCheerio('main').first().length
             ? loadedCheerio('main').first()
@@ -964,23 +976,28 @@ class Novelyra implements Plugin.PluginBase {
 
     const paragraphs: string[] = [];
 
-    chapterContent.find('p').each((_, element) => {
-      const text = loadedCheerio(element).text().trim().replace(/\s+/g, ' ');
-
-      if (text && text.length > 10) {
-        paragraphs.push(cleanTextForTts(text));
+    // Buscar párrafos en p, div y span con contenido de texto
+    chapterContent.find('p, div, span').each((_, element) => {
+      const el = loadedCheerio(element);
+      // Solo procesar elementos que son contenedores de texto directo
+      if (el.children().length === 0 || el.find('p, div').length === 0) {
+        const text = el.text().trim().replace(/\s+/g, ' ');
+        if (text && text.length > 10) {
+          const cleaned = cleanTextForTts(text);
+          if (cleaned && !paragraphs.includes(cleaned)) {
+            paragraphs.push(cleaned);
+          }
+        }
       }
     });
 
+    // Si no se encontraron párrafos, intentar con el texto raw
     if (paragraphs.length === 0) {
-      const rawText = chapterContent.text().trim().replace(/\s+/g, ' ');
-
-      if (rawText) {
-        const chunks = rawText.match(/.{1,1800}(?:\s|$)/g) || [rawText];
-
+      const allText = chapterContent.text().trim().replace(/\s+/g, ' ');
+      if (allText) {
+        const chunks = allText.match(/.{1,1800}(?:\s|$)/g) || [allText];
         for (const chunk of chunks) {
           const cleaned = cleanTextForTts(chunk.trim());
-
           if (cleaned) {
             paragraphs.push(cleaned);
           }
@@ -994,7 +1011,10 @@ class Novelyra implements Plugin.PluginBase {
 
     const translated = await translateParagraphs(paragraphs);
 
-    return translated
+    // Si la traducción devolvió vacío, usar los párrafos originales
+    const resultParagraphs = translated.length > 0 ? translated : paragraphs;
+
+    return resultParagraphs
       .map(
         paragraph =>
           `<p>${paragraph.replace(/</g, '<').replace(/>/g, '>')}</p>`,

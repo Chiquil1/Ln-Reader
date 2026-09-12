@@ -53,6 +53,7 @@ src/
 - **Multi-source plugins**: Template in `plugins/multisrc/{name}/` → generates individual plugins in `plugins/{language}/{name}[site].ts`
 - **BLACKLIST.json**: Sites removed at owner request - never re-add without approval
 - **Environment**: `.env` overrides `USER_CONTENT_BASE` for mobile testing (default: `http://localhost:3000`)
+- **Chapter content**: Plugins must return ALL chapters and ALL content without pagination. The LNReader app does not support paginated chapters - it expects complete content in a single response. Do not implement chapter pagination in `parseChapter()`. If the source site paginates content, fetch all pages and concatenate them before returning.
 
 ## Testing
 - **Web**: `npm run dev` → http://localhost:3000 (see `docs/website-tutorial.md`)
