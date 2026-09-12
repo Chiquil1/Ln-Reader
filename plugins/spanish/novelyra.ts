@@ -950,76 +950,135 @@ class Novelyra implements Plugin.PluginBase {
 
     const body = await result.text();
 
-    const loadedCheerio = loadCheerio(body);
+    const $ = loadCheerio(body);
 
-    loadedCheerio(
-      'script, style, iframe, ins, header, footer, aside, [class*="ad"], [class*="sidebar"], [class*="related"], [class*="recommend"]',
+    // 1) Quitar elementos que no aportan contenido legible
+    $(
+      'script, style, iframe, ins, header, footer, aside, nav, [class*="ad"], [class*="sidebar"], [class*="related"], [class*="recommend"], [class*="nav"]',
     ).remove();
 
-    const chapterContent = loadedCheerio('#chapter-content').first().length
-      ? loadedCheerio('#chapter-content').first()
-      : loadedCheerio('article').first().length
-        ? loadedCheerio('article').first()
-        : loadedCheerio(
+    // 2) Buscar el contenedor del contenido del capítulo
+    const chapterContent = $('#chapter-content').first().length
+      ? $('#chapter-content').first()
+      : $('article').first().length
+        ? $('article').first()
+        : $(
               '[class*="chapter-content"], [class*="entry-content"], [class*="chapter"], [class*="content"]',
             ).first().length
-          ? loadedCheerio(
+          ? $(
               '[class*="chapter-content"], [class*="entry-content"], [class*="chapter"], [class*="content"]',
             ).first()
-          : loadedCheerio('main').first().length
-            ? loadedCheerio('main').first()
-            : loadedCheerio('body').first();
+          : $('main').first().length
+            ? $('main').first()
+            : $('body').first();
 
     if (chapterContent.length === 0) {
       return 'Contenido no encontrado';
     }
 
-    const paragraphs: string[] = [];
-
-    // Buscar párrafos en p, div y span con contenido de texto
-    chapterContent.find('p, div, span').each((_, element) => {
-      const el = loadedCheerio(element);
-      // Solo procesar elementos que son contenedores de texto directo
-      if (el.children().length === 0 || el.find('p, div').length === 0) {
-        const text = el.text().trim().replace(/\s+/g, ' ');
-        if (text && text.length > 10) {
-          const cleaned = cleanTextForTts(text);
-          if (cleaned && !paragraphs.includes(cleaned)) {
-            paragraphs.push(cleaned);
+    // 3) Limpiar cada nodo de texto (invisibles, símbolos, espacios)
+    chapterContent
+      .find('*')
+      .contents()
+      .each((_, element) => {
+        if (element.type === 'text' && element.data) {
+          const cleanedText = cleanTextForTts(element.data);
+          if (element.data !== cleanedText) {
+            element.data = cleanedText;
           }
         }
+      });
+
+    // 4) Eliminar contenedores que quedaron vacíos tras la limpieza
+    chapterContent.find('p, div').each((_, el) => {
+      const $el = $(el);
+      if (!$el.text().trim()) $el.remove();
+    });
+
+    // 5) Asegurar que haya párrafos <p> bien formateados
+    this.ensureReadableParagraphs($, chapterContent);
+
+    // 6) Extraer párrafos para traducir
+    const paragraphs: string[] = [];
+    chapterContent.find('p').each((_, element) => {
+      const text = $(element).text().trim().replace(/\s+/g, ' ');
+      if (text && text.length > 10) {
+        paragraphs.push(text);
       }
     });
 
-    // Si no se encontraron párrafos, intentar con el texto raw
-    if (paragraphs.length === 0) {
-      const allText = chapterContent.text().trim().replace(/\s+/g, ' ');
-      if (allText) {
-        const chunks = allText.match(/.{1,1800}(?:\s|$)/g) || [allText];
-        for (const chunk of chunks) {
-          const cleaned = cleanTextForTts(chunk.trim());
-          if (cleaned) {
-            paragraphs.push(cleaned);
-          }
+    // 7) Traducir si hay párrafos
+    if (paragraphs.length > 0) {
+      const translated = await translateParagraphs(paragraphs);
+
+      // Reemplazar el texto de cada párrafo con la traducción
+      const translatedParagraphs =
+        translated.length > 0 ? translated : paragraphs;
+      chapterContent.find('p').each((index, element) => {
+        if (index < translatedParagraphs.length) {
+          $(element).text(translatedParagraphs[index]);
         }
+      });
+    }
+
+    // 8) Retornar solo el HTML del contenido (no el documento completo)
+    return chapterContent.html() || 'Contenido no encontrado';
+  }
+
+  /**
+   * Asegura que el contenedor tenga párrafos <p> bien delimitados y de tamaño
+   * razonable, reconstruyéndolos desde el texto plano si hace falta.
+   */
+  private ensureReadableParagraphs($: any, container: any): void {
+    const MAX_PARAGRAPH_LENGTH = 1800;
+
+    const goodParagraphs = container
+      .find('p')
+      .filter(
+        (_: any, el: any) =>
+          $(el).text().trim().length > 0 &&
+          $(el).text().trim().length <= MAX_PARAGRAPH_LENGTH,
+      );
+
+    const anyParagraphs = container
+      .find('p')
+      .filter((_: any, el: any) => $(el).text().trim().length > 0);
+
+    // Ya hay párrafos <p> y ninguno es demasiado largo: no hace falta tocar nada
+    if (
+      anyParagraphs.length > 0 &&
+      goodParagraphs.length === anyParagraphs.length
+    ) {
+      return;
+    }
+
+    // Convertimos <br> en saltos de línea para no perder la separación visual
+    container.find('br').replaceWith('\n');
+
+    const rawText = container.text();
+    const rawParagraphs = rawText
+      .split(/\n+/)
+      .map((p: string) => p.trim())
+      .filter(Boolean);
+
+    container.empty();
+
+    rawParagraphs.forEach((paragraph: string) => {
+      if (paragraph.length <= MAX_PARAGRAPH_LENGTH) {
+        container.append(`<p>${paragraph}</p>`);
+      } else {
+        // Partir párrafos largos por oraciones
+        const sentences = paragraph.match(
+          /.{1,MAX_PARAGRAPH_LENGTH}(?:[.!?]+(?:\s|$)|$)/g,
+        ) || [paragraph];
+        sentences.forEach((sentence: string) => {
+          const trimmed = sentence.trim();
+          if (trimmed) {
+            container.append(`<p>${trimmed}</p>`);
+          }
+        });
       }
-    }
-
-    if (paragraphs.length === 0) {
-      return 'Contenido no encontrado';
-    }
-
-    const translated = await translateParagraphs(paragraphs);
-
-    // Si la traducción devolvió vacío, usar los párrafos originales
-    const resultParagraphs = translated.length > 0 ? translated : paragraphs;
-
-    return resultParagraphs
-      .map(
-        paragraph =>
-          `<p>${paragraph.replace(/</g, '<').replace(/>/g, '>')}</p>`,
-      )
-      .join('');
+    });
   }
 }
 
