@@ -135,7 +135,15 @@ async function translateText(
 
   for (const provider of providers) {
     try {
-      const res = await fetchApi(provider.url);
+      const res = await fetchApi(provider.url, {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ' +
+            'AppleWebKit/537.36 (KHTML, like Gecko) ' +
+            'Chrome/131.0.0.0 Safari/537.36',
+        },
+      });
 
       if (!res.ok) {
         continue;
@@ -379,7 +387,16 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.0';
+  private pageHeaders = {
+    Accept: 'text/html,application/xhtml+xml,*/*;q=0.8',
+    Referer: 'https://novelyra.com/',
+    'User-Agent':
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ' +
+      'AppleWebKit/537.36 (KHTML, like Gecko) ' +
+      'Chrome/131.0.0.0 Safari/537.36',
+  };
+
+  version = '2.7.0';
 
   filters: Filters = {
     genres: {
@@ -566,7 +583,7 @@ class Novelyra implements Plugin.PluginBase {
       url = page === 1 ? this.site : `${this.site}?page=${page}`;
     }
 
-    const result = await fetchApi(url);
+    const result = await fetchApi(url, { headers: this.pageHeaders });
 
     if (!result.ok) {
       throw new Error(`HTTP ${result.status}: ${url}`);
@@ -605,7 +622,7 @@ class Novelyra implements Plugin.PluginBase {
       `${this.site}search?q=${encodeURIComponent(sourceQuery)}` +
       (page > 1 ? `&page=${page}` : '');
 
-    const result = await fetchApi(url);
+    const result = await fetchApi(url, { headers: this.pageHeaders });
 
     if (!result.ok) {
       throw new Error(`HTTP ${result.status}: ${url}`);
@@ -814,7 +831,7 @@ class Novelyra implements Plugin.PluginBase {
 
     const url = `${this.site}${cleanPath}/`;
 
-    const result = await fetchApi(url);
+    const result = await fetchApi(url, { headers: this.pageHeaders });
 
     if (!result.ok) {
       throw new Error(`HTTP ${result.status}: ${url}`);
@@ -906,7 +923,9 @@ class Novelyra implements Plugin.PluginBase {
     for (let page = 2; page <= totalPages; page++) {
       try {
         const pageUrl = `${this.site}${cleanPath}?page=${page}`;
-        const pageResult = await fetchApi(pageUrl);
+        const pageResult = await fetchApi(pageUrl, {
+          headers: this.pageHeaders,
+        });
 
         if (!pageResult.ok) {
           continue;
@@ -942,7 +961,7 @@ class Novelyra implements Plugin.PluginBase {
 
     const url = `${this.site}${cleanPath}/`;
 
-    const result = await fetchApi(url);
+    const result = await fetchApi(url, { headers: this.pageHeaders });
 
     if (!result.ok) {
       throw new Error(`HTTP ${result.status}: ${url}`);
