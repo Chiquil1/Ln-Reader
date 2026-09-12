@@ -379,7 +379,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.2';
+  version = '2.6.3';
 
   filters: Filters = {
     genres: {
@@ -942,7 +942,12 @@ class Novelyra implements Plugin.PluginBase {
 
     const url = `${this.site}${cleanPath}/`;
 
-    const result = await fetchApi(url);
+    const result = await fetchApi(url, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Linux; Android 13; RMO-NX1 Build/HONORRMO-N21; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/151.0.7922.169 Mobile Safari/537.36',
+      },
+    });
 
     if (!result.ok) {
       throw new Error(`HTTP ${result.status}: ${url}`);
