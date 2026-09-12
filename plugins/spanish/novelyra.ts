@@ -379,7 +379,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.6';
+  version = '2.6.7';
 
   filters: Filters = {
     genres: {
@@ -968,8 +968,8 @@ class Novelyra implements Plugin.PluginBase {
 
     const url = `${this.site}${cleanPath}/`;
 
-    // Use jina.ai reader proxy to bypass Cloudflare
-    const proxyUrl = `https://r.jina.ai/http://${url.replace('https://', '')}`;
+    // Use jina.ai reader proxy with https to bypass Cloudflare
+    const proxyUrl = `https://r.jina.ai/https://${url.replace('https://', '')}`;
 
     const result = await fetchApi(proxyUrl, {
       headers: {
