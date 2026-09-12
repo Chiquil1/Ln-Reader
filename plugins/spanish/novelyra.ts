@@ -379,7 +379,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.3';
+  version = '2.6.4';
 
   filters: Filters = {
     genres: {
@@ -566,11 +566,7 @@ class Novelyra implements Plugin.PluginBase {
       url = page === 1 ? this.site : `${this.site}?page=${page}`;
     }
 
-    const result = await fetchApi(url);
-
-    if (!result.ok) {
-      throw new Error(`HTTP ${result.status}: ${url}`);
-    }
+    const result = await this.fetchWithHeaders(url);
 
     const body = await result.text();
 
@@ -605,11 +601,7 @@ class Novelyra implements Plugin.PluginBase {
       `${this.site}search?q=${encodeURIComponent(sourceQuery)}` +
       (page > 1 ? `&page=${page}` : '');
 
-    const result = await fetchApi(url);
-
-    if (!result.ok) {
-      throw new Error(`HTTP ${result.status}: ${url}`);
-    }
+    const result = await this.fetchWithHeaders(url);
 
     const body = await result.text();
 
@@ -814,11 +806,7 @@ class Novelyra implements Plugin.PluginBase {
 
     const url = `${this.site}${cleanPath}/`;
 
-    const result = await fetchApi(url);
-
-    if (!result.ok) {
-      throw new Error(`HTTP ${result.status}: ${url}`);
-    }
+    const result = await this.fetchWithHeaders(url);
 
     const body = await result.text();
 
@@ -906,11 +894,7 @@ class Novelyra implements Plugin.PluginBase {
     for (let page = 2; page <= totalPages; page++) {
       try {
         const pageUrl = `${this.site}${cleanPath}?page=${page}`;
-        const pageResult = await fetchApi(pageUrl);
-
-        if (!pageResult.ok) {
-          continue;
-        }
+        const pageResult = await this.fetchWithHeaders(pageUrl);
 
         const pageBody = await pageResult.text();
         const pageHtml = loadCheerio(pageBody);
@@ -937,17 +921,38 @@ class Novelyra implements Plugin.PluginBase {
     return novel;
   }
 
+  private async fetchWithHeaders(url: string): Promise<Response> {
+    const headers = new Headers();
+    headers.append(
+      'User-Agent',
+      'Mozilla/5.0 (Linux; Android 13; RMO-NX1 Build/HONORRMO-N21; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/151.0.7922.169 Mobile Safari/537.36',
+    );
+    headers.append(
+      'Accept',
+      'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    );
+    headers.append('Accept-Language', 'es-ES,es;q=0.9,en;q=0.8');
+    headers.append('Referer', this.site);
+    headers.append('Alt-Used', 'novelyra.com');
+    headers.append('Sec-Fetch-Dest', 'document');
+    headers.append('Sec-Fetch-Mode', 'navigate');
+    headers.append('Sec-Fetch-Site', 'same-origin');
+    headers.append('Sec-Fetch-User', '?1');
+    headers.append('Upgrade-Insecure-Requests', '1');
+
+    const result = await fetchApi(url, { headers });
+    if (!result.ok) {
+      throw new Error(`HTTP ${result.status}: ${url}`);
+    }
+    return result;
+  }
+
   async parseChapter(chapterPath: string): Promise<string> {
     const cleanPath = chapterPath.replace(/^\/+/, '').replace(/\/$/, '');
 
     const url = `${this.site}${cleanPath}/`;
 
-    const result = await fetchApi(url, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Linux; Android 13; RMO-NX1 Build/HONORRMO-N21; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/151.0.7922.169 Mobile Safari/537.36',
-      },
-    });
+    const result = await this.fetchWithHeaders(url);
 
     if (!result.ok) {
       throw new Error(`HTTP ${result.status}: ${url}`);
