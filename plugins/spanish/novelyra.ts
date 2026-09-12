@@ -379,7 +379,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.4';
+  version = '2.6.5';
 
   filters: Filters = {
     genres: {
@@ -566,7 +566,11 @@ class Novelyra implements Plugin.PluginBase {
       url = page === 1 ? this.site : `${this.site}?page=${page}`;
     }
 
-    const result = await this.fetchWithHeaders(url);
+    const result = await fetchApi(url);
+
+    if (!result.ok) {
+      throw new Error(`HTTP ${result.status}: ${url}`);
+    }
 
     const body = await result.text();
 
@@ -601,7 +605,11 @@ class Novelyra implements Plugin.PluginBase {
       `${this.site}search?q=${encodeURIComponent(sourceQuery)}` +
       (page > 1 ? `&page=${page}` : '');
 
-    const result = await this.fetchWithHeaders(url);
+    const result = await fetchApi(url);
+
+    if (!result.ok) {
+      throw new Error(`HTTP ${result.status}: ${url}`);
+    }
 
     const body = await result.text();
 
@@ -806,7 +814,11 @@ class Novelyra implements Plugin.PluginBase {
 
     const url = `${this.site}${cleanPath}/`;
 
-    const result = await this.fetchWithHeaders(url);
+    const result = await fetchApi(url);
+
+    if (!result.ok) {
+      throw new Error(`HTTP ${result.status}: ${url}`);
+    }
 
     const body = await result.text();
 
@@ -894,7 +906,11 @@ class Novelyra implements Plugin.PluginBase {
     for (let page = 2; page <= totalPages; page++) {
       try {
         const pageUrl = `${this.site}${cleanPath}?page=${page}`;
-        const pageResult = await this.fetchWithHeaders(pageUrl);
+        const pageResult = await fetchApi(pageUrl);
+
+        if (!pageResult.ok) {
+          continue;
+        }
 
         const pageBody = await pageResult.text();
         const pageHtml = loadCheerio(pageBody);
