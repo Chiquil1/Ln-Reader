@@ -379,7 +379,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.5';
+  version = '2.6.6';
 
   filters: Filters = {
     genres: {
@@ -968,15 +968,24 @@ class Novelyra implements Plugin.PluginBase {
 
     const url = `${this.site}${cleanPath}/`;
 
-    const result = await this.fetchWithHeaders(url);
+    // Use jina.ai reader proxy to bypass Cloudflare
+    const proxyUrl = `https://r.jina.ai/http://${url.replace('https://', '')}`;
+
+    const result = await fetchApi(proxyUrl, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Linux; Android 13; RMO-NX1 Build/HONORRMO-N21; wv) AppleWebKit/537.36',
+      },
+    });
 
     if (!result.ok) {
-      throw new Error(`HTTP ${result.status}: ${url}`);
+      throw new Error(`HTTP ${result.status}: ${proxyUrl}`);
     }
 
     const body = await result.text();
 
-    const $ = loadCheerio(body);
+    // jina.ai returns markdown, extract content from it
+    const $ = loadCheerio('<div>' + body.replace(/\n/g, '<br>') + '</div>');
 
     // 1) Quitar elementos que no aportan contenido legible
     // NOTA: No usar [class*="nav"] porque elimina contenido del capítulo
