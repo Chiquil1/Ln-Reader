@@ -953,9 +953,13 @@ class Novelyra implements Plugin.PluginBase {
     const $ = loadCheerio(body);
 
     // 1) Quitar elementos que no aportan contenido legible
+    // NOTA: No usar [class*="nav"] porque elimina contenido del capítulo
     $(
-      'script, style, iframe, ins, header, footer, aside, nav, [class*="ad"], [class*="sidebar"], [class*="related"], [class*="recommend"], [class*="nav"]',
+      'script, style, iframe, ins, header, footer, aside, nav, [class*="ad"], [class*="sidebar"], [class*="related"], [class*="recommend"]',
     ).remove();
+
+    // Eliminar solo navegación específica del capítulo (fuera del contenido)
+    $('#chapter-bottom-nav, #chapter-top-nav, .chapter-nav').remove();
 
     // 2) Buscar el contenedor del contenido del capítulo
     const chapterContent = $('#chapter-content').first().length
