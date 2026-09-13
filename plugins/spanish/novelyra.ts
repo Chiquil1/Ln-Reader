@@ -379,7 +379,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.8';
+  version = '2.6.9';
 
   filters: Filters = {
     genres: {
@@ -968,22 +968,53 @@ class Novelyra implements Plugin.PluginBase {
 
     const url = `${this.site}${cleanPath}/`;
 
-    // Use Cloudflare Worker proxy to bypass Cloudflare
-    const workerUrl = 'https://aged-hall-69f2.protroleador664.workers.dev/';
-    const proxyUrl = `${workerUrl}?url=${encodeURIComponent(url)}`;
-
-    const result = await fetchApi(proxyUrl, {
+    // DEBUG: Try direct fetch first to see what we get
+    console.log('[Novelyra] Fetching chapter:', url);
+    const directResult = await fetchApi(url, {
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Linux; Android 13; RMO-NX1 Build/HONORRMO-N21; wv) AppleWebKit/537.36',
       },
     });
+    const directBody = await directResult.text();
+    console.log(
+      '[Novelyra] Direct fetch status:',
+      directResult.status,
+      'length:',
+      directBody.length,
+    );
+    console.log('[Novelyra] Direct preview:', directBody.slice(0, 300));
 
-    if (!result.ok) {
-      throw new Error(`HTTP ${result.status}: ${proxyUrl}`);
+    // If direct works, use it; else try worker proxy
+    let body: string;
+    if (directResult.ok && directBody.includes('chapter-content')) {
+      console.log('[Novelyra] Direct fetch succeeded');
+      body = directBody;
+    } else {
+      console.log('[Novelyra] Direct failed, trying worker proxy...');
+      const workerUrl = 'https://aged-hall-69f2.protroleador664.workers.dev/';
+      const proxyUrl = `${workerUrl}?url=${encodeURIComponent(url)}`;
+
+      const result = await fetchApi(proxyUrl, {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Linux; Android 13; RMO-NX1 Build/HONORRMO-N21; wv) AppleWebKit/537.36',
+        },
+      });
+
+      if (!result.ok) {
+        throw new Error(`HTTP ${result.status}: ${proxyUrl}`);
+      }
+
+      body = await result.text();
+      console.log(
+        '[Novelyra] Worker proxy status:',
+        result.status,
+        'length:',
+        body.length,
+      );
+      console.log('[Novelyra] Worker preview:', body.slice(0, 300));
     }
-
-    const body = await result.text();
 
     const $ = loadCheerio(body);
 
@@ -1108,7 +1139,7 @@ class Novelyra implements Plugin.PluginBase {
       } else {
         // Partir párrafos largos por oraciones
         const sentences = paragraph.match(
-          /.{1,MAX_PARAGRAPH_LENGTH}(?:[.!?]+(?:\s|$)|$)/g,
+          new RegExp(`.{1,${MAX_PARAGRAPH_LENGTH}}(?:[.!?]+(?:\\s|$)|$)`, 'g'),
         ) || [paragraph];
         sentences.forEach((sentence: string) => {
           const trimmed = sentence.trim();
