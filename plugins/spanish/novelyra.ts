@@ -48,14 +48,161 @@ function getSearchTerms(text: string): string[] {
   return normalizeText(text).split(/\s+/).filter(Boolean);
 }
 
-function searchTermsMatch(title: string, queryTerms: string[]): boolean {
-  const normalizedTitle = normalizeText(title);
+// Palabras vacías EN/ES: si cuentan para el filtro, una búsqueda como
+// "the" o "lord of" devuelve medio catálogo en vez de la novela pedida.
+const SEARCH_STOPWORDS = new Set([
+  'a',
+  'an',
+  'the',
+  'of',
+  'and',
+  'or',
+  'in',
+  'on',
+  'at',
+  'to',
+  'for',
+  'with',
+  'by',
+  'from',
+  'as',
+  'is',
+  'are',
+  'was',
+  'were',
+  'be',
+  'been',
+  'it',
+  'its',
+  'this',
+  'that',
+  'these',
+  'those',
+  'i',
+  'you',
+  'he',
+  'she',
+  'we',
+  'they',
+  'my',
+  'his',
+  'her',
+  'our',
+  'their',
+  'your',
+  'me',
+  'him',
+  'us',
+  'them',
+  'no',
+  'not',
+  'so',
+  'but',
+  'if',
+  'then',
+  'than',
+  'too',
+  'up',
+  'out',
+  'el',
+  'la',
+  'los',
+  'las',
+  'un',
+  'una',
+  'unos',
+  'unas',
+  'de',
+  'del',
+  'al',
+  'en',
+  'y',
+  'o',
+  'u',
+  'que',
+  'se',
+  'su',
+  'sus',
+  'mi',
+  'mis',
+  'tu',
+  'tus',
+  'con',
+  'por',
+  'para',
+  'como',
+  'mas',
+  'es',
+  'son',
+  'fue',
+  'fueron',
+  'era',
+  'eran',
+  'esta',
+  'estan',
+  'hay',
+  'este',
+  'estos',
+  'estas',
+  'ese',
+  'esa',
+  'esos',
+  'esas',
+  'lo',
+  'le',
+  'les',
+  'te',
+  'nos',
+  'si',
+  'ni',
+  'pero',
+  'porque',
+  'cuando',
+  'donde',
+  'muy',
+  'tambien',
+  'solo',
+  'entre',
+  'hasta',
+  'desde',
+  'sobre',
+  'tras',
+  'ante',
+  'bajo',
+  'contra',
+  'hacia',
+  'segun',
+  'sin',
+]);
 
-  if (!normalizedTitle || !queryTerms.length) {
+function getSignificantTerms(text: string): string[] {
+  return getSearchTerms(text).filter(
+    term => term.length > 1 && !SEARCH_STOPWORDS.has(term),
+  );
+}
+
+function searchTermsMatch(title: string, query: string): boolean {
+  const normalizedTitle = normalizeText(title);
+  const normalizedQuery = normalizeText(query);
+
+  if (!normalizedTitle || !normalizedQuery) {
     return false;
   }
 
-  return queryTerms.every(term => normalizedTitle.includes(term));
+  if (normalizedTitle.includes(normalizedQuery)) {
+    return true;
+  }
+
+  const terms = getSignificantTerms(query);
+
+  if (!terms.length) {
+    // La búsqueda eran solo palabras vacías ("the", "de"...):
+    // no hay nada significativo que matchear, devolver false
+    // evita entregar el catálogo entero.
+    return false;
+  }
+
+  return terms.every(term => normalizedTitle.includes(term));
 }
 
 function searchScore(title: string, query: string): number {
@@ -78,7 +225,7 @@ function searchScore(title: string, query: string): number {
     return 600;
   }
 
-  const terms = getSearchTerms(query);
+  const terms = getSignificantTerms(query);
 
   const matchingTerms = terms.filter(term =>
     normalizedTitle.includes(term),
@@ -399,7 +546,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.11'; // Fix: [class*="ad"] borraba #chapter-content (contiene "ad" en "reading"); fix regex MAX_PARAGRAPH_LENGTH sin interpolar
+  version = '2.6.12'; // Fix buscador: stopwords EN/ES + fallback /browse?q= para no devolver el catálogo entero
 
   filters: Filters = {
     genres: {
@@ -621,33 +768,67 @@ class Novelyra implements Plugin.PluginBase {
 
     const page = Math.max(1, pageNo || 1);
 
-    const url =
-      `${this.site}search?q=${encodeURIComponent(sourceQuery)}` +
-      (page > 1 ? `&page=${page}` : '');
+    const pageSuffix = page > 1 ? `&page=${page}` : '';
 
-    const result = await fetchApi(url);
-
-    if (!result.ok) {
-      throw new Error(`HTTP ${result.status}: ${url}`);
-    }
-
-    const body = await result.text();
-
-    const loadedCheerio = loadCheerio(body);
-
-    const novels = this.extractNovels(loadedCheerio);
+    // El sitio expone su catálogo en /browse (ver /browse?status=... indexado);
+    // /search?q= no está confirmado: se intenta primero y, si no trae nada útil,
+    // se respalda con /browse?q=. El filtro estricto de abajo protege de traer
+    // el catálogo entero en cualquier caso.
+    const urls = [
+      `${this.site}search?q=${encodeURIComponent(sourceQuery)}${pageSuffix}`,
+      `${this.site}browse?q=${encodeURIComponent(sourceQuery)}${pageSuffix}`,
+    ];
 
     const queryCandidates = [query, sourceQuery].filter(Boolean);
+
+    const matchesQuery = (title: string): boolean =>
+      queryCandidates.some(candidate => searchTermsMatch(title, candidate));
+
+    const seenPaths = new Set<string>();
+    const novels: (Plugin.NovelItem & {
+      sourceName: string;
+    })[] = [];
+    let firstError: unknown = null;
+
+    for (const url of urls) {
+      try {
+        const result = await fetchApi(url);
+
+        if (!result.ok) {
+          continue;
+        }
+
+        const body = await result.text();
+        const found = this.extractNovels(loadCheerio(body));
+
+        for (const novel of found) {
+          if (novel.path && !seenPaths.has(novel.path)) {
+            seenPaths.add(novel.path);
+            novels.push(novel);
+          }
+        }
+
+        // Si ya hay candidatos que matchean, no pedir la segunda URL.
+        if (novels.some(novel => matchesQuery(novel.sourceName))) {
+          break;
+        }
+      } catch (error) {
+        if (!firstError) {
+          firstError = error;
+        }
+      }
+    }
+
+    if (!novels.length && firstError) {
+      throw firstError;
+    }
 
     const scored = novels
       .map(novel => {
         const scores = queryCandidates.map(candidate => ({
           candidate,
           score: searchScore(novel.sourceName, candidate),
-          matches: searchTermsMatch(
-            novel.sourceName,
-            getSearchTerms(candidate),
-          ),
+          matches: searchTermsMatch(novel.sourceName, candidate),
         }));
 
         const best = scores.reduce(
