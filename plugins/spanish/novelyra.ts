@@ -546,7 +546,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.12'; // Fix buscador: stopwords EN/ES + fallback /browse?q= para no devolver el catálogo entero
+  version = '2.6.13'; // Fix portada: og:image + alt + hero en vez del primer img del DOM
 
   filters: Filters = {
     genres: {
@@ -1010,6 +1010,136 @@ class Novelyra implements Plugin.PluginBase {
     return maxPage;
   }
 
+  private extractCover(
+    loadedCheerio: ReturnType<typeof loadCheerio>,
+    title: string,
+  ): string {
+    const BAD_SRC =
+      /(logo|favicon|sprite|avatar|banner|placeholder|spinner|loading|blank|pixel|emoji|ad\/|ads\/|doubleclick|googlesyndication)/i;
+
+    const absolutize = (url: string): string => {
+      const trimmed = (url || '').trim();
+      if (!trimmed) {
+        return '';
+      }
+      if (/^https?:\/\//i.test(trimmed)) {
+        return trimmed;
+      }
+      if (trimmed.startsWith('//')) {
+        return `https:${trimmed}`;
+      }
+      return `${this.site}${trimmed.replace(/^\/+/, '')}`;
+    };
+
+    const urlFrom = (img: any): string => {
+      const candidates = [
+        img.attr('data-src'),
+        img.attr('data-lazy-src'),
+        img.attr('data-original'),
+        img.attr('src'),
+      ];
+      const srcset = img.attr('srcset') || img.attr('data-srcset');
+      if (srcset) {
+        candidates.push(srcset.split(',')[0]?.trim().split(/\s+/)[0]);
+      }
+      for (const candidate of candidates) {
+        const url = (candidate || '').trim();
+        if (!url || url.startsWith('data:') || BAD_SRC.test(url)) {
+          continue;
+        }
+        return absolutize(url);
+      }
+      return '';
+    };
+
+    const isNoiseImg = (img: any): boolean => {
+      let node: any = img;
+      for (let depth = 0; depth < 3 && node && node.length; depth++) {
+        if (hasNoiseClass(node.attr('class'))) {
+          return true;
+        }
+        node = node.parent();
+      }
+      return false;
+    };
+
+    const isGoodImg = (img: any): boolean => {
+      const width = parseInt(img.attr('width') || '', 10);
+      const height = parseInt(img.attr('height') || '', 10);
+      if ((width && width < 60) || (height && height < 60)) {
+        return false;
+      }
+      if (isNoiseImg(img)) {
+        return false;
+      }
+      return !!urlFrom(img);
+    };
+
+    const firstGood = (selection: any): string => {
+      const imgs = selection.filter((_: any, el: any) =>
+        isGoodImg(loadedCheerio(el)),
+      );
+      return imgs.length ? urlFrom(loadedCheerio(imgs.first())) : '';
+    };
+
+    // 1) La propia página dice cuál es su portada (inmune al orden del DOM).
+    const ogImage = loadedCheerio('meta[property="og:image"]')
+      .first()
+      .attr('content')
+      ?.trim();
+    if (ogImage && !ogImage.startsWith('data:') && !BAD_SRC.test(ogImage)) {
+      return absolutize(ogImage);
+    }
+
+    // 2) Imagen cuyo alt nombra la obra.
+    const normalizedTitle = normalizeText(title);
+    if (normalizedTitle && normalizedTitle !== 'desconocido') {
+      const byAlt = firstGood(
+        loadedCheerio('main img').filter((_: any, el: any) => {
+          const alt = normalizeText(loadedCheerio(el).attr('alt') || '');
+          return (
+            alt.length >= 6 &&
+            (alt.includes(normalizedTitle) || normalizedTitle.includes(alt))
+          );
+        }),
+      );
+      if (byAlt) {
+        return byAlt;
+      }
+    }
+
+    // 3) Imagen junto al h1 del título (hero de la novela), subiendo niveles.
+    const h1 = loadedCheerio('h1').first();
+    let scope: any = h1.parent();
+    for (let depth = 0; depth < 3 && scope && scope.length; depth++) {
+      const found = firstGood(scope.find('img'));
+      if (found) {
+        return found;
+      }
+      if (scope.is('main, body')) {
+        break;
+      }
+      scope = scope.parent();
+    }
+
+    // 4) Imágenes con pinta de portada dentro del contenido principal.
+    const coverLike = firstGood(
+      loadedCheerio(
+        'main img[src*="cover"], main img[alt*="cover"], main img[src*="poster"], main img[src*="thumbnail"], #synopsis img',
+      ),
+    );
+    if (coverLike) {
+      return coverLike;
+    }
+
+    // 5) Primera imagen decente del contenido (mejor vacío que un logo).
+    return (
+      firstGood(loadedCheerio('main img')) ||
+      firstGood(loadedCheerio('article img')) ||
+      ''
+    );
+  }
+
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
     const cleanPath = novelPath.replace(/^\/+/, '').replace(/\/$/, '');
 
@@ -1030,20 +1160,7 @@ class Novelyra implements Plugin.PluginBase {
 
     const name = await translateShortText(sourceName);
 
-    let cover =
-      loadedCheerio('img[src*="cover"], img[alt*="cover"]')
-        .first()
-        .attr('src')
-        ?.trim() ||
-      loadedCheerio('#synopsis img').first().attr('src')?.trim() ||
-      loadedCheerio('main img').first().attr('src')?.trim() ||
-      loadedCheerio('article img').first().attr('src')?.trim() ||
-      loadedCheerio('img').first().attr('src')?.trim() ||
-      '';
-
-    if (cover && cover.startsWith('/')) {
-      cover = `${this.site}${cover.slice(1)}`;
-    }
+    const cover = this.extractCover(loadedCheerio, sourceName);
 
     const synopsisText = loadedCheerio('#synopsis')
       .first()
