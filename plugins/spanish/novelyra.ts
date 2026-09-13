@@ -379,7 +379,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.9';
+  version = '2.6.10';
 
   filters: Filters = {
     genres: {
@@ -965,56 +965,15 @@ class Novelyra implements Plugin.PluginBase {
 
   async parseChapter(chapterPath: string): Promise<string> {
     const cleanPath = chapterPath.replace(/^\/+/, '').replace(/\/$/, '');
-
     const url = `${this.site}${cleanPath}/`;
 
-    // DEBUG: Try direct fetch first to see what we get
-    console.log('[Novelyra] Fetching chapter:', url);
-    const directResult = await fetchApi(url, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Linux; Android 13; RMO-NX1 Build/HONORRMO-N21; wv) AppleWebKit/537.36',
-      },
-    });
-    const directBody = await directResult.text();
-    console.log(
-      '[Novelyra] Direct fetch status:',
-      directResult.status,
-      'length:',
-      directBody.length,
-    );
-    console.log('[Novelyra] Direct preview:', directBody.slice(0, 300));
+    const result = await fetchApi(url);
+    const body = await result.text();
 
-    // If direct works, use it; else try worker proxy
-    let body: string;
-    if (directResult.ok && directBody.includes('chapter-content')) {
-      console.log('[Novelyra] Direct fetch succeeded');
-      body = directBody;
-    } else {
-      console.log('[Novelyra] Direct failed, trying worker proxy...');
-      const workerUrl = 'https://aged-hall-69f2.protroleador664.workers.dev/';
-      const proxyUrl = `${workerUrl}?url=${encodeURIComponent(url)}`;
-
-      const result = await fetchApi(proxyUrl, {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Linux; Android 13; RMO-NX1 Build/HONORRMO-N21; wv) AppleWebKit/537.36',
-        },
-      });
-
-      if (!result.ok) {
-        throw new Error(`HTTP ${result.status}: ${proxyUrl}`);
-      }
-
-      body = await result.text();
-      console.log(
-        '[Novelyra] Worker proxy status:',
-        result.status,
-        'length:',
-        body.length,
-      );
-      console.log('[Novelyra] Worker preview:', body.slice(0, 300));
-    }
+    console.log('STATUS:', result.status);
+    console.log('LENGTH:', body.length);
+    console.log('PREVIEW:', body.slice(0, 500));
+    console.log('HAS #chapter-content:', body.includes('id="chapter-content"'));
 
     const $ = loadCheerio(body);
 
