@@ -546,7 +546,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.13'; // Fix portada: og:image + alt + hero en vez del primer img del DOM
+  version = '2.6.14'; // Fix portada: prioriza alt+ruta /uploads/covers, og:image genérico al final
 
   filters: Filters = {
     genres: {
@@ -1014,8 +1014,19 @@ class Novelyra implements Plugin.PluginBase {
     loadedCheerio: ReturnType<typeof loadCheerio>,
     title: string,
   ): string {
+    // OJO: "ad"/"ads" solo cuentan como segmento delimitado ("/ads/", "-ad-"):
+    // un match suelto rechazaría rutas legítimas como "/uploads/" ("uplo-ADS/").
     const BAD_SRC =
-      /(logo|favicon|sprite|avatar|banner|placeholder|spinner|loading|blank|pixel|emoji|ad\/|ads\/|doubleclick|googlesyndication)/i;
+      /(logo|favicon|sprite|avatar|banner|placeholder|spinner|loading|blank|pixel|emoji|doubleclick|googlesyndication)|[/\-_.]ads?[/\-_.]/i;
+
+    // El sitio usa un og:image / imagen genérica por defecto: no debe ganarle
+    // a la portada real.
+    const DEFAULT_SRC =
+      /(default|noimage|no-image|nocover|no-cover|coming|empty|generic|missing)/i;
+
+    // Señales positivas de portada real: las portadas viven en rutas como
+    // /uploads/covers/cover_*.jpg con alt = título de la obra.
+    const COVER_SRC = /covers?\/|cover_|poster|thumbnail/i;
 
     const absolutize = (url: string): string => {
       const trimmed = (url || '').trim();
@@ -1044,7 +1055,12 @@ class Novelyra implements Plugin.PluginBase {
       }
       for (const candidate of candidates) {
         const url = (candidate || '').trim();
-        if (!url || url.startsWith('data:') || BAD_SRC.test(url)) {
+        if (
+          !url ||
+          url.startsWith('data:') ||
+          BAD_SRC.test(url) ||
+          DEFAULT_SRC.test(url)
+        ) {
           continue;
         }
         return absolutize(url);
@@ -1082,26 +1098,52 @@ class Novelyra implements Plugin.PluginBase {
       return imgs.length ? urlFrom(loadedCheerio(imgs.first())) : '';
     };
 
-    // 1) La propia página dice cuál es su portada (inmune al orden del DOM).
-    const ogImage = loadedCheerio('meta[property="og:image"]')
-      .first()
-      .attr('content')
-      ?.trim();
-    if (ogImage && !ogImage.startsWith('data:') && !BAD_SRC.test(ogImage)) {
-      return absolutize(ogImage);
-    }
-
-    // 2) Imagen cuyo alt nombra la obra.
+    // 1) Combinación ganadora: alt nombra la obra Y ruta con pinta de
+    // portada (/uploads/covers/cover_*.jpg). No la confundas con portadas
+    // de "también te puede gustar": esas tienen otro alt.
     const normalizedTitle = normalizeText(title);
-    if (normalizedTitle && normalizedTitle !== 'desconocido') {
-      const byAlt = firstGood(
+    const hasRealTitle = !!normalizedTitle && normalizedTitle !== 'desconocido';
+
+    const altMatchesTitle = (img: any): boolean => {
+      if (!hasRealTitle) {
+        return false;
+      }
+      const alt = normalizeText(img.attr('alt') || '');
+      return (
+        alt.length >= 6 &&
+        (alt.includes(normalizedTitle) || normalizedTitle.includes(alt))
+      );
+    };
+
+    const srcLooksCover = (img: any): boolean =>
+      COVER_SRC.test(
+        [
+          img.attr('data-src'),
+          img.attr('data-lazy-src'),
+          img.attr('data-original'),
+          img.attr('src'),
+          img.attr('srcset'),
+        ]
+          .filter(Boolean)
+          .join(' '),
+      );
+
+    if (hasRealTitle) {
+      const byAltAndSrc = firstGood(
         loadedCheerio('main img').filter((_: any, el: any) => {
-          const alt = normalizeText(loadedCheerio(el).attr('alt') || '');
-          return (
-            alt.length >= 6 &&
-            (alt.includes(normalizedTitle) || normalizedTitle.includes(alt))
-          );
+          const img = loadedCheerio(el);
+          return altMatchesTitle(img) && srcLooksCover(img);
         }),
+      );
+      if (byAltAndSrc) {
+        return byAltAndSrc;
+      }
+
+      // 2) Imagen cuyo alt nombra la obra.
+      const byAlt = firstGood(
+        loadedCheerio('main img').filter((_: any, el: any) =>
+          altMatchesTitle(loadedCheerio(el)),
+        ),
       );
       if (byAlt) {
         return byAlt;
@@ -1132,7 +1174,21 @@ class Novelyra implements Plugin.PluginBase {
       return coverLike;
     }
 
-    // 5) Primera imagen decente del contenido (mejor vacío que un logo).
+    // 5) og:image, solo si no parece la imagen genérica del sitio.
+    const ogImage = loadedCheerio('meta[property="og:image"]')
+      .first()
+      .attr('content')
+      ?.trim();
+    if (
+      ogImage &&
+      !ogImage.startsWith('data:') &&
+      !BAD_SRC.test(ogImage) &&
+      !DEFAULT_SRC.test(ogImage)
+    ) {
+      return absolutize(ogImage);
+    }
+
+    // 6) Primera imagen decente del contenido (mejor vacío que un logo).
     return (
       firstGood(loadedCheerio('main img')) ||
       firstGood(loadedCheerio('article img')) ||
