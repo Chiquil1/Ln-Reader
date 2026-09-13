@@ -370,6 +370,26 @@ function extractChapterNumberFromUrl(url: string): number | null {
   return null;
 }
 
+/**
+ * Indica si alguna de las clases de un elemento corresponde a un
+ * bloque de publicidad/sidebar/relacionados, comparando por TOKEN
+ * completo (delimitado por guiones), no por substring suelto.
+ *
+ * Motivo del fix: usar un selector como `[class*="ad"]` also matches
+ * clases como "prose-reading" (contiene "ad" dentro de "re-AD-ing"),
+ * lo que borraba por accidente el propio contenedor del capítulo.
+ * Con esta función, "ad" solo cuenta si aparece como su propio
+ * segmento separado por guiones (ej. "nv-ad", "chapter-ad-top"),
+ * nunca como parte de otra palabra como "reading".
+ */
+function hasNoiseClass(classAttr: string | undefined): boolean {
+  if (!classAttr) return false;
+
+  const keywords = /(^|-)(ad|sidebar|related|recommend)(-|$)/i;
+
+  return classAttr.split(/\s+/).some(token => keywords.test(token));
+}
+
 class Novelyra implements Plugin.PluginBase {
   id = 'novelyra';
 
@@ -379,7 +399,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.10';
+  version = '2.6.11'; // Fix: [class*="ad"] borraba #chapter-content (contiene "ad" en "reading"); fix regex MAX_PARAGRAPH_LENGTH sin interpolar
 
   filters: Filters = {
     genres: {
@@ -937,51 +957,38 @@ class Novelyra implements Plugin.PluginBase {
     return novel;
   }
 
-  private async fetchWithHeaders(url: string): Promise<Response> {
-    const headers = new Headers();
-    headers.append(
-      'User-Agent',
-      'Mozilla/5.0 (Linux; Android 13; RMO-NX1 Build/HONORRMO-N21; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/151.0.7922.169 Mobile Safari/537.36',
-    );
-    headers.append(
-      'Accept',
-      'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-    );
-    headers.append('Accept-Language', 'es-ES,es;q=0.9,en;q=0.8');
-    headers.append('Referer', this.site);
-    headers.append('Alt-Used', 'novelyra.com');
-    headers.append('Sec-Fetch-Dest', 'document');
-    headers.append('Sec-Fetch-Mode', 'navigate');
-    headers.append('Sec-Fetch-Site', 'same-origin');
-    headers.append('Sec-Fetch-User', '?1');
-    headers.append('Upgrade-Insecure-Requests', '1');
-
-    const result = await fetchApi(url, { headers });
-    if (!result.ok) {
-      throw new Error(`HTTP ${result.status}: ${url}`);
-    }
-    return result;
-  }
-
   async parseChapter(chapterPath: string): Promise<string> {
     const cleanPath = chapterPath.replace(/^\/+/, '').replace(/\/$/, '');
+
     const url = `${this.site}${cleanPath}/`;
 
     const result = await fetchApi(url);
-    const body = await result.text();
 
-    console.log('STATUS:', result.status);
-    console.log('LENGTH:', body.length);
-    console.log('PREVIEW:', body.slice(0, 500));
-    console.log('HAS #chapter-content:', body.includes('id="chapter-content"'));
+    if (!result.ok) {
+      throw new Error(`HTTP ${result.status}: ${url}`);
+    }
+
+    const body = await result.text();
 
     const $ = loadCheerio(body);
 
     // 1) Quitar elementos que no aportan contenido legible
-    // NOTA: No usar [class*="nav"] porque elimina contenido del capítulo
-    $(
-      'script, style, iframe, ins, header, footer, aside, nav, [class*="ad"], [class*="sidebar"], [class*="related"], [class*="recommend"]',
-    ).remove();
+    // Los tags son seguros de quitar por nombre (no dependen de nombres de clase)
+    $('script, style, iframe, ins, header, footer, aside, nav').remove();
+
+    // FIX: antes se usaba `[class*="ad"], [class*="sidebar"], [class*="related"], [class*="recommend"]`,
+    // un selector por SUBSTRING que también coincidía con clases como
+    // "prose-reading" (contiene "ad" dentro de "re-AD-ing"), borrando por
+    // accidente el propio #chapter-content antes de poder extraerlo.
+    // Ahora solo se eliminan elementos donde "ad"/"sidebar"/"related"/"recommend"
+    // aparecen como su propio segmento delimitado por guiones (ej. "nv-ad",
+    // "chapter-ad-top"), nunca como parte de otra palabra.
+    $('[class]').each((_, el) => {
+      const $el = $(el);
+      if (hasNoiseClass($el.attr('class'))) {
+        $el.remove();
+      }
+    });
 
     // Eliminar solo navegación específica del capítulo (fuera del contenido)
     $('#chapter-bottom-nav, #chapter-top-nav, .chapter-nav').remove();
@@ -1096,7 +1103,12 @@ class Novelyra implements Plugin.PluginBase {
       if (paragraph.length <= MAX_PARAGRAPH_LENGTH) {
         container.append(`<p>${paragraph}</p>`);
       } else {
-        // Partir párrafos largos por oraciones
+        // FIX: antes esta regex usaba literalmente el texto
+        // "MAX_PARAGRAPH_LENGTH" dentro de /.../ (no se interpola una
+        // variable dentro de un literal de regex), así que el match
+        // siempre fallaba y caía al fallback sin dividir. Ahora se
+        // construye la regex dinámicamente con RegExp() para que el
+        // número sí se use de verdad.
         const sentences = paragraph.match(
           new RegExp(`.{1,${MAX_PARAGRAPH_LENGTH}}(?:[.!?]+(?:\\s|$)|$)`, 'g'),
         ) || [paragraph];
