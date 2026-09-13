@@ -379,7 +379,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.7';
+  version = '2.6.8';
 
   filters: Filters = {
     genres: {
@@ -968,8 +968,9 @@ class Novelyra implements Plugin.PluginBase {
 
     const url = `${this.site}${cleanPath}/`;
 
-    // Use jina.ai reader proxy with https to bypass Cloudflare
-    const proxyUrl = `https://r.jina.ai/https://${url.replace('https://', '')}`;
+    // Use Cloudflare Worker proxy to bypass Cloudflare
+    const workerUrl = 'https://aged-hall-69f2.protroleador664.workers.dev/';
+    const proxyUrl = `${workerUrl}?url=${encodeURIComponent(url)}`;
 
     const result = await fetchApi(proxyUrl, {
       headers: {
@@ -984,8 +985,7 @@ class Novelyra implements Plugin.PluginBase {
 
     const body = await result.text();
 
-    // jina.ai returns markdown, extract content from it
-    const $ = loadCheerio('<div>' + body.replace(/\n/g, '<br>') + '</div>');
+    const $ = loadCheerio(body);
 
     // 1) Quitar elementos que no aportan contenido legible
     // NOTA: No usar [class*="nav"] porque elimina contenido del capítulo
