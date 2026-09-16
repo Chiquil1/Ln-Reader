@@ -314,7 +314,7 @@ var LightNovelWorld = /** @class */ (function () {
     return LightNovelWorld;
 }());
 exports.LightNovelWorld = LightNovelWorld;
-var plugin = new LightNovelWorld({ "id": "lightnovelpubvip", "sourceName": "LightNovelPub Vip", "sourceSite": "https://lightnovelpub.vip/", "options": { "versionIncrements": 10 } });
+var plugin = new LightNovelWorld({ "options": { "versionIncrements": 50 }, "id": "lightnovelpubvip", "sourceName": "LightNovelPub Vip", "sourceSite": "https://lightnovelpub.vip/" });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");

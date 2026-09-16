@@ -335,14 +335,41 @@ __ENTranslation(plugin);
 `;
 
 function bumpVersion(source) {
+  // Piso de versión: garantiza que el publish (que re-inyecta desde .ts
+  // pristinos) siempre quede POR ENCIMA de lo ya publicado en plugins/v3.0.0,
+  // forzando la re-descarga en la app. Subir si en el futuro se publica ≥ 2.2.50.
+  const MIN_VERSION = 50;
   const re = /("versionIncrements"\s*:\s*)(\d+)/;
   if (re.test(source)) {
     return source.replace(
       re,
-      (match, prefix, num) => prefix + (Number(num) + 1),
+      (match, prefix, num) => prefix + Math.max(Number(num) + 1, MIN_VERSION),
     );
   }
-  return source.replace(/("options"\s*:\s*\{)/, '$1"versionIncrements":1,');
+  if (/^\s*this\.version\s*=\s*'[^']+';?$/m.test(source)) {
+    // Esquema de versión literal (p. ej. HotNovelPub '1.0.1', MTLNovel '1.1.3'):
+    // bumpa el número final una vez.
+    return source.replace(
+      /(this\.version\s*=\s*')([^']*)(\d+)([^']*)(')/,
+      (m, a, pre, num, post, quote) =>
+        a + pre + (Number(num) + 1) + post + quote,
+    );
+  }
+  if (/("options"\s*:\s*\{)/.test(source)) {
+    return source.replace(
+      /("options"\s*:\s*\{)/,
+      '$1"versionIncrements":' + MIN_VERSION + ',',
+    );
+  }
+  if (/new \w+\(\{/.test(source)) {
+    // Templates cuya metadata NO define "options" (p. ej. lightnovelworld,
+    // algunos madara/readwn): el constructor lee metadata.options.
+    return source.replace(
+      /(new \w+\(\{)/,
+      '$1"options":{"versionIncrements":' + MIN_VERSION + '},',
+    );
+  }
+  return source;
 }
 
 function injectFile(filePath) {

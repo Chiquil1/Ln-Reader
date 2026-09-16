@@ -67,7 +67,7 @@ var NovelCoolPlugin = /** @class */ (function () {
         this.site = metadata.sourceSite;
         this.icon = 'multisrc/novelcool/novelcool/icon.png';
         this.mainUrl = 'https://api.novelcool.com';
-        this.version = '1.0.0';
+        this.version = '1.0.1';
         this.options = (_a = metadata.options) !== null && _a !== void 0 ? _a : {};
         this.filters = {
             sortby: {
@@ -259,7 +259,7 @@ var NovelCoolPlugin = /** @class */ (function () {
     return NovelCoolPlugin;
 }());
 exports.NovelCoolPlugin = NovelCoolPlugin;
-var plugin = new NovelCoolPlugin({ "id": "novelcool", "sourceName": "NovelCool", "sourceSite": "https://www.novelcool.com", "options": { "versionIncrements": 50, "lang": "English", "langCode": "en", "app": { "userAgent": "Android/Package:com.zuoyou.novel - Version Name:2.3 - Phone Info:sdk_gphone_x86_64(Android Version:13)", "package_name": "com.zuoyou.novel", "appId": "202201290625004", "secret": "c73a8590641781f203660afca1d37ada" } } });
+var plugin = new NovelCoolPlugin({ "id": "novelcool", "sourceName": "NovelCool", "sourceSite": "https://www.novelcool.com", "options": { "lang": "English", "langCode": "en", "app": { "userAgent": "Android/Package:com.zuoyou.novel - Version Name:2.3 - Phone Info:sdk_gphone_x86_64(Android Version:13)", "package_name": "com.zuoyou.novel", "appId": "202201290625004", "secret": "c73a8590641781f203660afca1d37ada" } } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_1 = require("cheerio");

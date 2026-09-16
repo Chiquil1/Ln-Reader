@@ -65,7 +65,7 @@ var MTLNovelPlugin = /** @class */ (function () {
         this.icon = 'multisrc/mtlnovel/mtlnovel/icon.png';
         this.site = metadata.sourceSite;
         this.mainUrl = 'https://www.mtlnovels.com/';
-        this.version = '1.1.3';
+        this.version = '1.1.4';
         this.options = (_a = metadata.options) !== null && _a !== void 0 ? _a : {};
         this.filters = metadata.filters;
     }
@@ -285,7 +285,7 @@ var MTLNovelPlugin = /** @class */ (function () {
     return MTLNovelPlugin;
 }());
 exports.MTLNovelPlugin = MTLNovelPlugin;
-var plugin = new MTLNovelPlugin({ "id": "mtlnovel", "sourceSite": "https://www.mtlnovels.com/", "sourceName": "MTL Novel", "options": { "versionIncrements": 50, "lang": "English" }, "filters": { "order": { "value": "view", "label": "Order by", "options": [{ "label": "Date", "value": "date" }, { "label": "Name", "value": "name" }, { "label": "Rating", "value": "rating" }, { "label": "View", "value": "view" }], "type": "Picker" }, "sort": { "value": "desc", "label": "Sort by", "options": [{ "label": "Descending", "value": "desc" }, { "label": "Ascending", "value": "asc" }], "type": "Picker" }, "storyStatus": { "value": "all", "label": "Status", "options": [{ "label": "All", "value": "all" }, { "label": "Ongoing", "value": "ongoing" }, { "label": "Complete", "value": "completed" }], "type": "Picker" } } });
+var plugin = new MTLNovelPlugin({ "id": "mtlnovel", "sourceSite": "https://www.mtlnovels.com/", "sourceName": "MTL Novel", "options": { "lang": "English" }, "filters": { "order": { "value": "view", "label": "Order by", "options": [{ "label": "Date", "value": "date" }, { "label": "Name", "value": "name" }, { "label": "Rating", "value": "rating" }, { "label": "View", "value": "view" }], "type": "Picker" }, "sort": { "value": "desc", "label": "Sort by", "options": [{ "label": "Descending", "value": "desc" }, { "label": "Ascending", "value": "asc" }], "type": "Picker" }, "storyStatus": { "value": "all", "label": "Status", "options": [{ "label": "All", "value": "all" }, { "label": "Ongoing", "value": "ongoing" }, { "label": "Complete", "value": "completed" }], "type": "Picker" } } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");

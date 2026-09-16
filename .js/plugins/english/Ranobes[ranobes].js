@@ -113,7 +113,7 @@ var RanobesPlugin = /** @class */ (function () {
         this.name = metadata.sourceName;
         this.icon = 'multisrc/ranobes/ranobes/icon.png';
         this.site = metadata.sourceSite;
-        this.version = '2.0.2';
+        this.version = '2.0.3';
         this.options = metadata.options;
     }
     RanobesPlugin.prototype.safeFecth = function (url, init) {
@@ -521,7 +521,7 @@ var RanobesPlugin = /** @class */ (function () {
     return RanobesPlugin;
 }());
 exports.RanobesPlugin = RanobesPlugin;
-var plugin = new RanobesPlugin({ "id": "ranobes", "sourceSite": "https://ranobes.top", "sourceName": "Ranobes", "options": { "versionIncrements": 50, "lang": "English", "path": "novels" } });
+var plugin = new RanobesPlugin({ "id": "ranobes", "sourceSite": "https://ranobes.top", "sourceName": "Ranobes", "options": { "lang": "English", "path": "novels" } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_1 = require("cheerio");
