@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load } from 'cheerio';
 import { Plugin } from '@/types/plugin';
 import { fetchApi } from '@libs/fetch';
@@ -31,7 +30,7 @@ class StorySeedlingPlugin implements Plugin.PluginBase {
   name = 'StorySeedling';
   icon = 'src/en/storyseedling/icon.png';
   site = 'https://storyseedling.com/';
-  version = '1.0.9';
+  version = '1.0.6';
   nonce: string | undefined;
 
   async getCheerio(url: string, search: boolean): Promise<CheerioAPI> {
@@ -286,4 +285,4 @@ class StorySeedlingPlugin implements Plugin.PluginBase {
   }
 }
 
-export default withTranslation(new StorySeedlingPlugin());
+export default new StorySeedlingPlugin();

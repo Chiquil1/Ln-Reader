@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { Plugin } from '@/types/plugin';
 import { Parser } from 'htmlparser2';
 import { FilterTypes, Filters } from '@libs/filterInputs';
@@ -10,7 +9,7 @@ class Foxteller implements Plugin.PluginBase {
   id = 'foxteller';
   name = 'Foxteller';
   site = 'https://www.foxteller.com';
-  version = '1.0.6';
+  version = '1.0.3';
   icon = 'src/en/foxteller/icon.png';
 
   async safeFecth(url: string, init?: FetchInit): Promise<string> {
@@ -299,7 +298,7 @@ class Foxteller implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default withTranslation(new Foxteller());
+export default new Foxteller();
 
 const base64Characters =
   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';

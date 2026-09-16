@@ -66,10 +66,7 @@ function compareVersions(a, b) {
 }
 
 const createRecursiveProxy = () => {
-  // Callable proxy: when invoked (e.g. `withTranslation(plugin)`), pass the
-  // argument through so the manifest can read the real plugin instance.
-  const callable = arg => arg;
-  const target = callable;
+  const target = {};
   const handler = {
     get(target, prop) {
       if (prop === 'get') {

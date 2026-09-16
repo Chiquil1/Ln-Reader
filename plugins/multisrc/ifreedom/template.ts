@@ -25,7 +25,7 @@ export class IfreedomPlugin implements Plugin.PluginBase {
     this.name = metadata.sourceName;
     this.icon = `multisrc/ifreedom/${metadata.id.toLowerCase()}/icon.png`;
     this.site = metadata.sourceSite;
-    this.version = '1.1.4';
+    this.version = '1.1.1';
     this.filters = metadata.filters;
   }
 

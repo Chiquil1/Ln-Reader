@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Filters, FilterTypes } from '@libs/filterInputs';
@@ -7,7 +6,7 @@ import { Plugin } from '@/types/plugin';
 class NovelUpdates implements Plugin.PluginBase {
   id = 'novelupdates';
   name = 'Novel Updates';
-  version = '0.9.12';
+  version = '0.9.9';
   icon = 'src/en/novelupdates/icon.png';
   customCSS = 'src/en/novelupdates/customCSS.css';
   site = 'https://www.novelupdates.com/';
@@ -1462,4 +1461,4 @@ class NovelUpdates implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default withTranslation(new NovelUpdates());
+export default new NovelUpdates();

@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -13,7 +12,7 @@ class NovelBuddy implements Plugin.PluginBase {
   name = 'NovelBuddy';
   site = 'https://novelbuddy.com/';
   api = 'https://api.novelbuddy.com/';
-  version = '2.1.5';
+  version = '2.1.2';
   icon = 'src/en/novelbuddy/icon.png';
 
   parseNovels(body: Response): Plugin.NovelItem[] {
@@ -337,7 +336,7 @@ class NovelBuddy implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default withTranslation(new NovelBuddy());
+export default new NovelBuddy();
 
 type Response = { data: { items: Items[] } };
 type ChapterResponse = { success: boolean; data?: { chapters?: Items[] } };

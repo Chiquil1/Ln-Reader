@@ -33,8 +33,6 @@ if [[ "$1" == "--all-branches" ]]; then
         npm run build:multisrc
         echo "Compiling TypeScript..."
         npx tsc --project tsconfig.production.json
-        echo "Inlining @libs/translation into compiled plugins..."
-        npm run build:inline
         echo "# $branch" >> $GITHUB_STEP_SUMMARY
         BRANCH=$dist npm run build:manifest -- --only-new 2>> $GITHUB_STEP_SUMMARY
         if [ ! -d ".dist" ] || [ -z "$(ls -A .dist)" ]; then
@@ -86,8 +84,6 @@ npm run clean:multisrc
 npm run build:multisrc
 echo "Compiling TypeScript..."
 npx tsc --project tsconfig.production.json
-echo "Inlining @libs/translation into compiled plugins..."
-npm run build:inline
 npm run build:manifest
 
 if [ ! -d ".dist" ] || [ -z "$(ls -A .dist)" ]; then

@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -11,7 +10,7 @@ import { storage } from '@libs/storage';
 class Novelight implements Plugin.PagePlugin {
   id = 'novelight';
   name = 'Novelight';
-  version = '1.1.8';
+  version = '1.1.5';
   icon = 'src/en/novelight/icon.png';
   site = 'https://novelight.net/';
 
@@ -375,4 +374,4 @@ class Novelight implements Plugin.PagePlugin {
   } satisfies Filters;
 }
 
-export default withTranslation(new Novelight());
+export default new Novelight();

@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Filters, FilterTypes } from '@libs/filterInputs';
@@ -8,7 +7,7 @@ import { storage } from '@libs/storage';
 class Webnovel implements Plugin.PluginBase {
   id = 'webnovel';
   name = 'Webnovel';
-  version = '1.0.6';
+  version = '1.0.3';
   icon = 'src/en/webnovel/icon.png';
   site = 'https://www.webnovel.com';
   headers = {
@@ -338,4 +337,4 @@ class Webnovel implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default withTranslation(new Webnovel());
+export default new Webnovel();

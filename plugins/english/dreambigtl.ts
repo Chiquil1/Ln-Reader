@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -6,7 +5,7 @@ import { Plugin } from '@/types/plugin';
 class DreamBigTL implements Plugin.PluginBase {
   id = 'dreambigtl';
   name = 'Dream Big Translations';
-  version = '1.0.3';
+  version = '1.0.0';
   site = 'https://www.dreambigtl.com/';
   icon = 'src/en/dreambigtl/icon.png';
 
@@ -186,4 +185,4 @@ class DreamBigTL implements Plugin.PluginBase {
   }
 }
 
-export default withTranslation(new DreamBigTL());
+export default new DreamBigTL();

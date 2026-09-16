@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load as parseHTML } from 'cheerio';
 import { fetchApi, FetchInit } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -9,7 +8,7 @@ class NovelsOnline implements Plugin.PluginBase {
   name = 'novelsOnline';
   site = 'https://novelsonline.org';
   icon = 'src/en/novelsonline/icon.png';
-  version = '1.0.5';
+  version = '1.0.2';
 
   async safeFetch(
     url: string,
@@ -252,4 +251,4 @@ class NovelsOnline implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default withTranslation(new NovelsOnline());
+export default new NovelsOnline();

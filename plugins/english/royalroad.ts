@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { Parser } from 'htmlparser2';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -10,7 +9,7 @@ import { storage } from '@libs/storage';
 class RoyalRoad implements Plugin.PluginBase {
   id = 'royalroad';
   name = 'Royal Road';
-  version = '2.3.4';
+  version = '2.3.1';
   icon = 'src/en/royalroad/icon.png';
   site = 'https://www.royalroad.com/';
 
@@ -932,7 +931,7 @@ class RoyalRoad implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default withTranslation(new RoyalRoad());
+export default new RoyalRoad();
 
 type ChapterEntry = {
   id: number;

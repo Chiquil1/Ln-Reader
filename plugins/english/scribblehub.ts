@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { FilterTypes, Filters } from '@libs/filterInputs';
@@ -10,7 +9,7 @@ class ScribbleHubPlugin implements Plugin.PluginBase {
   name = 'Scribble Hub';
   icon = 'src/en/scribblehub/icon.png';
   site = 'https://www.scribblehub.com/';
-  version = '1.0.5';
+  version = '1.0.2';
 
   parseNovels(loadedCheerio: CheerioAPI) {
     const novels: Plugin.NovelItem[] = [];
@@ -301,4 +300,4 @@ class ScribbleHubPlugin implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default withTranslation(new ScribbleHubPlugin());
+export default new ScribbleHubPlugin();

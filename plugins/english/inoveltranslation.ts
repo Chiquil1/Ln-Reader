@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { Filters } from '@libs/filterInputs';
@@ -12,7 +11,7 @@ class INovelTranslation implements Plugin.PluginBase {
   name = 'iNovelTranslation';
   icon = 'src/en/inoveltranslation/icon.png';
   site = 'https://inoveltranslation.com';
-  version = '1.0.5';
+  version = '1.0.2';
   filters: Filters | undefined = undefined;
 
   pluginSettings = {
@@ -367,7 +366,7 @@ class INovelTranslation implements Plugin.PluginBase {
   }
 }
 
-export default withTranslation(new INovelTranslation());
+export default new INovelTranslation();
 
 type LexicalNode = {
   type: string;

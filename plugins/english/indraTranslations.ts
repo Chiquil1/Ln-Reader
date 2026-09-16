@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { load } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Filters, FilterTypes } from '@libs/filterInputs';
@@ -9,7 +8,7 @@ class IndraTranslations implements Plugin.PluginBase {
   id = 'indratranslations';
   name = 'Indra Translations';
   site = 'https://indratranslations.com';
-  version = '1.2.4';
+  version = '1.2.1';
   icon = 'src/en/indratranslations/icon.png';
   // customCSS = 'src/en/indratranslations/customCSS.css';
   // (optional) Add these files to the repo and uncomment the lines above if you want an icon/custom CSS.
@@ -295,4 +294,4 @@ class IndraTranslations implements Plugin.PluginBase {
   };
 }
 
-export default withTranslation(new IndraTranslations());
+export default new IndraTranslations();

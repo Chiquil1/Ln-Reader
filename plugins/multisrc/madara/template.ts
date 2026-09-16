@@ -7,13 +7,6 @@ import { defaultCover } from '@libs/defaultCover';
 import { NovelStatus } from '@libs/novelStatus';
 import dayjs from 'dayjs';
 import { storage } from '@libs/storage';
-import {
-  translateParagraphs,
-  translateShortText,
-  translateTitles,
-  TranslationConfig,
-  DEFAULT_TRANSLATION_CONFIG,
-} from '@libs/translation';
 
 const includesAny = (str: string, keywords: string[]) =>
   new RegExp(keywords.join('|')).test(str);
@@ -43,7 +36,6 @@ export class MadaraPlugin implements Plugin.PluginBase {
   version: string;
   options?: MadaraOptions;
   filters?: Filters | undefined;
-  translationConfig: TranslationConfig;
 
   hideLocked = storage.get('hideLocked');
   pluginSettings?: Filters;
@@ -54,15 +46,9 @@ export class MadaraPlugin implements Plugin.PluginBase {
     this.icon = `multisrc/madara/${metadata.id.toLowerCase()}/icon.png`;
     this.site = metadata.sourceSite;
     const versionIncrements = metadata.options?.versionIncrements || 0;
-    this.version = `2.5.${versionIncrements}`;
+    this.version = `2.2.${versionIncrements}`;
     this.options = metadata.options;
     this.filters = metadata.filters;
-    this.translationConfig = {
-      ...DEFAULT_TRANSLATION_CONFIG,
-      enabled: (metadata.options?.lang || 'English') === 'English',
-      targetLang: 'es',
-      sourceLang: 'auto',
-    };
 
     if (this.options?.hasLocked) {
       this.pluginSettings = {
@@ -288,7 +274,7 @@ export class MadaraPlugin implements Plugin.PluginBase {
       novel.author = loadedCheerio('.manga-authors').text().trim();
 
     loadedCheerio('div.summary__content .code-block,script,noscript').remove();
-    const sourceSummary =
+    novel.summary =
       this.translateDragontea(loadedCheerio('div.summary__content'))
         .text()
         .trim() ||
@@ -310,62 +296,6 @@ export class MadaraPlugin implements Plugin.PluginBase {
         .get()
         .join('\n\n')
         .trim();
-
-    const sourceName =
-      loadedCheerio('.post-title h1').text().trim() ||
-      loadedCheerio('#manga-title h1').text().trim() ||
-      loadedCheerio('.manga-title').text().trim() ||
-      '';
-    const sourceGenres = novel.genres || '';
-    const sourceAuthor = novel.author || '';
-    const sourceArtist = novel.artist || '';
-
-    let translatedName = '';
-    let translatedSummary = '';
-    let translatedGenres = '';
-    let translatedAuthor = '';
-    let translatedArtist = '';
-
-    if (this.translationConfig.enabled) {
-      const [translatedNameValue] = await translateTitles(
-        [sourceName],
-        this.translationConfig.targetLang,
-        'auto',
-        this.translationConfig,
-      );
-      translatedName = translatedNameValue;
-      translatedSummary = await translateShortText(
-        sourceSummary,
-        this.translationConfig.targetLang,
-        'auto',
-        this.translationConfig,
-      );
-      translatedGenres = sourceGenres
-        ? await translateShortText(
-            sourceGenres,
-            this.translationConfig.targetLang,
-            'auto',
-            this.translationConfig,
-          )
-        : '';
-      translatedAuthor = sourceAuthor
-        ? await translateShortText(
-            sourceAuthor,
-            this.translationConfig.targetLang,
-            'auto',
-            this.translationConfig,
-          )
-        : '';
-      translatedArtist = sourceArtist
-        ? await translateShortText(
-            sourceArtist,
-            this.translationConfig.targetLang,
-            'auto',
-            this.translationConfig,
-          )
-        : '';
-    }
-
     const chapters: Plugin.ChapterItem[] = [];
     let html = '';
 
@@ -425,27 +355,7 @@ export class MadaraPlugin implements Plugin.PluginBase {
       }
     });
 
-    const chapterNames = chapters.map(ch => ch.name);
-    const translatedChapterNames = this.translationConfig.enabled
-      ? await translateTitles(
-          chapterNames,
-          this.translationConfig.targetLang,
-          'auto',
-          this.translationConfig,
-        )
-      : chapterNames;
-
-    novel.name = translatedName || sourceName;
-    novel.summary = translatedSummary || sourceSummary;
-    novel.author = translatedAuthor || sourceAuthor;
-    novel.artist = translatedArtist || sourceArtist;
-    novel.genres = translatedGenres || sourceGenres;
-    novel.chapters = chapters
-      .map((ch, i) => ({
-        ...ch,
-        name: translatedChapterNames[i] || ch.name,
-      }))
-      .reverse();
+    novel.chapters = chapters.reverse();
     return novel;
   }
 
@@ -466,38 +376,7 @@ export class MadaraPlugin implements Plugin.PluginBase {
       }
     }
 
-    const html = this.translateDragontea(chapterText).html() || '';
-
-    if (!this.translationConfig.enabled || html === '') {
-      return html;
-    }
-
-    const $ = parseHTML(html);
-    const paragraphs: string[] = [];
-
-    $('p').each((_, el) => {
-      const text = $(el).text().trim();
-      if (text && text.length > 10) {
-        paragraphs.push(text);
-      }
-    });
-
-    if (paragraphs.length > 0) {
-      const translated = await translateParagraphs(
-        paragraphs,
-        this.translationConfig,
-      );
-
-      const translatedParagraphs =
-        translated.length > 0 ? translated : paragraphs;
-      $('p').each((index, el) => {
-        if (index < translatedParagraphs.length) {
-          $(el).text(translatedParagraphs[index]);
-        }
-      });
-    }
-
-    return $.html() || html;
+    return this.translateDragontea(chapterText).html() || '';
   }
 
   async searchNovels(

@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { Filters } from '@libs/filterInputs';
@@ -15,7 +14,7 @@ class ReadFromPlugin implements Plugin.PluginBase {
   name = 'Read From Net';
   icon = 'src/en/readfrom/icon.png';
   site = 'https://readfrom.net/';
-  version = '1.1.3';
+  version = '1.1.0';
   filters: Filters | undefined = undefined;
   headers = new Headers(pluginHeaders);
   imageRequestInit: Plugin.ImageRequestInit = {
@@ -216,4 +215,4 @@ class ReadFromPlugin implements Plugin.PluginBase {
   // resolveUrl = (path: string, isNovel?: boolean) => this.site + '/' + path;
 }
 
-export default withTranslation(new ReadFromPlugin());
+export default new ReadFromPlugin();

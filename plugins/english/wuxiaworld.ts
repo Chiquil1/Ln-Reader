@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { load as parseHTML } from 'cheerio';
 import { fetchApi, fetchProto } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -108,7 +107,7 @@ class WuxiaWorld implements Plugin.PluginBase {
   site = 'https://www.wuxiaworld.com/';
   apiSite = 'https://api2.wuxiaworld.com/wuxiaworld.api.v2.';
   filters?: Filters | undefined;
-  version = '0.5.4';
+  version = '0.5.1';
 
   parseNovels(data: { items: NovelEntry[] }) {
     const novels: Plugin.NovelItem[] = [];
@@ -466,4 +465,4 @@ class WuxiaWorld implements Plugin.PluginBase {
     `;
 }
 
-export default withTranslation(new WuxiaWorld());
+export default new WuxiaWorld();

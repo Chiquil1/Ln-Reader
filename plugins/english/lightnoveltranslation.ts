@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { Filters } from '@libs/filterInputs';
@@ -16,7 +15,7 @@ class LNTPlugin implements Plugin.PluginBase {
   name = 'Light Novel Translations';
   icon = 'src/en/lightnoveltranslations/icon.png';
   site = 'https://lightnovelstranslations.com/';
-  version = '1.0.3';
+  version = '1.0.0';
   filters: Filters | undefined = undefined;
   imageRequestInit?: Plugin.ImageRequestInit | undefined = undefined;
 
@@ -206,4 +205,4 @@ class LNTPlugin implements Plugin.PluginBase {
     this.site + (isNovel ? '/book/' : '/chapter/') + path;
 }
 
-export default withTranslation(new LNTPlugin());
+export default new LNTPlugin();

@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { Filters } from '@libs/filterInputs';
@@ -164,7 +163,7 @@ class ReLibraryPlugin implements Plugin.PluginBase {
   name = 'Re:Library';
   icon = 'src/en/relibrary/icon.png';
   site = 'https://re-library.com';
-  version = '1.0.6';
+  version = '1.0.3';
   imageRequestInit: Plugin.ImageRequestInit = {
     headers: {
       Referer: 'https://re-library.com/',
@@ -414,4 +413,4 @@ class ReLibraryPlugin implements Plugin.PluginBase {
   }
 }
 
-export default withTranslation(new ReLibraryPlugin());
+export default new ReLibraryPlugin();

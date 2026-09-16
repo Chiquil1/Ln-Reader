@@ -13,30 +13,6 @@ const isScriptGenerator = s => {
   return !!s && typeof s === 'function';
 };
 
-// Multisrc templates that already translate internally (parseNovel/parseChapter):
-// the wrapper only adds listing + search translation for them to avoid double work.
-const INTERNAL_TRANSLATION = new Set(['madara']);
-
-const isEnglish = lang => {
-  return (lang || 'English').toLowerCase() === 'english';
-};
-
-const wrapWithTranslation = (pluginScript, multisrcName) => {
-  const internalTranslation = INTERNAL_TRANSLATION.has(multisrcName);
-  const wrapArgs = internalTranslation
-    ? `, {
-  translateNovel: false,
-  translateChapter: false,
-}`
-    : '';
-  const importLine = "import { withTranslation } from '@libs/translation';";
-  const wrapped = pluginScript.replace(
-    /export default plugin;$/,
-    `export default withTranslation(plugin${wrapArgs});`,
-  );
-  return `${importLine}\n${wrapped}`;
-};
-
 const generate = async name => {
   try {
     const generateAll = (await import(`./${name}/generator.js`)).generateAll;
@@ -54,10 +30,7 @@ const generate = async name => {
         lang.toLowerCase(),
         filename.replace(/[\s-.]+/g, '') + `[${name}].ts`,
       );
-      const finalScript = isEnglish(lang)
-        ? wrapWithTranslation(pluginScript, name)
-        : pluginScript;
-      fs.writeFileSync(filePath, finalScript, { encoding: 'utf-8' });
+      fs.writeFileSync(filePath, pluginScript, { encoding: 'utf-8' });
     }
     return true;
   } catch (e) {

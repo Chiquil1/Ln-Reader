@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { Filters, FilterTypes } from '@libs/filterInputs';
@@ -10,7 +9,7 @@ class Rainofsnow implements Plugin.PagePlugin {
   name = 'Rainofsnow';
   icon = 'src/en/rainofsnow/icon.png';
   site = 'https://rainofsnow.com/';
-  version = '1.1.5';
+  version = '1.1.2';
 
   parseNovels(loadedCheerio: CheerioAPI) {
     const novels: Plugin.NovelItem[] = [];
@@ -193,4 +192,4 @@ class Rainofsnow implements Plugin.PagePlugin {
   } satisfies Filters;
 }
 
-export default withTranslation(new Rainofsnow());
+export default new Rainofsnow();

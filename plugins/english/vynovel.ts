@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { Plugin } from '@/types/plugin';
 import { FilterTypes, Filters } from '@libs/filterInputs';
 import { defaultCover } from '@libs/defaultCover';
@@ -11,7 +10,7 @@ class VyNovel implements Plugin.PluginBase {
   id = 'vynovel';
   name = 'VyNovel';
   site = 'https://vynovel.com';
-  version = '1.0.4';
+  version = '1.0.1';
   icon = 'src/en/vynovel/icon.png';
 
   async fetchNovels(
@@ -170,4 +169,4 @@ class VyNovel implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default withTranslation(new VyNovel());
+export default new VyNovel();

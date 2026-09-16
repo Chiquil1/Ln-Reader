@@ -2,25 +2,13 @@ import { load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { defaultCover } from '@libs/defaultCover';
-import {
-  translateParagraphs,
-  translateShortText,
-  translateTitles,
-  TranslationConfig,
-  DEFAULT_TRANSLATION_CONFIG,
-  withTranslation,
-} from '@libs/translation';
 
 class NovelHall implements Plugin.PluginBase {
   id = 'novelhall';
   name = 'Novel Hall';
-  version = '1.0.7';
+  version = '1.0.3';
   icon = 'src/en/novelhall/icon.png';
   site = 'https://novelhall.com/';
-  translationConfig: TranslationConfig = {
-    ...DEFAULT_TRANSLATION_CONFIG,
-    targetLang: 'es',
-  };
 
   async popularNovels(page: number): Promise<Plugin.NovelItem[]> {
     const url = `${this.site}all2022-${page}.html`;
@@ -52,54 +40,30 @@ class NovelHall implements Plugin.PluginBase {
 
     const loadedCheerio = parseHTML(body);
 
-    const sourceName = loadedCheerio('.book-info > h1').text() || 'Untitled';
-    const sourceSummary = loadedCheerio('.intro').text().trim();
+    const novel: Plugin.SourceNovel = {
+      path: novelPath,
+      name: loadedCheerio('.book-info > h1').text() || 'Untitled',
+      cover: loadedCheerio('meta[property="og:image"]').attr('content'),
+      summary: loadedCheerio('.intro').text().trim(),
+      chapters: [],
+    };
 
     loadedCheerio('.total').find('p').remove();
-    const sourceAuthor = loadedCheerio('.total span:contains("Author")')
+    novel.author = loadedCheerio('.total span:contains("Author")')
       .text()
       .replace('Author：', '')
       .trim();
 
-    const sourceStatus = loadedCheerio('.total span:contains("Status")')
+    novel.status = loadedCheerio('.total span:contains("Status")')
       .text()
       .replace('Status：', '')
       .replace('Active', 'Ongoing')
       .trim();
 
-    const sourceGenres = loadedCheerio('.total a')
+    novel.genres = loadedCheerio('.total a')
       .map((a, ex) => loadedCheerio(ex).text())
       .toArray()
       .join(',');
-
-    const [translatedName] = await translateTitles(
-      [sourceName],
-      this.translationConfig.targetLang,
-      'auto',
-      this.translationConfig,
-    );
-    const translatedSummary = await translateShortText(
-      sourceSummary,
-      this.translationConfig.targetLang,
-      'auto',
-      this.translationConfig,
-    );
-    const translatedAuthor = sourceAuthor
-      ? await translateShortText(
-          sourceAuthor,
-          this.translationConfig.targetLang,
-          'auto',
-          this.translationConfig,
-        )
-      : '';
-    const translatedGenres = sourceGenres
-      ? await translateShortText(
-          sourceGenres,
-          this.translationConfig.targetLang,
-          'auto',
-          this.translationConfig,
-        )
-      : '';
 
     const chapter: Plugin.ChapterItem[] = [];
 
@@ -114,30 +78,7 @@ class NovelHall implements Plugin.PluginBase {
       });
     });
 
-    const chapterNames = chapter.map(ch => ch.name);
-    const translatedChapterNames = await translateTitles(
-      chapterNames,
-      this.translationConfig.targetLang,
-      'auto',
-      this.translationConfig,
-    );
-
-    const translatedChapters = chapter.map((ch, i) => ({
-      ...ch,
-      name: translatedChapterNames[i] || ch.name,
-    }));
-
-    const novel: Plugin.SourceNovel = {
-      path: novelPath,
-      name: translatedName || sourceName,
-      cover: loadedCheerio('meta[property="og:image"]').attr('content'),
-      summary: translatedSummary || sourceSummary,
-      author: translatedAuthor || sourceAuthor,
-      status: sourceStatus,
-      genres: translatedGenres || sourceGenres,
-      chapters: translatedChapters,
-    };
-
+    novel.chapters = chapter;
     return novel;
   }
 
@@ -145,37 +86,7 @@ class NovelHall implements Plugin.PluginBase {
     const body = await fetchApi(this.site + chapterPath).then(r => r.text());
     const loadedCheerio = parseHTML(body);
     const chapterText = loadedCheerio('#htmlContent').html() || '';
-
-    if (!this.translationConfig.enabled || chapterText === '') {
-      return chapterText;
-    }
-
-    const $ = parseHTML(chapterText);
-    const paragraphs: string[] = [];
-
-    $('p').each((_, el) => {
-      const text = $(el).text().trim();
-      if (text && text.length > 10) {
-        paragraphs.push(text);
-      }
-    });
-
-    if (paragraphs.length > 0) {
-      const translated = await translateParagraphs(
-        paragraphs,
-        this.translationConfig,
-      );
-
-      const translatedParagraphs =
-        translated.length > 0 ? translated : paragraphs;
-      $('p').each((index, el) => {
-        if (index < translatedParagraphs.length) {
-          $(el).text(translatedParagraphs[index]);
-        }
-      });
-    }
-
-    return $.html() || chapterText;
+    return chapterText;
   }
 
   async searchNovels(searchTerm: string): Promise<Plugin.NovelItem[]> {
@@ -209,7 +120,4 @@ class NovelHall implements Plugin.PluginBase {
   }
 }
 
-export default withTranslation(new NovelHall(), {
-  translateNovel: false,
-  translateChapter: false,
-});
+export default new NovelHall();

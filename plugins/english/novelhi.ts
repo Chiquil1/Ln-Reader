@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { load as parseHTML } from 'cheerio';
@@ -11,7 +10,7 @@ class NovelHi implements Plugin.PluginBase {
   name = 'NovelHi';
   icon = 'src/en/novelhi/icon.png';
   site = 'https://novelhi.com/';
-  version = '1.1.4';
+  version = '1.1.1';
 
   // flag indicates whether access to LocalStorage, SesesionStorage is required.
   webStorageUtilized?: boolean;
@@ -241,7 +240,7 @@ class NovelHi implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default withTranslation(new NovelHi());
+export default new NovelHi();
 
 type CachedNovel = Plugin.NovelItem & {
   summary: string;

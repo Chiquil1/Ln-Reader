@@ -1,4 +1,3 @@
-import { withTranslation } from '@libs/translation';
 import { Parser } from 'htmlparser2';
 import { fetchApi } from '@libs/fetch';
 import { FilterTypes, Filters } from '@libs/filterInputs';
@@ -9,7 +8,7 @@ class LnMTLPlugin implements Plugin.PagePlugin {
   name = 'LnMTL';
   icon = 'src/en/lnmtl/icon.png';
   site = 'https://lnmtl.com/';
-  version = '2.1.4';
+  version = '2.1.1';
 
   async sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -410,7 +409,7 @@ class LnMTLPlugin implements Plugin.PagePlugin {
   } satisfies Filters;
 }
 
-export default withTranslation(new LnMTLPlugin());
+export default new LnMTLPlugin();
 
 type ChapterEntry = {
   number: number;
