@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { Filters, FilterTypes } from '@libs/filterInputs';
@@ -22,7 +23,7 @@ class NovelRestPlugin implements Plugin.PluginBase {
   icon = 'src/en/novelrest/icon.png';
   site = 'https://novelrest.vercel.app';
   apiBase = 'https://novelrest.vercel.app/api/lnreader';
-  version = '1.0.0';
+  version = '1.0.1';
 
   filters: Filters = {
     status: {
@@ -237,6 +238,6 @@ class NovelRestPlugin implements Plugin.PluginBase {
   };
 }
 
-export default new NovelRestPlugin();
+export default withTranslation(new NovelRestPlugin());
 
 // trigger build

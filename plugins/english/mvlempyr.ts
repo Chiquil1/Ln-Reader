@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -30,7 +31,7 @@ class MVLEMPYRPlugin implements Plugin.PluginBase {
   name = 'MVLEMPYR';
   icon = 'src/en/mvlempyr/icon.png';
   site = 'https://www.mvlempyr.io/';
-  version = '1.0.12';
+  version = '1.0.13';
 
   _chapSite = 'https://chap.heliosarchive.online/';
   _allNovels: (Plugin.NovelItem & ExtraNovelData)[] | undefined;
@@ -1242,4 +1243,4 @@ type ExtraNovelData = {
   tags: string[];
 };
 
-export default new MVLEMPYRPlugin();
+export default withTranslation(new MVLEMPYRPlugin());

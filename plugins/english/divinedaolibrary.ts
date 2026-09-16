@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { defaultCover } from '@libs/defaultCover';
 import { fetchApi } from '@libs/fetch';
 import { Filters, FilterTypes, FilterValueWithType } from '@libs/filterInputs';
@@ -10,7 +11,7 @@ class DDLPlugin implements Plugin.PluginBase {
   id = 'DDL.com';
   name = 'Divine Dao Library';
   site = 'https://www.divinedaolibrary.com/';
-  version = '1.1.1';
+  version = '1.1.2';
   icon = 'src/en/divinedaolibrary/icon.png';
 
   filters = {
@@ -295,4 +296,4 @@ class DDLPlugin implements Plugin.PluginBase {
   }
 }
 
-export default new DDLPlugin();
+export default withTranslation(new DDLPlugin());

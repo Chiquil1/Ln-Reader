@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -8,7 +9,7 @@ class NovelArrow implements Plugin.PluginBase {
   name = 'Novel Arrow';
   icon = 'src/en/novelarrow/icon.png';
   site = 'https://novelarrow.com/';
-  version = '1.0.0';
+  version = '1.0.1';
 
   async popularNovels(page: number) {
     const url = `${this.site}novels/latest?page=${page}`;
@@ -209,4 +210,4 @@ class NovelArrow implements Plugin.PluginBase {
   }
 }
 
-export default new NovelArrow();
+export default withTranslation(new NovelArrow());

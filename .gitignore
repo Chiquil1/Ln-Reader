@@ -3,16 +3,8 @@ node_modules
 .idea
 .env
 config.json
-
-# generated multisrc .ts files
-plugins/*/*\[*\]*.ts
-
-# ignore dist stuffs
-.js
-.dist
 .DS_Store
+.vite
 dist
 total.svg
-src/plugins/index.ts
 .history
-broken-sites-report.json

@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { Filters } from '@libs/filterInputs';
@@ -9,7 +10,7 @@ class Chrysanthemumgarden implements Plugin.PluginBase {
   name = 'Chrysanthemum Garden';
   icon = 'src/en/chrysanthemumgarden/icon.png';
   site = 'https://chrysanthemumgarden.com';
-  version = '1.0.3';
+  version = '1.0.4';
   filters: Filters | undefined = undefined;
   imageRequestInit?: Plugin.ImageRequestInit | undefined = undefined;
 
@@ -144,7 +145,7 @@ class Chrysanthemumgarden implements Plugin.PluginBase {
     this.site + (isNovel ? '/book/' : '/chapter/') + path;
 }
 
-export default new Chrysanthemumgarden();
+export default withTranslation(new Chrysanthemumgarden());
 
 type ChrysanthemumGardenNovel = {
   name: string;

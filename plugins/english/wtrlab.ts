@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { Plugin } from '@/types/plugin';
 import { fetchApi } from '@libs/fetch';
 import { FilterTypes, Filters } from '@libs/filterInputs';
@@ -8,7 +9,7 @@ class WTRLAB implements Plugin.PluginBase {
   id = 'WTRLAB';
   name = 'WTR-LAB';
   site = 'https://wtr-lab.com/';
-  version = '1.1.4';
+  version = '1.1.5';
   icon = 'src/en/wtrlab/icon.png';
   sourceLang = 'en/';
   baggage = '';
@@ -1814,4 +1815,4 @@ type Datum = {
   data: Data;
 };
 
-export default new WTRLAB();
+export default withTranslation(new WTRLAB());

@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { NovelStatus } from '@libs/novelStatus';
@@ -8,7 +9,7 @@ class WitchCultTranslations implements Plugin.PluginBase {
   name = 'Witch Cult Translations';
   site = 'https://witchculttranslation.com';
   icon = 'src/en/wct/icon.png';
-  version = '1.0.0';
+  version = '1.0.1';
 
   private cachedNovel: Plugin.NovelItem | null = null;
 
@@ -154,4 +155,4 @@ class WitchCultTranslations implements Plugin.PluginBase {
   }
 }
 
-export default new WitchCultTranslations();
+export default withTranslation(new WitchCultTranslations());

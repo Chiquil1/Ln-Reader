@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { load as loadCheerio } from 'cheerio';
@@ -75,7 +76,7 @@ class FenrirRealmPlugin implements Plugin.PluginBase {
   name = 'Fenrir Realm';
   icon = 'src/en/fenrirrealm/icon.png';
   site = 'https://fenrirealm.com';
-  version = '1.1.0';
+  version = '1.1.1';
   imageRequestInit?: Plugin.ImageRequestInit | undefined = undefined;
 
   hideLocked = storage.get('hideLocked');
@@ -471,4 +472,4 @@ class FenrirRealmPlugin implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default new FenrirRealmPlugin();
+export default withTranslation(new FenrirRealmPlugin());

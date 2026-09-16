@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -36,7 +37,7 @@ class CrimsonScrollsPlugin implements Plugin.PluginBase {
   name = 'Crimson Scrolls';
   icon = 'src/en/crimsonscrolls/icon.png';
   site = 'https://crimsonscrolls.net';
-  version = '1.0.1';
+  version = '1.0.2';
 
   hideLocked = storage.get('hideLocked');
   pluginSettings = {
@@ -212,4 +213,4 @@ class CrimsonScrollsPlugin implements Plugin.PluginBase {
   //   this.site + '/novel/' + path;
 }
 
-export default new CrimsonScrollsPlugin();
+export default withTranslation(new CrimsonScrollsPlugin());

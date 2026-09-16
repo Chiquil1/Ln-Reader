@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -9,7 +10,7 @@ import { storage } from '@libs/storage';
 class NovelFire implements Plugin.PluginBase {
   id = 'novelfire';
   name = 'Novel Fire';
-  version = '1.4.3';
+  version = '1.4.4';
   icon = 'src/en/novelfire/icon.png';
   site = 'https://novelfire.net/';
   webStorageUtilized = true;
@@ -597,7 +598,7 @@ class NovelFire implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default new NovelFire();
+export default withTranslation(new NovelFire());
 
 // Custom error for when Novel Fire is rate limiting requests
 class NovelFireThrottlingError extends Error {

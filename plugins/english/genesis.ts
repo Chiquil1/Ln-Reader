@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { load } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Filters, FilterTypes } from '@libs/filterInputs';
@@ -13,7 +14,7 @@ class Genesis implements Plugin.PluginBase {
   customCSS = 'src/en/genesis/customCSS.css';
   site = 'https://genesistudio.com';
   api = 'https://api.genesistudio.com';
-  version = '2.0.1';
+  version = '2.0.2';
 
   hideLocked = storage.get('hideLocked');
   pluginSettings = {
@@ -282,7 +283,7 @@ class Genesis implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default new Genesis();
+export default withTranslation(new Genesis());
 
 type NovelJSON = {
   id: string;

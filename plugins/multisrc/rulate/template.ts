@@ -32,7 +32,7 @@ export class RulatePlugin implements Plugin.PluginBase {
     this.name = metadata.sourceName + ' (API)';
     this.icon = `multisrc/rulate/${metadata.id.toLowerCase()}/icon.png`;
     this.site = metadata.sourceSite;
-    this.version = '1.0.' + (1 + metadata.versionIncrements);
+    this.version = '1.0.' + (2 + metadata.versionIncrements);
     this.filters = metadata.filters;
     this.key = metadata.key;
   }

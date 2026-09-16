@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { Plugin } from '@/types/plugin';
 import { fetchApi } from '@libs/fetch';
 import { CheerioAPI, load as parseHTML } from 'cheerio';
@@ -7,7 +8,7 @@ class FaqWikiUs implements Plugin.PluginBase {
   id = 'FWK.US';
   name = 'Faq Wiki';
   site = 'https://faqwiki.us/novel';
-  version = '3.0.1';
+  version = '3.0.2';
   icon = 'src/en/faqwikius/icon.png';
 
   parseNovels(loadedCheerio: CheerioAPI, searchTerm?: string) {
@@ -186,4 +187,4 @@ class FaqWikiUs implements Plugin.PluginBase {
   }
 }
 
-export default new FaqWikiUs();
+export default withTranslation(new FaqWikiUs());

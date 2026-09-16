@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { Filters } from '@libs/filterInputs';
@@ -8,7 +9,7 @@ class FictionZonePlugin implements Plugin.PluginBase {
   name = 'Fiction Zone';
   icon = 'src/en/fictionzone/icon.png';
   site = 'https://fictionzone.net';
-  version = '1.0.2';
+  version = '1.0.3';
   filters: Filters | undefined = undefined;
 
   async popularNovels(
@@ -118,7 +119,7 @@ class FictionZonePlugin implements Plugin.PluginBase {
   //   this.site + '/' + path.split('|')[0];
 }
 
-export default new FictionZonePlugin();
+export default withTranslation(new FictionZonePlugin());
 
 type Response<T> = {
   data: T;

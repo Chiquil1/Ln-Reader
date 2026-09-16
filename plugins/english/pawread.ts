@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { Parser } from 'htmlparser2';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -6,7 +7,7 @@ import { Filters, FilterTypes } from '@libs/filterInputs';
 class PawRead implements Plugin.PluginBase {
   id = 'pawread';
   name = 'PawRead';
-  version = '2.1.1';
+  version = '2.1.2';
   icon = 'src/en/pawread/icon.png';
   site = 'https://m.pawread.com/';
 
@@ -428,7 +429,7 @@ class PawRead implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default new PawRead();
+export default withTranslation(new PawRead());
 
 enum ParsingState {
   Idle,

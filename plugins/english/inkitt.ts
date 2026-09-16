@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { Filters, FilterTypes } from '@libs/filterInputs';
@@ -9,7 +10,7 @@ class InkittPlugin implements Plugin.PluginBase {
   name = 'Inkitt';
   icon = 'src/en/inkitt/icon.png';
   site = 'https://www.inkitt.com';
-  version = '1.0.1';
+  version = '1.0.2';
   imageRequestInit?: Plugin.ImageRequestInit | undefined = undefined;
 
   //flag indicates whether access to LocalStorage, SesesionStorage is required.
@@ -159,7 +160,7 @@ class InkittPlugin implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default new InkittPlugin();
+export default withTranslation(new InkittPlugin());
 
 // Typings inferred from usage, no actual investigation done
 // TODO: change layout

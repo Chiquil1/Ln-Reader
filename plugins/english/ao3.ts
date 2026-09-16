@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load as parseHTML } from 'cheerio';
 import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
@@ -7,7 +8,7 @@ import { defaultCover } from '@libs/defaultCover';
 class ArchiveOfOurOwn implements Plugin.PluginBase {
   id = 'archiveofourown';
   name = 'Archive Of Our Own';
-  version = '1.0.4';
+  version = '1.0.5';
   icon = 'src/en/ao3/icon.png';
   site = 'https://archiveofourown.org/';
 
@@ -597,4 +598,4 @@ class ArchiveOfOurOwn implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default new ArchiveOfOurOwn();
+export default withTranslation(new ArchiveOfOurOwn());

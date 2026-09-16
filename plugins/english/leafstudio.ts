@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { CheerioAPI, load as parseHTML } from 'cheerio';
 import { Plugin } from '@/types/plugin';
 import { defaultCover } from '@libs/defaultCover';
@@ -9,7 +10,7 @@ class LeafStudio implements Plugin.PluginBase {
   name = 'LeafStudio';
   icon = 'src/en/leafstudio/icon.png';
   site = 'https://leafstudio.site/';
-  version = '1.0.0';
+  version = '1.0.1';
 
   filters: Filters | undefined = undefined;
 
@@ -122,4 +123,4 @@ class LeafStudio implements Plugin.PluginBase {
   }
 }
 
-export default new LeafStudio();
+export default withTranslation(new LeafStudio());

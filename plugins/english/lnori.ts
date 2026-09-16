@@ -1,3 +1,4 @@
+import { withTranslation } from '@libs/translation';
 import { fetchText } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { Filters, FilterTypes } from '@libs/filterInputs';
@@ -9,7 +10,7 @@ class LnorisPlugin implements Plugin.PluginBase {
   name = 'LNORI';
   icon = 'src/en/lnori/icon.png';
   site = 'https://lnori.com/';
-  version = '1.0.0';
+  version = '1.0.1';
 
   private async getLibraryNovels(): Promise<
     {
@@ -409,4 +410,4 @@ class LnorisPlugin implements Plugin.PluginBase {
   } satisfies Filters;
 }
 
-export default new LnorisPlugin();
+export default withTranslation(new LnorisPlugin());
