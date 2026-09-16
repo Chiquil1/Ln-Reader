@@ -10,7 +10,7 @@ class Chrysanthemumgarden implements Plugin.PluginBase {
   name = 'Chrysanthemum Garden';
   icon = 'src/en/chrysanthemumgarden/icon.png';
   site = 'https://chrysanthemumgarden.com';
-  version = '1.0.5';
+  version = '1.0.6';
   filters: Filters | undefined = undefined;
   imageRequestInit?: Plugin.ImageRequestInit | undefined = undefined;
 

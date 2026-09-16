@@ -8,7 +8,7 @@ class FaqWikiUs implements Plugin.PluginBase {
   id = 'FWK.US';
   name = 'Faq Wiki';
   site = 'https://faqwiki.us/novel';
-  version = '3.0.3';
+  version = '3.0.4';
   icon = 'src/en/faqwikius/icon.png';
 
   parseNovels(loadedCheerio: CheerioAPI, searchTerm?: string) {

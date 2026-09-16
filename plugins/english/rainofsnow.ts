@@ -10,7 +10,7 @@ class Rainofsnow implements Plugin.PagePlugin {
   name = 'Rainofsnow';
   icon = 'src/en/rainofsnow/icon.png';
   site = 'https://rainofsnow.com/';
-  version = '1.1.4';
+  version = '1.1.5';
 
   parseNovels(loadedCheerio: CheerioAPI) {
     const novels: Plugin.NovelItem[] = [];

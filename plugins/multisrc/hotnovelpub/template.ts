@@ -31,7 +31,7 @@ export class HotNovelPubPlugin implements Plugin.PluginBase {
     this.icon = `multisrc/hotnovelpub/${metadata.id.toLowerCase()}/icon.png`;
     this.site = metadata.sourceSite;
     this.apiSite = metadata.sourceSite.replace('://', '://api.');
-    this.version = '1.0.3';
+    this.version = '1.0.4';
     this.filters = metadata.filters;
     this.lang = metadata.options?.lang || 'en';
   }

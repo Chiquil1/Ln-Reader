@@ -11,7 +11,7 @@ class NovelHi implements Plugin.PluginBase {
   name = 'NovelHi';
   icon = 'src/en/novelhi/icon.png';
   site = 'https://novelhi.com/';
-  version = '1.1.3';
+  version = '1.1.4';
 
   // flag indicates whether access to LocalStorage, SesesionStorage is required.
   webStorageUtilized?: boolean;

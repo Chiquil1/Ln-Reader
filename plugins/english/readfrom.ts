@@ -15,7 +15,7 @@ class ReadFromPlugin implements Plugin.PluginBase {
   name = 'Read From Net';
   icon = 'src/en/readfrom/icon.png';
   site = 'https://readfrom.net/';
-  version = '1.1.2';
+  version = '1.1.3';
   filters: Filters | undefined = undefined;
   headers = new Headers(pluginHeaders);
   imageRequestInit: Plugin.ImageRequestInit = {

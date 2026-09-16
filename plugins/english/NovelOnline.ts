@@ -9,7 +9,7 @@ class NovelsOnline implements Plugin.PluginBase {
   name = 'novelsOnline';
   site = 'https://novelsonline.org';
   icon = 'src/en/novelsonline/icon.png';
-  version = '1.0.4';
+  version = '1.0.5';
 
   async safeFetch(
     url: string,

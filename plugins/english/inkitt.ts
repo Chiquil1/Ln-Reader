@@ -10,7 +10,7 @@ class InkittPlugin implements Plugin.PluginBase {
   name = 'Inkitt';
   icon = 'src/en/inkitt/icon.png';
   site = 'https://www.inkitt.com';
-  version = '1.0.3';
+  version = '1.0.4';
   imageRequestInit?: Plugin.ImageRequestInit | undefined = undefined;
 
   //flag indicates whether access to LocalStorage, SesesionStorage is required.

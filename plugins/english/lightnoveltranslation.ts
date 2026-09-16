@@ -16,7 +16,7 @@ class LNTPlugin implements Plugin.PluginBase {
   name = 'Light Novel Translations';
   icon = 'src/en/lightnoveltranslations/icon.png';
   site = 'https://lightnovelstranslations.com/';
-  version = '1.0.2';
+  version = '1.0.3';
   filters: Filters | undefined = undefined;
   imageRequestInit?: Plugin.ImageRequestInit | undefined = undefined;
 

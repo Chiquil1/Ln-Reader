@@ -11,7 +11,7 @@ import { storage } from '@libs/storage';
 class Novelight implements Plugin.PagePlugin {
   id = 'novelight';
   name = 'Novelight';
-  version = '1.1.7';
+  version = '1.1.8';
   icon = 'src/en/novelight/icon.png';
   site = 'https://novelight.net/';
 

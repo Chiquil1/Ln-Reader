@@ -6,7 +6,7 @@ import { Plugin } from '@/types/plugin';
 class DreamBigTL implements Plugin.PluginBase {
   id = 'dreambigtl';
   name = 'Dream Big Translations';
-  version = '1.0.2';
+  version = '1.0.3';
   site = 'https://www.dreambigtl.com/';
   icon = 'src/en/dreambigtl/icon.png';
 

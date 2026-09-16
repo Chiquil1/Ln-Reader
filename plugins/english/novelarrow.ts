@@ -9,7 +9,7 @@ class NovelArrow implements Plugin.PluginBase {
   name = 'Novel Arrow';
   icon = 'src/en/novelarrow/icon.png';
   site = 'https://novelarrow.com/';
-  version = '1.0.2';
+  version = '1.0.3';
 
   async popularNovels(page: number) {
     const url = `${this.site}novels/latest?page=${page}`;

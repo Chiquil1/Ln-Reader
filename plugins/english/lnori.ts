@@ -10,7 +10,7 @@ class LnorisPlugin implements Plugin.PluginBase {
   name = 'LNORI';
   icon = 'src/en/lnori/icon.png';
   site = 'https://lnori.com/';
-  version = '1.0.2';
+  version = '1.0.3';
 
   private async getLibraryNovels(): Promise<
     {

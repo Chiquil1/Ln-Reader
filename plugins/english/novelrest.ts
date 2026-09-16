@@ -23,7 +23,7 @@ class NovelRestPlugin implements Plugin.PluginBase {
   icon = 'src/en/novelrest/icon.png';
   site = 'https://novelrest.vercel.app';
   apiBase = 'https://novelrest.vercel.app/api/lnreader';
-  version = '1.0.2';
+  version = '1.0.3';
 
   filters: Filters = {
     status: {

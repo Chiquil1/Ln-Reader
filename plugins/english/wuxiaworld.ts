@@ -108,7 +108,7 @@ class WuxiaWorld implements Plugin.PluginBase {
   site = 'https://www.wuxiaworld.com/';
   apiSite = 'https://api2.wuxiaworld.com/wuxiaworld.api.v2.';
   filters?: Filters | undefined;
-  version = '0.5.3';
+  version = '0.5.4';
 
   parseNovels(data: { items: NovelEntry[] }) {
     const novels: Plugin.NovelItem[] = [];

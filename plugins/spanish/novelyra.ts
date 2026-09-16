@@ -31,7 +31,7 @@ class Novelyra implements Plugin.PluginBase {
 
   site = SITE;
 
-  version = '2.6.16'; // Traductor unificado en @libs/translation (cache persistente, concurrencia limitada)
+  version = '2.6.17'; // Traductor unificado en @libs/translation (cache persistente, concurrencia limitada)
 
   filters: Filters = {
     genres: {

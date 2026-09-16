@@ -33,7 +33,7 @@ export class NovelCoolPlugin implements Plugin.PluginBase {
     this.site = metadata.sourceSite;
     this.icon = 'multisrc/novelcool/novelcool/icon.png';
     this.mainUrl = 'https://api.novelcool.com';
-    this.version = '1.0.2';
+    this.version = '1.0.3';
     this.options = metadata.options ?? ({} as NovelCoolOptions);
     this.filters = {
       sortby: {
