@@ -802,15 +802,13 @@ var ParsingState;
     ParsingState[ParsingState["NovelName"] = 11] = "NovelName";
     ParsingState[ParsingState["NovelList"] = 12] = "NovelList";
 })(ParsingState || (ParsingState = {}));
-var plugin = new ReadNovelFullPlugin({ "id": "novelbin", "sourceSite": "https://novelbin.com/", "sourceName": "Novel Bin", "options": { "latestPage": "sort/latest", "searchPage": "search", "versionIncrements": 2, "customJs": "$('[class*=\"app-promo\"]').remove();" }, "filters": { "type": { "type": "Picker", "label": "Novel Listing", "value": "sort/top-view-novel", "options": [{ "label": "Hot Novel", "value": "sort/top-hot-novel" }, { "label": "Completed Novel", "value": "sort/completed" }, { "label": "Most Popular", "value": "sort/top-view-novel" }] }, "genres": { "type": "Picker", "label": "Genre (Cancels out 'Novel Listing')", "value": "", "options": [{ "label": "Action", "value": "genre/action" }, { "label": "Adventure", "value": "genre/adventure" }, { "label": "Anime & comics", "value": "genre/anime-&-comics" }, { "label": "Comedy", "value": "genre/comedy" }, { "label": "Drama", "value": "genre/drama" }, { "label": "Eastern", "value": "genre/eastern" }, { "label": "Fan-fiction", "value": "genre/fan-fiction" }, { "label": "Fanfiction", "value": "genre/fanfiction" }, { "label": "Fantasy", "value": "genre/fantasy" }, { "label": "Game", "value": "genre/game" }, { "label": "Games", "value": "genre/games" }, { "label": "Gender bender", "value": "genre/gender-bender" }, { "label": "General", "value": "genre/general" }, { "label": "Harem", "value": "genre/harem" }, { "label": "Historical", "value": "genre/historical" }, { "label": "Horror", "value": "genre/horror" }, { "label": "Isekai", "value": "genre/isekai" }, { "label": "Josei", "value": "genre/josei" }, { "label": "Litrpg", "value": "genre/litrpg" }, { "label": "Magic", "value": "genre/magic" }, { "label": "Magical realism", "value": "genre/magical-realism" }, { "label": "Martial arts", "value": "genre/martial-arts" }, { "label": "Mature", "value": "genre/mature" }, { "label": "Mecha", "value": "genre/mecha" }, { "label": "Military", "value": "genre/military" }, { "label": "Modern life", "value": "genre/modern-life" }, { "label": "Myster", "value": "genre/myster" }, { "label": "Mystery", "value": "genre/mystery" }, { "label": "Other", "value": "genre/other" }, { "label": "Other", "value": "genre/other" }, { "label": "Psychological", "value": "genre/psychological" }, { "label": "Reincarnation", "value": "genre/reincarnation" }, { "label": "Romance", "value": "genre/romance" }, { "label": "Romance.smut", "value": "genre/romance.smut" }, { "label": "School life", "value": "genre/school-life" }, { "label": "Sci-fi", "value": "genre/sci-fi" }, { "label": "Seinen", "value": "genre/seinen" }, { "label": "Shoujo", "value": "genre/shoujo" }, { "label": "Shoujo ai", "value": "genre/shoujo-ai" }, { "label": "Shounen", "value": "genre/shounen" }, { "label": "Shounen ai", "value": "genre/shounen-ai" }, { "label": "Slice of life", "value": "genre/slice-of-life" }, { "label": "Smut", "value": "genre/smut" }, { "label": "Sports", "value": "genre/sports" }, { "label": "Supernatural", "value": "genre/supernatural" }, { "label": "System", "value": "genre/system" }, { "label": "Thriller", "value": "genre/thriller" }, { "label": "Tragedy", "value": "genre/tragedy" }, { "label": "Urban", "value": "genre/urban" }, { "label": "Urban life", "value": "genre/urban-life" }, { "label": "Video games", "value": "genre/video-games" }, { "label": "War", "value": "genre/war" }, { "label": "Wuxia", "value": "genre/wuxia" }, { "label": "Xianxia", "value": "genre/xianxia" }, { "label": "Xuanhuan", "value": "genre/xuanhuan" }, { "label": "Yaoi", "value": "genre/yaoi" }, { "label": "Yuri", "value": "genre/yuri" }] }, "complete": { "type": "Switch", "label": "Show Completed Novels Only", "value": false } } });
+var plugin = new ReadNovelFullPlugin({ "id": "novelbin", "sourceSite": "https://novelbin.com/", "sourceName": "Novel Bin", "options": { "latestPage": "sort/latest", "searchPage": "search", "versionIncrements": 50, "customJs": "$('[class*=\"app-promo\"]').remove();" }, "filters": { "type": { "type": "Picker", "label": "Novel Listing", "value": "sort/top-view-novel", "options": [{ "label": "Hot Novel", "value": "sort/top-hot-novel" }, { "label": "Completed Novel", "value": "sort/completed" }, { "label": "Most Popular", "value": "sort/top-view-novel" }] }, "genres": { "type": "Picker", "label": "Genre (Cancels out 'Novel Listing')", "value": "", "options": [{ "label": "Action", "value": "genre/action" }, { "label": "Adventure", "value": "genre/adventure" }, { "label": "Anime & comics", "value": "genre/anime-&-comics" }, { "label": "Comedy", "value": "genre/comedy" }, { "label": "Drama", "value": "genre/drama" }, { "label": "Eastern", "value": "genre/eastern" }, { "label": "Fan-fiction", "value": "genre/fan-fiction" }, { "label": "Fanfiction", "value": "genre/fanfiction" }, { "label": "Fantasy", "value": "genre/fantasy" }, { "label": "Game", "value": "genre/game" }, { "label": "Games", "value": "genre/games" }, { "label": "Gender bender", "value": "genre/gender-bender" }, { "label": "General", "value": "genre/general" }, { "label": "Harem", "value": "genre/harem" }, { "label": "Historical", "value": "genre/historical" }, { "label": "Horror", "value": "genre/horror" }, { "label": "Isekai", "value": "genre/isekai" }, { "label": "Josei", "value": "genre/josei" }, { "label": "Litrpg", "value": "genre/litrpg" }, { "label": "Magic", "value": "genre/magic" }, { "label": "Magical realism", "value": "genre/magical-realism" }, { "label": "Martial arts", "value": "genre/martial-arts" }, { "label": "Mature", "value": "genre/mature" }, { "label": "Mecha", "value": "genre/mecha" }, { "label": "Military", "value": "genre/military" }, { "label": "Modern life", "value": "genre/modern-life" }, { "label": "Myster", "value": "genre/myster" }, { "label": "Mystery", "value": "genre/mystery" }, { "label": "Other", "value": "genre/other" }, { "label": "Other", "value": "genre/other" }, { "label": "Psychological", "value": "genre/psychological" }, { "label": "Reincarnation", "value": "genre/reincarnation" }, { "label": "Romance", "value": "genre/romance" }, { "label": "Romance.smut", "value": "genre/romance.smut" }, { "label": "School life", "value": "genre/school-life" }, { "label": "Sci-fi", "value": "genre/sci-fi" }, { "label": "Seinen", "value": "genre/seinen" }, { "label": "Shoujo", "value": "genre/shoujo" }, { "label": "Shoujo ai", "value": "genre/shoujo-ai" }, { "label": "Shounen", "value": "genre/shounen" }, { "label": "Shounen ai", "value": "genre/shounen-ai" }, { "label": "Slice of life", "value": "genre/slice-of-life" }, { "label": "Smut", "value": "genre/smut" }, { "label": "Sports", "value": "genre/sports" }, { "label": "Supernatural", "value": "genre/supernatural" }, { "label": "System", "value": "genre/system" }, { "label": "Thriller", "value": "genre/thriller" }, { "label": "Tragedy", "value": "genre/tragedy" }, { "label": "Urban", "value": "genre/urban" }, { "label": "Urban life", "value": "genre/urban-life" }, { "label": "Video games", "value": "genre/video-games" }, { "label": "War", "value": "genre/war" }, { "label": "Wuxia", "value": "genre/wuxia" }, { "label": "Xianxia", "value": "genre/xianxia" }, { "label": "Xuanhuan", "value": "genre/xuanhuan" }, { "label": "Yaoi", "value": "genre/yaoi" }, { "label": "Yuri", "value": "genre/yuri" }] }, "complete": { "type": "Switch", "label": "Show Completed Novels Only", "value": false } } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");
 var __ENTranslation = (function () {
     var CFG = {
         enabled: true,
-        provider: 'google',
-        fallbackProvider: 'libretranslate',
         targetLang: 'es',
         sourceLang: 'auto',
         maxBatchChars: 2000,
@@ -821,6 +819,8 @@ var __ENTranslation = (function () {
         translateContent: true,
         translateQuery: true,
     };
+    var providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
+    var providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
     var cache = new Map();
     var active = 0;
     var queue = [];
@@ -851,15 +851,22 @@ var __ENTranslation = (function () {
     };
     var buildUrl = function (provider, text) {
         var enc = encodeURIComponent(text);
-        if (provider === 'deepl') {
-            return ('https://api-free.deepl.com/v2/translate?auth_key=' +
-                (CFG.apiKey || '') +
-                '&text=' +
+        var src = provider === 'mymemory' && CFG.sourceLang === 'auto' ? 'en' : CFG.sourceLang;
+        if (provider === 'google_repeated') {
+            return ('https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=' +
+                src +
+                '&tl=' +
+                CFG.targetLang +
+                '&q=' +
+                enc);
+        }
+        if (provider === 'mymemory') {
+            return ('https://api.mymemory.translated.net/get?q=' +
                 enc +
-                '&target_lang=' +
-                CFG.targetLang.toUpperCase() +
-                '&source_lang=' +
-                (CFG.sourceLang === 'auto' ? '' : CFG.sourceLang));
+                '&langpair=' +
+                src +
+                '|' +
+                CFG.targetLang);
         }
         if (provider === 'libretranslate') {
             return ('https://libretranslate.de/translate?q=' +
@@ -887,6 +894,19 @@ var __ENTranslation = (function () {
                         .join('');
                 }
             }
+            else if (provider === 'google_repeated') {
+                if (Array.isArray(json) && typeof json[0] === 'string') {
+                    return json[0];
+                }
+            }
+            else if (provider === 'mymemory') {
+                if (json &&
+                    json.responseStatus === 200 &&
+                    json.responseData &&
+                    typeof json.responseData.translatedText === 'string') {
+                    return json.responseData.translatedText;
+                }
+            }
             else if (provider === 'deepl') {
                 if (json && Array.isArray(json.translations) && json.translations[0]) {
                     return json.translations[0].text;
@@ -905,7 +925,7 @@ var __ENTranslation = (function () {
     };
     function translateText(text, target, source) {
         return __awaiter(this, void 0, void 0, function () {
-            var t, tl, sl, ck, providers, _i, providers_1, provider, res, json, out, e_1;
+            var t, tl, sl, ck, _i, providers_1, provider, cap, res, json, out, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -917,7 +937,6 @@ var __ENTranslation = (function () {
                         ck = sl + ':' + tl + ':' + t;
                         if (cache.has(ck))
                             return [2 /*return*/, cache.get(ck)];
-                        providers = [CFG.provider, CFG.fallbackProvider];
                         _i = 0, providers_1 = providers;
                         _a.label = 1;
                     case 1:
@@ -926,6 +945,9 @@ var __ENTranslation = (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 5, , 6]);
+                        cap = providerMaxChars[provider] || Infinity;
+                        if (t.length > cap)
+                            return [3 /*break*/, 6];
                         return [4 /*yield*/, (0, fetch_2.fetchApi)(buildUrl(provider, t))];
                     case 3:
                         res = _a.sent();
@@ -1233,20 +1255,26 @@ var __ENTranslation = (function () {
         }
         if (typeof plugin.parseChapter === 'function') {
             var orig_4 = plugin.parseChapter.bind(plugin);
-            plugin.parseChapter = function (chapterPath) { return __awaiter(_this, void 0, void 0, function () {
-                var res;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, orig_4(chapterPath)];
-                        case 1:
-                            res = _a.sent();
-                            if (CFG.translateContent && typeof res === 'string') {
-                                return [2 /*return*/, translateHTMLContent(res)];
-                            }
-                            return [2 /*return*/, res];
-                    }
+            plugin.parseChapter = function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                return __awaiter(_this, void 0, void 0, function () {
+                    var res;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, orig_4.apply(void 0, args)];
+                            case 1:
+                                res = _a.sent();
+                                if (CFG.translateContent && typeof res === 'string') {
+                                    return [2 /*return*/, translateHTMLContent(res)];
+                                }
+                                return [2 /*return*/, res];
+                        }
+                    });
                 });
-            }); };
+            };
         }
     }
     return wrapPlugin;

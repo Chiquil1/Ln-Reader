@@ -528,15 +528,13 @@ function extractChapterNumber(data, tempChapter) {
         tempChapter.chapterNumber = parseInt(tempChapterNumber[0]);
     }
 }
-var plugin = new LightNovelWPPlugin({ "id": "novelsknight", "sourceSite": "https://novelsknight.punchmanga.online/", "sourceName": "NovelsKnight", "options": { "lang": "English", "reverseChapters": true, "versionIncrements": 3, "customJs": "$('.announ').remove();         return $('.epcontent').eq(-1).find('p').map(function (i, el) {          return '<p>' + $(this).text() + '</p>';        }).toArray().join('\\n') || '';" }, "filters": { "genre[]": { "type": "Checkbox", "label": "Genre", "value": [], "options": [{ "label": "city", "value": "city" }, { "label": "cultivation", "value": "cultivation" }, { "label": "faloo", "value": "faloo" }, { "label": "Fan fiction", "value": "fan-fiction" }, { "label": "fanfiction", "value": "fanfiction" }, { "label": "fanqie", "value": "fanqie" }, { "label": "fanstay", "value": "fanstay" }, { "label": "fantansy", "value": "fantansy" }, { "label": "fantasy", "value": "fantasy" }, { "label": "horror", "value": "horror" }, { "label": "immortal", "value": "immortal" }, { "label": "Infinite Heavens", "value": "infinite-heavens" }, { "label": "Infinity", "value": "infinity" }, { "label": "light novel", "value": "light-novel" }, { "label": "martial arts", "value": "martial-arts" }, { "label": "military history", "value": "military-history" }, { "label": "novel", "value": "novel" }, { "label": "qidian", "value": "qidian" }, { "label": "rebirth", "value": "rebirth" }, { "label": "romance", "value": "romance" }, { "label": "sc-fi online game", "value": "sc-fi-online-game" }, { "label": "Sci-fi online games", "value": "sci-fi-online-games" }, { "label": "Science fiction online game", "value": "science-fiction-online-game" }, { "label": "sport", "value": "sport" }, { "label": "Sports", "value": "sports" }, { "label": "system", "value": "system" }, { "label": "time travel", "value": "time-travel" }, { "label": "travel", "value": "travel" }, { "label": "Unlimited Heavens", "value": "unlimited-heavens" }, { "label": "urban", "value": "urban" }, { "label": "urrban", "value": "urrban" }] }, "type[]": { "type": "Checkbox", "label": "Type", "value": [], "options": [{ "label": "Black Basket: Platinum Star", "value": "black-basket-platinum-star" }, { "label": "chinesse", "value": "chinesse" }, { "label": "ciweimao", "value": "ciweimao" }, { "label": "Doomsday", "value": "doomsday" }, { "label": "dragon ball", "value": "dragon-ball" }, { "label": "Entertainment", "value": "entertainment" }, { "label": "f", "value": "f" }, { "label": "falo", "value": "falo" }, { "label": "faloo", "value": "faloo" }, { "label": "falooo", "value": "falooo" }, { "label": "fan fiction", "value": "fan-fiction" }, { "label": "fanqie", "value": "fanqie" }, { "label": "fanqienovel", "value": "fanqienovel" }, { "label": "Fantasy", "value": "fantasy" }, { "label": "faoo", "value": "faoo" }, { "label": "Football", "value": "football" }, { "label": "Harry Potter", "value": "harry-potter" }, { "label": "horror", "value": "horror" }, { "label": "Hunter X Hunter", "value": "hunter-x-hunter" }, { "label": "Infinite Evolution", "value": "infinite-evolution" }, { "label": "jjwxc", "value": "jjwxc" }, { "label": "Lords: Opens with a Bloody Nest", "value": "lords-opens-with-a-bloody-nest" }, { "label": "martial arts", "value": "martial-arts" }, { "label": "marvel", "value": "marvel" }, { "label": "naruto", "value": "naruto" }, { "label": "nba", "value": "nba" }, { "label": "nove", "value": "nove" }, { "label": "novel", "value": "novel" }, { "label": "one piece", "value": "one-piece" }, { "label": "online game", "value": "online-game" }, { "label": "Please", "value": "please" }, { "label": "qiamao", "value": "qiamao" }, { "label": "qidian", "value": "qidian" }, { "label": "qimao", "value": "qimao" }, { "label": "qq", "value": "qq" }, { "label": "romance", "value": "romance" }, { "label": "Sci-Fi", "value": "sci-fi" }, { "label": "Science-fiction", "value": "science-fiction" }, { "label": "sfacg", "value": "sfacg" }, { "label": "this is a world of horror", "value": "this-is-a-world-of-horror" }, { "label": "Urban", "value": "urban" }, { "label": "Web Novel", "value": "web-novel" }] }, "status": { "type": "Picker", "label": "Status", "value": "", "options": [{ "label": "All", "value": "" }, { "label": "Ongoing", "value": "ongoing" }, { "label": "Hiatus", "value": "hiatus" }, { "label": "Completed", "value": "completed" }] }, "order": { "type": "Picker", "label": "Order by", "value": "", "options": [{ "label": "Default", "value": "" }, { "label": "A-Z", "value": "title" }, { "label": "Z-A", "value": "titlereverse" }, { "label": "Latest Update", "value": "update" }, { "label": "Latest Added", "value": "latest" }, { "label": "Popular", "value": "popular" }, { "label": "Rating", "value": "rating" }] } } });
+var plugin = new LightNovelWPPlugin({ "id": "novelsknight", "sourceSite": "https://novelsknight.punchmanga.online/", "sourceName": "NovelsKnight", "options": { "lang": "English", "reverseChapters": true, "versionIncrements": 50, "customJs": "$('.announ').remove();         return $('.epcontent').eq(-1).find('p').map(function (i, el) {          return '<p>' + $(this).text() + '</p>';        }).toArray().join('\\n') || '';" }, "filters": { "genre[]": { "type": "Checkbox", "label": "Genre", "value": [], "options": [{ "label": "city", "value": "city" }, { "label": "cultivation", "value": "cultivation" }, { "label": "faloo", "value": "faloo" }, { "label": "Fan fiction", "value": "fan-fiction" }, { "label": "fanfiction", "value": "fanfiction" }, { "label": "fanqie", "value": "fanqie" }, { "label": "fanstay", "value": "fanstay" }, { "label": "fantansy", "value": "fantansy" }, { "label": "fantasy", "value": "fantasy" }, { "label": "horror", "value": "horror" }, { "label": "immortal", "value": "immortal" }, { "label": "Infinite Heavens", "value": "infinite-heavens" }, { "label": "Infinity", "value": "infinity" }, { "label": "light novel", "value": "light-novel" }, { "label": "martial arts", "value": "martial-arts" }, { "label": "military history", "value": "military-history" }, { "label": "novel", "value": "novel" }, { "label": "qidian", "value": "qidian" }, { "label": "rebirth", "value": "rebirth" }, { "label": "romance", "value": "romance" }, { "label": "sc-fi online game", "value": "sc-fi-online-game" }, { "label": "Sci-fi online games", "value": "sci-fi-online-games" }, { "label": "Science fiction online game", "value": "science-fiction-online-game" }, { "label": "sport", "value": "sport" }, { "label": "Sports", "value": "sports" }, { "label": "system", "value": "system" }, { "label": "time travel", "value": "time-travel" }, { "label": "travel", "value": "travel" }, { "label": "Unlimited Heavens", "value": "unlimited-heavens" }, { "label": "urban", "value": "urban" }, { "label": "urrban", "value": "urrban" }] }, "type[]": { "type": "Checkbox", "label": "Type", "value": [], "options": [{ "label": "Black Basket: Platinum Star", "value": "black-basket-platinum-star" }, { "label": "chinesse", "value": "chinesse" }, { "label": "ciweimao", "value": "ciweimao" }, { "label": "Doomsday", "value": "doomsday" }, { "label": "dragon ball", "value": "dragon-ball" }, { "label": "Entertainment", "value": "entertainment" }, { "label": "f", "value": "f" }, { "label": "falo", "value": "falo" }, { "label": "faloo", "value": "faloo" }, { "label": "falooo", "value": "falooo" }, { "label": "fan fiction", "value": "fan-fiction" }, { "label": "fanqie", "value": "fanqie" }, { "label": "fanqienovel", "value": "fanqienovel" }, { "label": "Fantasy", "value": "fantasy" }, { "label": "faoo", "value": "faoo" }, { "label": "Football", "value": "football" }, { "label": "Harry Potter", "value": "harry-potter" }, { "label": "horror", "value": "horror" }, { "label": "Hunter X Hunter", "value": "hunter-x-hunter" }, { "label": "Infinite Evolution", "value": "infinite-evolution" }, { "label": "jjwxc", "value": "jjwxc" }, { "label": "Lords: Opens with a Bloody Nest", "value": "lords-opens-with-a-bloody-nest" }, { "label": "martial arts", "value": "martial-arts" }, { "label": "marvel", "value": "marvel" }, { "label": "naruto", "value": "naruto" }, { "label": "nba", "value": "nba" }, { "label": "nove", "value": "nove" }, { "label": "novel", "value": "novel" }, { "label": "one piece", "value": "one-piece" }, { "label": "online game", "value": "online-game" }, { "label": "Please", "value": "please" }, { "label": "qiamao", "value": "qiamao" }, { "label": "qidian", "value": "qidian" }, { "label": "qimao", "value": "qimao" }, { "label": "qq", "value": "qq" }, { "label": "romance", "value": "romance" }, { "label": "Sci-Fi", "value": "sci-fi" }, { "label": "Science-fiction", "value": "science-fiction" }, { "label": "sfacg", "value": "sfacg" }, { "label": "this is a world of horror", "value": "this-is-a-world-of-horror" }, { "label": "Urban", "value": "urban" }, { "label": "Web Novel", "value": "web-novel" }] }, "status": { "type": "Picker", "label": "Status", "value": "", "options": [{ "label": "All", "value": "" }, { "label": "Ongoing", "value": "ongoing" }, { "label": "Hiatus", "value": "hiatus" }, { "label": "Completed", "value": "completed" }] }, "order": { "type": "Picker", "label": "Order by", "value": "", "options": [{ "label": "Default", "value": "" }, { "label": "A-Z", "value": "title" }, { "label": "Z-A", "value": "titlereverse" }, { "label": "Latest Update", "value": "update" }, { "label": "Latest Added", "value": "latest" }, { "label": "Popular", "value": "popular" }, { "label": "Rating", "value": "rating" }] } } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");
 var __ENTranslation = (function () {
     var CFG = {
         enabled: true,
-        provider: 'google',
-        fallbackProvider: 'libretranslate',
         targetLang: 'es',
         sourceLang: 'auto',
         maxBatchChars: 2000,
@@ -547,6 +545,8 @@ var __ENTranslation = (function () {
         translateContent: true,
         translateQuery: true,
     };
+    var providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
+    var providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
     var cache = new Map();
     var active = 0;
     var queue = [];
@@ -577,15 +577,22 @@ var __ENTranslation = (function () {
     };
     var buildUrl = function (provider, text) {
         var enc = encodeURIComponent(text);
-        if (provider === 'deepl') {
-            return ('https://api-free.deepl.com/v2/translate?auth_key=' +
-                (CFG.apiKey || '') +
-                '&text=' +
+        var src = provider === 'mymemory' && CFG.sourceLang === 'auto' ? 'en' : CFG.sourceLang;
+        if (provider === 'google_repeated') {
+            return ('https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=' +
+                src +
+                '&tl=' +
+                CFG.targetLang +
+                '&q=' +
+                enc);
+        }
+        if (provider === 'mymemory') {
+            return ('https://api.mymemory.translated.net/get?q=' +
                 enc +
-                '&target_lang=' +
-                CFG.targetLang.toUpperCase() +
-                '&source_lang=' +
-                (CFG.sourceLang === 'auto' ? '' : CFG.sourceLang));
+                '&langpair=' +
+                src +
+                '|' +
+                CFG.targetLang);
         }
         if (provider === 'libretranslate') {
             return ('https://libretranslate.de/translate?q=' +
@@ -613,6 +620,19 @@ var __ENTranslation = (function () {
                         .join('');
                 }
             }
+            else if (provider === 'google_repeated') {
+                if (Array.isArray(json) && typeof json[0] === 'string') {
+                    return json[0];
+                }
+            }
+            else if (provider === 'mymemory') {
+                if (json &&
+                    json.responseStatus === 200 &&
+                    json.responseData &&
+                    typeof json.responseData.translatedText === 'string') {
+                    return json.responseData.translatedText;
+                }
+            }
             else if (provider === 'deepl') {
                 if (json && Array.isArray(json.translations) && json.translations[0]) {
                     return json.translations[0].text;
@@ -631,7 +651,7 @@ var __ENTranslation = (function () {
     };
     function translateText(text, target, source) {
         return __awaiter(this, void 0, void 0, function () {
-            var t, tl, sl, ck, providers, _i, providers_1, provider, res, json, out, e_1;
+            var t, tl, sl, ck, _i, providers_1, provider, cap, res, json, out, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -643,7 +663,6 @@ var __ENTranslation = (function () {
                         ck = sl + ':' + tl + ':' + t;
                         if (cache.has(ck))
                             return [2 /*return*/, cache.get(ck)];
-                        providers = [CFG.provider, CFG.fallbackProvider];
                         _i = 0, providers_1 = providers;
                         _a.label = 1;
                     case 1:
@@ -652,6 +671,9 @@ var __ENTranslation = (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 5, , 6]);
+                        cap = providerMaxChars[provider] || Infinity;
+                        if (t.length > cap)
+                            return [3 /*break*/, 6];
                         return [4 /*yield*/, (0, fetch_2.fetchApi)(buildUrl(provider, t))];
                     case 3:
                         res = _a.sent();
@@ -959,20 +981,26 @@ var __ENTranslation = (function () {
         }
         if (typeof plugin.parseChapter === 'function') {
             var orig_4 = plugin.parseChapter.bind(plugin);
-            plugin.parseChapter = function (chapterPath) { return __awaiter(_this, void 0, void 0, function () {
-                var res;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, orig_4(chapterPath)];
-                        case 1:
-                            res = _a.sent();
-                            if (CFG.translateContent && typeof res === 'string') {
-                                return [2 /*return*/, translateHTMLContent(res)];
-                            }
-                            return [2 /*return*/, res];
-                    }
+            plugin.parseChapter = function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                return __awaiter(_this, void 0, void 0, function () {
+                    var res;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, orig_4.apply(void 0, args)];
+                            case 1:
+                                res = _a.sent();
+                                if (CFG.translateContent && typeof res === 'string') {
+                                    return [2 /*return*/, translateHTMLContent(res)];
+                                }
+                                return [2 /*return*/, res];
+                        }
+                    });
                 });
-            }); };
+            };
         }
     }
     return wrapPlugin;

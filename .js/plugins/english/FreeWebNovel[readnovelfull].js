@@ -802,15 +802,13 @@ var ParsingState;
     ParsingState[ParsingState["NovelName"] = 11] = "NovelName";
     ParsingState[ParsingState["NovelList"] = 12] = "NovelList";
 })(ParsingState || (ParsingState = {}));
-var plugin = new ReadNovelFullPlugin({ "id": "FWN.com", "sourceSite": "https://freewebnovel.com/", "sourceName": "Free Web Novel", "options": { "latestPage": "sort/latest-novels", "searchPage": "search", "searchKey": "searchkey", "postSearch": true, "noAjax": true, "noPages": ["sort/most-popular"], "pageAsPath": true, "chapterListing": "api/chapterlist.php", "chapterParam": "aid", "versionIncrements": 3, "customJs": "$('.txt, #chr-content, #chapter-content').find('*').addBack().contents().filter((_, el) => el.type === 'text').each((_, el) => { el.data = el.data.replace(/(?:𝐟|ᵮ|𝑓|𝒇|𝒻|𝓯|𝔣|𝕗|𝖿|𝗳|𝙛|𝚏|ꬵ|ꞙ|ẝ|𝖋|ⓕ|ｆ|ƒ|ḟ|ʃ|բ|ᶠ|⒡|ſ|ꊰ|ʄ|∱|ᶂ|𝘧|\\bf)(?:𝚛|ꭇ|ᣴ|ℾ|𝚪|𝛤|𝜞|𝝘|𝞒|Ⲅ|Г|Ꮁ|ᒥ|ꭈ|ⲅ|ꮁ|ⓡ|ｒ|ŕ|ṙ|ř|ȑ|ȓ|ṛ|ṝ|ŗ|г|Ր|ɾ|ᥬ|ṟ|ɍ|ʳ|⒭|ɼ|ѓ|ᴦ|ᶉ|𝐫|𝑟|𝒓|𝓇|𝓻|𝔯|𝕣|𝖗|𝗋|𝗿|𝘳|𝙧|ᵲ|ґ|ᵣ|r)(?:ə|ә|ⅇ|ꬲ|ꞓ|⋴|𝛆|𝛜|𝜀|𝜖|𝜺|𝝐|𝝴|𝞊|𝞮|𝟄|ⲉ|ꮛ|𐐩|Ꞓ|Ⲉ|⍷|𝑒|𝓮|𝕖|𝖊|𝘦|𝗲|𝚎|𝙚|𝒆|𝔢|𝖾|𝐞|Ҿ|ҿ|ⓔ|ｅ|⒠|è|ᧉ|é|ᶒ|ê|ɘ|ἔ|ề|ế|ễ|૯|ǝ|є|ε|ē|ҽ|ɛ|ể|ẽ|ḕ|ḗ|ĕ|ė|ë|ẻ|ě|ȅ|ȇ|ẹ|ệ|ȩ|ɇ|ₑ|ę|ḝ|ḙ|ḛ|℮|е|ԑ|ѐ|ӗ|ᥱ|ё|ἐ|ἑ|ἒ|ἓ|ἕ|ℯ|e)+(?:𝐰|ꝡ|𝑤|𝒘|𝓌|𝔀|𝔴|𝕨|𝖜|𝗐|𝘄|𝘸|𝙬|𝚠|ա|ẁ|ꮃ|ẃ|ⓦ|⍵|ŵ|ẇ|ẅ|ẘ|ẉ|ⱳ|ὼ|ὠ|ὡ|ὢ|ὣ|ω|ὤ|ὥ|ὦ|ὧ|ῲ|ῳ|ῴ|ῶ|ῷ|Ⱳ|ѡ|ԝ|ᴡ|ώ|ᾠ|ᾡ|ᾢ|ᾣ|ᾤ|ᾥ|ᾦ|ɯ|𝝕|𝟉|𝞏|w)(?:ə|ә|ⅇ|ꬲ|ꞓ|⋴|𝛆|𝛜|𝜀|𝜖|𝜺|𝝐|𝝴|𝞊|𝞮|𝟄|ⲉ|ꮛ|𐐩|Ꞓ|Ⲉ|⍷|𝑒|𝓮|𝕖|𝖊|𝘦|𝗲|𝚎|𝙚|𝒆|𝔢|𝖾|𝐞|Ҿ|ҿ|ⓔ|ｅ|⒠|è|ᧉ|é|ᶒ|ê|ɘ|ἔ|ề|ế|ễ|૯|ǝ|є|ε|ē|ҽ|ɛ|ể|ẽ|ḕ|ḗ|ĕ|ė|ë|ẻ|ě|ȅ|ȇ|ẹ|ệ|ȩ|ɇ|ₑ|ę|ḝ|ḙ|ḛ|℮|е|ԑ|ѐ|ӗ|ᥱ|ё|ἐ|ἑ|ἒ|ἓ|ἕ|ℯ|e)(?:ꮟ|Ꮟ|𝐛|𝘣|𝒷|𝔟|𝓫|𝖇|𝖻|𝑏|𝙗|𝕓|𝒃|𝗯|𝚋|♭|ᑳ|ᒈ|ｂ|ᖚ|ᕹ|ᕺ|ⓑ|ḃ|ḅ|ҍ|ъ|ḇ|ƃ|ɓ|ƅ|ᖯ|Ƅ|Ь|ᑲ|þ|Ƃ|⒝|Ъ|ᶀ|ᑿ|ᒀ|ᒂ|ᒁ|ᑾ|ь|ƀ|Ҍ|Ѣ|ѣ|ᔎ |b)(?:ո|ռ|ח|𝒏|𝓷|𝙣|𝑛|𝖓|𝔫|𝗇|𝚗|𝗻|ᥒ|ⓝ|ή|ｎ|ǹ|ᴒ|ń|ñ|ᾗ|η|ṅ|ň|ṇ|ɲ|ņ|ṋ|ṉ|ղ|ຖ|Ռ|ƞ|ŋ|⒩|ภ|ก|ɳ|п|ŉ|л|ԉ|Ƞ|ἠ|ἡ|ῃ|դ|ᾐ|ᾑ|ᾒ|ᾓ|ᾔ|ᾕ|ᾖ|ῄ|ῆ|ῇ|ῂ|ἢ|ἣ|ἤ|ἥ|ἦ|ἧ|ὴ|ή|በ|ቡ|ቢ|ባ|ቤ|ብ|ቦ|ȵ|𝛈|𝜂|𝜼|𝝶|𝞰|𝕟|𝘯|𝐧|𝓃|ᶇ|ᵰ|ᥥ|∩|n)(?:ం|ಂ|ം|ං|૦|௦|۵|ℴ|𝑜|𝒐|𝖔|ꬽ|𝝄|𝛔|𝜎|𝝈|𝞂|ჿ|𝚘|০|୦|ዐ|𝛐|𝗈|𝞼|ဝ|ⲟ|𝙤|၀|𐐬|𝔬|𐓪|𝓸|🇴|⍤|○|ϙ|🅾|𝒪|𝖮|𝟢|𝟶|𝙾|𝘰|𝗼|𝕠|𝜊|𝐨|𝝾|𝞸|ᐤ|ⓞ|ѳ|᧐|ᥲ|ð|ｏ|ఠ|ᦞ|Փ|ò|ө|ӧ|ó|º|ō|ô|ǒ|ȏ|ŏ|ồ|ȭ|ṏ|ὄ|ṑ|ṓ|ȯ|ȫ|๏|ᴏ|ő|ö|ѻ|о|ዐ|ǭ|ȱ|০|୦|٥|౦|೦|൦|๐|໐|ο|օ|ᴑ|०|੦|ỏ|ơ|ờ|ớ|ỡ|ở|ợ|ọ|ộ|ǫ|ø|ǿ|ɵ|ծ|ὀ|ὁ|ό|ὸ|ό|ὂ|ὃ|ὅ|o)(?:∨|⌄|⋁|ⅴ|𝐯|𝑣|𝒗|𝓋|𝔳|𝕧|𝖛|𝗏|ꮩ|ሀ|ⓥ|ｖ|𝜐|𝝊|ṽ|ṿ|౮|ง|ѵ|ע|ᴠ|ν|ט|ᵥ|ѷ|៴|ᘁ|𝙫|𝚟|𝛎|𝜈|𝝂|𝝼|𝞶|𝘷|𝘃|𝓿|v)(?:ə|ә|ⅇ|ꬲ|ꞓ|⋴|𝛆|𝛜|𝜀|𝜖|𝜺|𝝐|𝝴|𝞊|𝞮|𝟄|ⲉ|ꮛ|𐐩|Ꞓ|Ⲉ|⍷|𝑒|𝓮|𝕖|𝖊|𝘦|𝗲|𝚎|𝙚|𝒆|𝔢|𝖾|𝐞|Ҿ|ҿ|ⓔ|ｅ|⒠|è|ᧉ|é|ᶒ|ê|ɘ|ἔ|ề|ế|ễ|૯|ǝ|є|ε|ē|ҽ|ɛ|ể|ẽ|ḕ|ḗ|ĕ|ė|ë|ẻ|ě|ȅ|ȇ|ẹ|ệ|ȩ|ɇ|ₑ|ę|ḝ|ḙ|ḛ|℮|е|ԑ|ѐ|ӗ|ᥱ|ё|ἐ|ἑ|ἒ|ἓ|ἕ|ℯ|e)(?:ⓛ|ｌ|ŀ|ĺ|ľ|ḷ|ḹ|ļ|Ӏ|ℓ|ḽ|ḻ|ł|ﾚ|ɭ|ƚ|ɫ|ⱡ|\\||Ɩ|⒧|ʅ|ǀ|ו|ן|Ι|І|｜|ᶩ|ӏ|𝓘|𝕀|𝖨|𝗜|𝘐|𝐥|𝑙|𝒍|𝓁|𝔩|𝕝|𝖑|𝗅|𝗹|𝘭|𝚕|𝜤|𝝞|ı|𝚤|ɩ|ι|𝛊|𝜄|𝜾|𝞲|I|l)(?:.?(?:🝌|ｃ|ⅽ|𝐜|𝑐|𝒄|𝒸|𝓬|𝔠|𝕔|𝖈|𝖼|𝗰|𝘤|𝙘|𝚌|ᴄ|ϲ|ⲥ|с|ꮯ|𐐽|ⲥ|𐐽|ꮯ|ĉ|ｃ|ⓒ|ć|č|ċ|ç|ҁ|ƈ|ḉ|ȼ|ↄ|с|ር|ᴄ|ϲ|ҫ|꒝|ς|ɽ|ϛ|𝙲|ᑦ|᧚|𝐜|𝑐|𝒄|𝒸|𝓬|𝔠|𝕔|𝖈|𝖼|𝗰|𝘤|𝙘|𝚌|₵|🇨|ᥴ|ᒼ|ⅽ|c)(?:ం|ಂ|ം|ං|૦|௦|۵|ℴ|𝑜|𝒐|𝖔|ꬽ|𝝄|𝛔|𝜎|𝝈|𝞂|ჿ|𝚘|০|୦|ዐ|𝛐|𝗈|𝞼|ဝ|ⲟ|𝙤|၀|𐐬|𝔬|𐓪|𝓸|🇴|⍤|○|ϙ|🅾|𝒪|𝖮|𝟢|𝟶|𝙾|𝘰|𝗼|𝕠|𝜊|𝐨|𝝾|𝞸|ᐤ|ⓞ|ѳ|᧐|ᥲ|ð|ｏ|ఠ|ᦞ|Փ|ò|ө|ӧ|ó|º|ō|ô|ǒ|ȏ|ŏ|ồ|ȭ|ṏ|ὄ|ṑ|ṓ|ȯ|ȫ|๏|ᴏ|ő|ö|ѻ|о|ዐ|ǭ|ȱ|০|୦|٥|౦|೦|൦|๐|໐|ο|օ|ᴑ|०|੦|ỏ|ơ|ờ|ớ|ỡ|ở|ợ|ọ|ộ|ǫ|ø|ǿ|ɵ|ծ|ὀ|ὁ|ό|ὸ|ό|ὂ|ὃ|ὅ|o)(?:₥|ᵯ|𝖒|𝐦|𝗆|𝔪|𝕞|𝓂|ⓜ|ｍ|ന|ᙢ|൩|ḿ|ṁ|ⅿ|ϻ|ṃ|ጠ|ɱ|៳|ᶆ|𝒎|𝙢|𝓶|𝚖|𝑚|𝗺|᧕|᧗|m))?/g, ''); });" }, "filters": { "type": { "type": "Picker", "label": "Novel Type", "value": "sort/most-popular", "options": [{ "label": "All", "value": "sort/latest-release" }, { "label": "Chinese Novel", "value": "sort/latest-release/chinese-novel" }, { "label": "Korean Novel", "value": "sort/latest-release/korean-novel" }, { "label": "Japanese Novel", "value": "sort/latest-release/japanese-novel" }, { "label": "English Novel", "value": "sort/latest-release/english-novel" }, { "label": "Most Popular", "value": "sort/most-popular" }] }, "genres": { "type": "Picker", "label": "Genre", "value": "", "options": [{ "label": "Action", "value": "genre/Action" }, { "label": "Adult", "value": "genre/Adult" }, { "label": "Adventure", "value": "genre/Adventure" }, { "label": "Comedy", "value": "genre/Comedy" }, { "label": "Drama", "value": "genre/Drama" }, { "label": "Eastern", "value": "genre/Eastern" }, { "label": "Ecchi", "value": "genre/Ecchi" }, { "label": "Fantasy", "value": "genre/Fantasy" }, { "label": "Game", "value": "genre/Game" }, { "label": "Gender Bender", "value": "genre/Gender+Bender" }, { "label": "Harem", "value": "genre/Harem" }, { "label": "Historical", "value": "genre/Historical" }, { "label": "Horror", "value": "genre/Horror" }, { "label": "Josei", "value": "genre/Josei" }, { "label": "Martial Arts", "value": "genre/Martial+Arts" }, { "label": "Mature", "value": "genre/Mature" }, { "label": "Mecha", "value": "genre/Mecha" }, { "label": "Mystery", "value": "genre/Mystery" }, { "label": "Psychological", "value": "genre/Psychological" }, { "label": "Reincarnation", "value": "genre/Reincarnation" }, { "label": "Romance", "value": "genre/Romance" }, { "label": "School Life", "value": "genre/School+Life" }, { "label": "Sci-fi", "value": "genre/Sci-fi" }, { "label": "Seinen", "value": "genre/Seinen" }, { "label": "Shoujo", "value": "genre/Shoujo" }, { "label": "Shounen Ai", "value": "genre/Shounen+Ai" }, { "label": "Shounen", "value": "genre/Shounen" }, { "label": "Slice of Life", "value": "genre/Slice+of+Life" }, { "label": "Smut", "value": "genre/Smut" }, { "label": "Sports", "value": "genre/Sports" }, { "label": "Supernatural", "value": "genre/Supernatural" }, { "label": "Tragedy", "value": "genre/Tragedy" }, { "label": "Wuxia", "value": "genre/Wuxia" }, { "label": "Xianxia", "value": "genre/Xianxia" }, { "label": "Xuanhuan", "value": "genre/Xuanhuan" }, { "label": "Yaoi", "value": "genre/Yaoi" }] } } });
+var plugin = new ReadNovelFullPlugin({ "id": "FWN.com", "sourceSite": "https://freewebnovel.com/", "sourceName": "Free Web Novel", "options": { "latestPage": "sort/latest-novels", "searchPage": "search", "searchKey": "searchkey", "postSearch": true, "noAjax": true, "noPages": ["sort/most-popular"], "pageAsPath": true, "chapterListing": "api/chapterlist.php", "chapterParam": "aid", "versionIncrements": 50, "customJs": "$('.txt, #chr-content, #chapter-content').find('*').addBack().contents().filter((_, el) => el.type === 'text').each((_, el) => { el.data = el.data.replace(/(?:𝐟|ᵮ|𝑓|𝒇|𝒻|𝓯|𝔣|𝕗|𝖿|𝗳|𝙛|𝚏|ꬵ|ꞙ|ẝ|𝖋|ⓕ|ｆ|ƒ|ḟ|ʃ|բ|ᶠ|⒡|ſ|ꊰ|ʄ|∱|ᶂ|𝘧|\\bf)(?:𝚛|ꭇ|ᣴ|ℾ|𝚪|𝛤|𝜞|𝝘|𝞒|Ⲅ|Г|Ꮁ|ᒥ|ꭈ|ⲅ|ꮁ|ⓡ|ｒ|ŕ|ṙ|ř|ȑ|ȓ|ṛ|ṝ|ŗ|г|Ր|ɾ|ᥬ|ṟ|ɍ|ʳ|⒭|ɼ|ѓ|ᴦ|ᶉ|𝐫|𝑟|𝒓|𝓇|𝓻|𝔯|𝕣|𝖗|𝗋|𝗿|𝘳|𝙧|ᵲ|ґ|ᵣ|r)(?:ə|ә|ⅇ|ꬲ|ꞓ|⋴|𝛆|𝛜|𝜀|𝜖|𝜺|𝝐|𝝴|𝞊|𝞮|𝟄|ⲉ|ꮛ|𐐩|Ꞓ|Ⲉ|⍷|𝑒|𝓮|𝕖|𝖊|𝘦|𝗲|𝚎|𝙚|𝒆|𝔢|𝖾|𝐞|Ҿ|ҿ|ⓔ|ｅ|⒠|è|ᧉ|é|ᶒ|ê|ɘ|ἔ|ề|ế|ễ|૯|ǝ|є|ε|ē|ҽ|ɛ|ể|ẽ|ḕ|ḗ|ĕ|ė|ë|ẻ|ě|ȅ|ȇ|ẹ|ệ|ȩ|ɇ|ₑ|ę|ḝ|ḙ|ḛ|℮|е|ԑ|ѐ|ӗ|ᥱ|ё|ἐ|ἑ|ἒ|ἓ|ἕ|ℯ|e)+(?:𝐰|ꝡ|𝑤|𝒘|𝓌|𝔀|𝔴|𝕨|𝖜|𝗐|𝘄|𝘸|𝙬|𝚠|ա|ẁ|ꮃ|ẃ|ⓦ|⍵|ŵ|ẇ|ẅ|ẘ|ẉ|ⱳ|ὼ|ὠ|ὡ|ὢ|ὣ|ω|ὤ|ὥ|ὦ|ὧ|ῲ|ῳ|ῴ|ῶ|ῷ|Ⱳ|ѡ|ԝ|ᴡ|ώ|ᾠ|ᾡ|ᾢ|ᾣ|ᾤ|ᾥ|ᾦ|ɯ|𝝕|𝟉|𝞏|w)(?:ə|ә|ⅇ|ꬲ|ꞓ|⋴|𝛆|𝛜|𝜀|𝜖|𝜺|𝝐|𝝴|𝞊|𝞮|𝟄|ⲉ|ꮛ|𐐩|Ꞓ|Ⲉ|⍷|𝑒|𝓮|𝕖|𝖊|𝘦|𝗲|𝚎|𝙚|𝒆|𝔢|𝖾|𝐞|Ҿ|ҿ|ⓔ|ｅ|⒠|è|ᧉ|é|ᶒ|ê|ɘ|ἔ|ề|ế|ễ|૯|ǝ|є|ε|ē|ҽ|ɛ|ể|ẽ|ḕ|ḗ|ĕ|ė|ë|ẻ|ě|ȅ|ȇ|ẹ|ệ|ȩ|ɇ|ₑ|ę|ḝ|ḙ|ḛ|℮|е|ԑ|ѐ|ӗ|ᥱ|ё|ἐ|ἑ|ἒ|ἓ|ἕ|ℯ|e)(?:ꮟ|Ꮟ|𝐛|𝘣|𝒷|𝔟|𝓫|𝖇|𝖻|𝑏|𝙗|𝕓|𝒃|𝗯|𝚋|♭|ᑳ|ᒈ|ｂ|ᖚ|ᕹ|ᕺ|ⓑ|ḃ|ḅ|ҍ|ъ|ḇ|ƃ|ɓ|ƅ|ᖯ|Ƅ|Ь|ᑲ|þ|Ƃ|⒝|Ъ|ᶀ|ᑿ|ᒀ|ᒂ|ᒁ|ᑾ|ь|ƀ|Ҍ|Ѣ|ѣ|ᔎ |b)(?:ո|ռ|ח|𝒏|𝓷|𝙣|𝑛|𝖓|𝔫|𝗇|𝚗|𝗻|ᥒ|ⓝ|ή|ｎ|ǹ|ᴒ|ń|ñ|ᾗ|η|ṅ|ň|ṇ|ɲ|ņ|ṋ|ṉ|ղ|ຖ|Ռ|ƞ|ŋ|⒩|ภ|ก|ɳ|п|ŉ|л|ԉ|Ƞ|ἠ|ἡ|ῃ|դ|ᾐ|ᾑ|ᾒ|ᾓ|ᾔ|ᾕ|ᾖ|ῄ|ῆ|ῇ|ῂ|ἢ|ἣ|ἤ|ἥ|ἦ|ἧ|ὴ|ή|በ|ቡ|ቢ|ባ|ቤ|ብ|ቦ|ȵ|𝛈|𝜂|𝜼|𝝶|𝞰|𝕟|𝘯|𝐧|𝓃|ᶇ|ᵰ|ᥥ|∩|n)(?:ం|ಂ|ം|ං|૦|௦|۵|ℴ|𝑜|𝒐|𝖔|ꬽ|𝝄|𝛔|𝜎|𝝈|𝞂|ჿ|𝚘|০|୦|ዐ|𝛐|𝗈|𝞼|ဝ|ⲟ|𝙤|၀|𐐬|𝔬|𐓪|𝓸|🇴|⍤|○|ϙ|🅾|𝒪|𝖮|𝟢|𝟶|𝙾|𝘰|𝗼|𝕠|𝜊|𝐨|𝝾|𝞸|ᐤ|ⓞ|ѳ|᧐|ᥲ|ð|ｏ|ఠ|ᦞ|Փ|ò|ө|ӧ|ó|º|ō|ô|ǒ|ȏ|ŏ|ồ|ȭ|ṏ|ὄ|ṑ|ṓ|ȯ|ȫ|๏|ᴏ|ő|ö|ѻ|о|ዐ|ǭ|ȱ|০|୦|٥|౦|೦|൦|๐|໐|ο|օ|ᴑ|०|੦|ỏ|ơ|ờ|ớ|ỡ|ở|ợ|ọ|ộ|ǫ|ø|ǿ|ɵ|ծ|ὀ|ὁ|ό|ὸ|ό|ὂ|ὃ|ὅ|o)(?:∨|⌄|⋁|ⅴ|𝐯|𝑣|𝒗|𝓋|𝔳|𝕧|𝖛|𝗏|ꮩ|ሀ|ⓥ|ｖ|𝜐|𝝊|ṽ|ṿ|౮|ง|ѵ|ע|ᴠ|ν|ט|ᵥ|ѷ|៴|ᘁ|𝙫|𝚟|𝛎|𝜈|𝝂|𝝼|𝞶|𝘷|𝘃|𝓿|v)(?:ə|ә|ⅇ|ꬲ|ꞓ|⋴|𝛆|𝛜|𝜀|𝜖|𝜺|𝝐|𝝴|𝞊|𝞮|𝟄|ⲉ|ꮛ|𐐩|Ꞓ|Ⲉ|⍷|𝑒|𝓮|𝕖|𝖊|𝘦|𝗲|𝚎|𝙚|𝒆|𝔢|𝖾|𝐞|Ҿ|ҿ|ⓔ|ｅ|⒠|è|ᧉ|é|ᶒ|ê|ɘ|ἔ|ề|ế|ễ|૯|ǝ|є|ε|ē|ҽ|ɛ|ể|ẽ|ḕ|ḗ|ĕ|ė|ë|ẻ|ě|ȅ|ȇ|ẹ|ệ|ȩ|ɇ|ₑ|ę|ḝ|ḙ|ḛ|℮|е|ԑ|ѐ|ӗ|ᥱ|ё|ἐ|ἑ|ἒ|ἓ|ἕ|ℯ|e)(?:ⓛ|ｌ|ŀ|ĺ|ľ|ḷ|ḹ|ļ|Ӏ|ℓ|ḽ|ḻ|ł|ﾚ|ɭ|ƚ|ɫ|ⱡ|\\||Ɩ|⒧|ʅ|ǀ|ו|ן|Ι|І|｜|ᶩ|ӏ|𝓘|𝕀|𝖨|𝗜|𝘐|𝐥|𝑙|𝒍|𝓁|𝔩|𝕝|𝖑|𝗅|𝗹|𝘭|𝚕|𝜤|𝝞|ı|𝚤|ɩ|ι|𝛊|𝜄|𝜾|𝞲|I|l)(?:.?(?:🝌|ｃ|ⅽ|𝐜|𝑐|𝒄|𝒸|𝓬|𝔠|𝕔|𝖈|𝖼|𝗰|𝘤|𝙘|𝚌|ᴄ|ϲ|ⲥ|с|ꮯ|𐐽|ⲥ|𐐽|ꮯ|ĉ|ｃ|ⓒ|ć|č|ċ|ç|ҁ|ƈ|ḉ|ȼ|ↄ|с|ር|ᴄ|ϲ|ҫ|꒝|ς|ɽ|ϛ|𝙲|ᑦ|᧚|𝐜|𝑐|𝒄|𝒸|𝓬|𝔠|𝕔|𝖈|𝖼|𝗰|𝘤|𝙘|𝚌|₵|🇨|ᥴ|ᒼ|ⅽ|c)(?:ం|ಂ|ം|ං|૦|௦|۵|ℴ|𝑜|𝒐|𝖔|ꬽ|𝝄|𝛔|𝜎|𝝈|𝞂|ჿ|𝚘|০|୦|ዐ|𝛐|𝗈|𝞼|ဝ|ⲟ|𝙤|၀|𐐬|𝔬|𐓪|𝓸|🇴|⍤|○|ϙ|🅾|𝒪|𝖮|𝟢|𝟶|𝙾|𝘰|𝗼|𝕠|𝜊|𝐨|𝝾|𝞸|ᐤ|ⓞ|ѳ|᧐|ᥲ|ð|ｏ|ఠ|ᦞ|Փ|ò|ө|ӧ|ó|º|ō|ô|ǒ|ȏ|ŏ|ồ|ȭ|ṏ|ὄ|ṑ|ṓ|ȯ|ȫ|๏|ᴏ|ő|ö|ѻ|о|ዐ|ǭ|ȱ|০|୦|٥|౦|೦|൦|๐|໐|ο|օ|ᴑ|०|੦|ỏ|ơ|ờ|ớ|ỡ|ở|ợ|ọ|ộ|ǫ|ø|ǿ|ɵ|ծ|ὀ|ὁ|ό|ὸ|ό|ὂ|ὃ|ὅ|o)(?:₥|ᵯ|𝖒|𝐦|𝗆|𝔪|𝕞|𝓂|ⓜ|ｍ|ന|ᙢ|൩|ḿ|ṁ|ⅿ|ϻ|ṃ|ጠ|ɱ|៳|ᶆ|𝒎|𝙢|𝓶|𝚖|𝑚|𝗺|᧕|᧗|m))?/g, ''); });" }, "filters": { "type": { "type": "Picker", "label": "Novel Type", "value": "sort/most-popular", "options": [{ "label": "All", "value": "sort/latest-release" }, { "label": "Chinese Novel", "value": "sort/latest-release/chinese-novel" }, { "label": "Korean Novel", "value": "sort/latest-release/korean-novel" }, { "label": "Japanese Novel", "value": "sort/latest-release/japanese-novel" }, { "label": "English Novel", "value": "sort/latest-release/english-novel" }, { "label": "Most Popular", "value": "sort/most-popular" }] }, "genres": { "type": "Picker", "label": "Genre", "value": "", "options": [{ "label": "Action", "value": "genre/Action" }, { "label": "Adult", "value": "genre/Adult" }, { "label": "Adventure", "value": "genre/Adventure" }, { "label": "Comedy", "value": "genre/Comedy" }, { "label": "Drama", "value": "genre/Drama" }, { "label": "Eastern", "value": "genre/Eastern" }, { "label": "Ecchi", "value": "genre/Ecchi" }, { "label": "Fantasy", "value": "genre/Fantasy" }, { "label": "Game", "value": "genre/Game" }, { "label": "Gender Bender", "value": "genre/Gender+Bender" }, { "label": "Harem", "value": "genre/Harem" }, { "label": "Historical", "value": "genre/Historical" }, { "label": "Horror", "value": "genre/Horror" }, { "label": "Josei", "value": "genre/Josei" }, { "label": "Martial Arts", "value": "genre/Martial+Arts" }, { "label": "Mature", "value": "genre/Mature" }, { "label": "Mecha", "value": "genre/Mecha" }, { "label": "Mystery", "value": "genre/Mystery" }, { "label": "Psychological", "value": "genre/Psychological" }, { "label": "Reincarnation", "value": "genre/Reincarnation" }, { "label": "Romance", "value": "genre/Romance" }, { "label": "School Life", "value": "genre/School+Life" }, { "label": "Sci-fi", "value": "genre/Sci-fi" }, { "label": "Seinen", "value": "genre/Seinen" }, { "label": "Shoujo", "value": "genre/Shoujo" }, { "label": "Shounen Ai", "value": "genre/Shounen+Ai" }, { "label": "Shounen", "value": "genre/Shounen" }, { "label": "Slice of Life", "value": "genre/Slice+of+Life" }, { "label": "Smut", "value": "genre/Smut" }, { "label": "Sports", "value": "genre/Sports" }, { "label": "Supernatural", "value": "genre/Supernatural" }, { "label": "Tragedy", "value": "genre/Tragedy" }, { "label": "Wuxia", "value": "genre/Wuxia" }, { "label": "Xianxia", "value": "genre/Xianxia" }, { "label": "Xuanhuan", "value": "genre/Xuanhuan" }, { "label": "Yaoi", "value": "genre/Yaoi" }] } } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");
 var __ENTranslation = (function () {
     var CFG = {
         enabled: true,
-        provider: 'google',
-        fallbackProvider: 'libretranslate',
         targetLang: 'es',
         sourceLang: 'auto',
         maxBatchChars: 2000,
@@ -821,6 +819,8 @@ var __ENTranslation = (function () {
         translateContent: true,
         translateQuery: true,
     };
+    var providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
+    var providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
     var cache = new Map();
     var active = 0;
     var queue = [];
@@ -851,15 +851,22 @@ var __ENTranslation = (function () {
     };
     var buildUrl = function (provider, text) {
         var enc = encodeURIComponent(text);
-        if (provider === 'deepl') {
-            return ('https://api-free.deepl.com/v2/translate?auth_key=' +
-                (CFG.apiKey || '') +
-                '&text=' +
+        var src = provider === 'mymemory' && CFG.sourceLang === 'auto' ? 'en' : CFG.sourceLang;
+        if (provider === 'google_repeated') {
+            return ('https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=' +
+                src +
+                '&tl=' +
+                CFG.targetLang +
+                '&q=' +
+                enc);
+        }
+        if (provider === 'mymemory') {
+            return ('https://api.mymemory.translated.net/get?q=' +
                 enc +
-                '&target_lang=' +
-                CFG.targetLang.toUpperCase() +
-                '&source_lang=' +
-                (CFG.sourceLang === 'auto' ? '' : CFG.sourceLang));
+                '&langpair=' +
+                src +
+                '|' +
+                CFG.targetLang);
         }
         if (provider === 'libretranslate') {
             return ('https://libretranslate.de/translate?q=' +
@@ -887,6 +894,19 @@ var __ENTranslation = (function () {
                         .join('');
                 }
             }
+            else if (provider === 'google_repeated') {
+                if (Array.isArray(json) && typeof json[0] === 'string') {
+                    return json[0];
+                }
+            }
+            else if (provider === 'mymemory') {
+                if (json &&
+                    json.responseStatus === 200 &&
+                    json.responseData &&
+                    typeof json.responseData.translatedText === 'string') {
+                    return json.responseData.translatedText;
+                }
+            }
             else if (provider === 'deepl') {
                 if (json && Array.isArray(json.translations) && json.translations[0]) {
                     return json.translations[0].text;
@@ -905,7 +925,7 @@ var __ENTranslation = (function () {
     };
     function translateText(text, target, source) {
         return __awaiter(this, void 0, void 0, function () {
-            var t, tl, sl, ck, providers, _i, providers_1, provider, res, json, out, e_1;
+            var t, tl, sl, ck, _i, providers_1, provider, cap, res, json, out, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -917,7 +937,6 @@ var __ENTranslation = (function () {
                         ck = sl + ':' + tl + ':' + t;
                         if (cache.has(ck))
                             return [2 /*return*/, cache.get(ck)];
-                        providers = [CFG.provider, CFG.fallbackProvider];
                         _i = 0, providers_1 = providers;
                         _a.label = 1;
                     case 1:
@@ -926,6 +945,9 @@ var __ENTranslation = (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 5, , 6]);
+                        cap = providerMaxChars[provider] || Infinity;
+                        if (t.length > cap)
+                            return [3 /*break*/, 6];
                         return [4 /*yield*/, (0, fetch_2.fetchApi)(buildUrl(provider, t))];
                     case 3:
                         res = _a.sent();
@@ -1233,20 +1255,26 @@ var __ENTranslation = (function () {
         }
         if (typeof plugin.parseChapter === 'function') {
             var orig_4 = plugin.parseChapter.bind(plugin);
-            plugin.parseChapter = function (chapterPath) { return __awaiter(_this, void 0, void 0, function () {
-                var res;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, orig_4(chapterPath)];
-                        case 1:
-                            res = _a.sent();
-                            if (CFG.translateContent && typeof res === 'string') {
-                                return [2 /*return*/, translateHTMLContent(res)];
-                            }
-                            return [2 /*return*/, res];
-                    }
+            plugin.parseChapter = function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                return __awaiter(_this, void 0, void 0, function () {
+                    var res;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, orig_4.apply(void 0, args)];
+                            case 1:
+                                res = _a.sent();
+                                if (CFG.translateContent && typeof res === 'string') {
+                                    return [2 /*return*/, translateHTMLContent(res)];
+                                }
+                                return [2 /*return*/, res];
+                        }
+                    });
                 });
-            }); };
+            };
         }
     }
     return wrapPlugin;

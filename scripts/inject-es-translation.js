@@ -29,8 +29,6 @@ import { load as __translatorParse } from 'cheerio';
 const __ENTranslation = (function () {
   const CFG = {
     enabled: true,
-    provider: 'google',
-    fallbackProvider: 'libretranslate',
     targetLang: 'es',
     sourceLang: 'auto',
     maxBatchChars: 2000,
@@ -41,6 +39,8 @@ const __ENTranslation = (function () {
     translateContent: true,
     translateQuery: true,
   };
+  const providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
+  const providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
   const cache = new Map();
   let active = 0;
   const queue = [];
@@ -66,16 +66,25 @@ const __ENTranslation = (function () {
     });
   const buildUrl = (provider, text) => {
     const enc = encodeURIComponent(text);
-    if (provider === 'deepl') {
+    const src = provider === 'mymemory' && CFG.sourceLang === 'auto' ? 'en' : CFG.sourceLang;
+    if (provider === 'google_repeated') {
       return (
-        'https://api-free.deepl.com/v2/translate?auth_key=' +
-        (CFG.apiKey || '') +
-        '&text=' +
+        'https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=' +
+        src +
+        '&tl=' +
+        CFG.targetLang +
+        '&q=' +
+        enc
+      );
+    }
+    if (provider === 'mymemory') {
+      return (
+        'https://api.mymemory.translated.net/get?q=' +
         enc +
-        '&target_lang=' +
-        CFG.targetLang.toUpperCase() +
-        '&source_lang=' +
-        (CFG.sourceLang === 'auto' ? '' : CFG.sourceLang)
+        '&langpair=' +
+        src +
+        '|' +
+        CFG.targetLang
       );
     }
     if (provider === 'libretranslate') {
@@ -107,6 +116,19 @@ const __ENTranslation = (function () {
             .filter(Boolean)
             .join('');
         }
+      } else if (provider === 'google_repeated') {
+        if (Array.isArray(json) && typeof json[0] === 'string') {
+          return json[0];
+        }
+      } else if (provider === 'mymemory') {
+        if (
+          json &&
+          json.responseStatus === 200 &&
+          json.responseData &&
+          typeof json.responseData.translatedText === 'string'
+        ) {
+          return json.responseData.translatedText;
+        }
       } else if (provider === 'deepl') {
         if (json && Array.isArray(json.translations) && json.translations[0]) {
           return json.translations[0].text;
@@ -128,9 +150,10 @@ const __ENTranslation = (function () {
     const sl = source || CFG.sourceLang;
     const ck = sl + ':' + tl + ':' + t;
     if (cache.has(ck)) return cache.get(ck);
-    const providers = [CFG.provider, CFG.fallbackProvider];
     for (const provider of providers) {
       try {
+        const cap = providerMaxChars[provider] || Infinity;
+        if (t.length > cap) continue;
         const res = await __translatorFetch(buildUrl(provider, t));
         if (!res || !res.ok) continue;
         const json = await res.json();
@@ -296,8 +319,8 @@ const __ENTranslation = (function () {
     }
     if (typeof plugin.parseChapter === 'function') {
       const orig = plugin.parseChapter.bind(plugin);
-      plugin.parseChapter = async chapterPath => {
-        const res = await orig(chapterPath);
+      plugin.parseChapter = async (...args) => {
+        const res = await orig(...args);
         if (CFG.translateContent && typeof res === 'string') {
           return translateHTMLContent(res);
         }

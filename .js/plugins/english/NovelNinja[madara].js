@@ -493,15 +493,13 @@ var MadaraPlugin = /** @class */ (function () {
     return MadaraPlugin;
 }());
 exports.MadaraPlugin = MadaraPlugin;
-var plugin = new MadaraPlugin({ "id": "novelninja", "sourceSite": "https://novelninja.xyz/", "sourceName": "Novel Ninja", "options": { "versionIncrements": 1, "useNewChapterEndpoint": true }, "filters": { "genre[]": { "type": "Checkbox", "label": "Genre", "value": [], "options": [{ "label": "Action", "value": "action" }, { "label": "Adventure", "value": "adventure" }, { "label": "Childhood Friend", "value": "childhood-friend" }, { "label": "Comedy", "value": "comedy" }, { "label": "Drama", "value": "drama" }, { "label": "Economic Thriller", "value": "economic-thriller" }, { "label": "Fantasy", "value": "fantasy" }, { "label": "Harem", "value": "harem" }, { "label": "Isekai", "value": "isekai" }, { "label": "Kingdom Buidling", "value": "kingdom-buidling" }, { "label": "Otome Game", "value": "otome-game" }, { "label": "Production / Producer", "value": "production-producer" }, { "label": "Reincarnation", "value": "reincarnation" }, { "label": "Romance", "value": "romance" }, { "label": "School Life", "value": "school-life" }, { "label": "Sci-Fi", "value": "sci-fi" }, { "label": "Slice of Life", "value": "slice-of-life" }] }, "op": { "type": "Switch", "label": "having all selected genres", "value": false }, "author": { "type": "Text", "label": "Author", "value": "" }, "artist": { "type": "Text", "label": "Artist", "value": "" }, "release": { "type": "Text", "label": "Year of Released", "value": "" }, "adult": { "type": "Picker", "label": "Adult content", "value": "", "options": [{ "label": "All", "value": "" }, { "label": "None adult content", "value": "0" }, { "label": "Only adult content", "value": "1" }] }, "status[]": { "type": "Checkbox", "label": "Status", "value": [], "options": [{ "label": "OnGoing", "value": "on-going" }, { "label": "Completed", "value": "end" }, { "label": "Canceled", "value": "canceled" }, { "label": "On Hold", "value": "on-hold" }, { "label": "Upcoming", "value": "upcoming" }] }, "m_orderby": { "type": "Picker", "label": "Order by", "value": "", "options": [{ "label": "Relevance", "value": "" }, { "label": "Latest", "value": "latest" }] } } });
+var plugin = new MadaraPlugin({ "id": "novelninja", "sourceSite": "https://novelninja.xyz/", "sourceName": "Novel Ninja", "options": { "versionIncrements": 50, "useNewChapterEndpoint": true }, "filters": { "genre[]": { "type": "Checkbox", "label": "Genre", "value": [], "options": [{ "label": "Action", "value": "action" }, { "label": "Adventure", "value": "adventure" }, { "label": "Childhood Friend", "value": "childhood-friend" }, { "label": "Comedy", "value": "comedy" }, { "label": "Drama", "value": "drama" }, { "label": "Economic Thriller", "value": "economic-thriller" }, { "label": "Fantasy", "value": "fantasy" }, { "label": "Harem", "value": "harem" }, { "label": "Isekai", "value": "isekai" }, { "label": "Kingdom Buidling", "value": "kingdom-buidling" }, { "label": "Otome Game", "value": "otome-game" }, { "label": "Production / Producer", "value": "production-producer" }, { "label": "Reincarnation", "value": "reincarnation" }, { "label": "Romance", "value": "romance" }, { "label": "School Life", "value": "school-life" }, { "label": "Sci-Fi", "value": "sci-fi" }, { "label": "Slice of Life", "value": "slice-of-life" }] }, "op": { "type": "Switch", "label": "having all selected genres", "value": false }, "author": { "type": "Text", "label": "Author", "value": "" }, "artist": { "type": "Text", "label": "Artist", "value": "" }, "release": { "type": "Text", "label": "Year of Released", "value": "" }, "adult": { "type": "Picker", "label": "Adult content", "value": "", "options": [{ "label": "All", "value": "" }, { "label": "None adult content", "value": "0" }, { "label": "Only adult content", "value": "1" }] }, "status[]": { "type": "Checkbox", "label": "Status", "value": [], "options": [{ "label": "OnGoing", "value": "on-going" }, { "label": "Completed", "value": "end" }, { "label": "Canceled", "value": "canceled" }, { "label": "On Hold", "value": "on-hold" }, { "label": "Upcoming", "value": "upcoming" }] }, "m_orderby": { "type": "Picker", "label": "Order by", "value": "", "options": [{ "label": "Relevance", "value": "" }, { "label": "Latest", "value": "latest" }] } } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");
 var __ENTranslation = (function () {
     var CFG = {
         enabled: true,
-        provider: 'google',
-        fallbackProvider: 'libretranslate',
         targetLang: 'es',
         sourceLang: 'auto',
         maxBatchChars: 2000,
@@ -512,6 +510,8 @@ var __ENTranslation = (function () {
         translateContent: true,
         translateQuery: true,
     };
+    var providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
+    var providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
     var cache = new Map();
     var active = 0;
     var queue = [];
@@ -542,15 +542,22 @@ var __ENTranslation = (function () {
     };
     var buildUrl = function (provider, text) {
         var enc = encodeURIComponent(text);
-        if (provider === 'deepl') {
-            return ('https://api-free.deepl.com/v2/translate?auth_key=' +
-                (CFG.apiKey || '') +
-                '&text=' +
+        var src = provider === 'mymemory' && CFG.sourceLang === 'auto' ? 'en' : CFG.sourceLang;
+        if (provider === 'google_repeated') {
+            return ('https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=' +
+                src +
+                '&tl=' +
+                CFG.targetLang +
+                '&q=' +
+                enc);
+        }
+        if (provider === 'mymemory') {
+            return ('https://api.mymemory.translated.net/get?q=' +
                 enc +
-                '&target_lang=' +
-                CFG.targetLang.toUpperCase() +
-                '&source_lang=' +
-                (CFG.sourceLang === 'auto' ? '' : CFG.sourceLang));
+                '&langpair=' +
+                src +
+                '|' +
+                CFG.targetLang);
         }
         if (provider === 'libretranslate') {
             return ('https://libretranslate.de/translate?q=' +
@@ -578,6 +585,19 @@ var __ENTranslation = (function () {
                         .join('');
                 }
             }
+            else if (provider === 'google_repeated') {
+                if (Array.isArray(json) && typeof json[0] === 'string') {
+                    return json[0];
+                }
+            }
+            else if (provider === 'mymemory') {
+                if (json &&
+                    json.responseStatus === 200 &&
+                    json.responseData &&
+                    typeof json.responseData.translatedText === 'string') {
+                    return json.responseData.translatedText;
+                }
+            }
             else if (provider === 'deepl') {
                 if (json && Array.isArray(json.translations) && json.translations[0]) {
                     return json.translations[0].text;
@@ -596,7 +616,7 @@ var __ENTranslation = (function () {
     };
     function translateText(text, target, source) {
         return __awaiter(this, void 0, void 0, function () {
-            var t, tl, sl, ck, providers, _i, providers_1, provider, res, json, out, e_1;
+            var t, tl, sl, ck, _i, providers_1, provider, cap, res, json, out, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -608,7 +628,6 @@ var __ENTranslation = (function () {
                         ck = sl + ':' + tl + ':' + t;
                         if (cache.has(ck))
                             return [2 /*return*/, cache.get(ck)];
-                        providers = [CFG.provider, CFG.fallbackProvider];
                         _i = 0, providers_1 = providers;
                         _a.label = 1;
                     case 1:
@@ -617,6 +636,9 @@ var __ENTranslation = (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 5, , 6]);
+                        cap = providerMaxChars[provider] || Infinity;
+                        if (t.length > cap)
+                            return [3 /*break*/, 6];
                         return [4 /*yield*/, (0, fetch_2.fetchApi)(buildUrl(provider, t))];
                     case 3:
                         res = _a.sent();
@@ -924,20 +946,26 @@ var __ENTranslation = (function () {
         }
         if (typeof plugin.parseChapter === 'function') {
             var orig_4 = plugin.parseChapter.bind(plugin);
-            plugin.parseChapter = function (chapterPath) { return __awaiter(_this, void 0, void 0, function () {
-                var res;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, orig_4(chapterPath)];
-                        case 1:
-                            res = _a.sent();
-                            if (CFG.translateContent && typeof res === 'string') {
-                                return [2 /*return*/, translateHTMLContent(res)];
-                            }
-                            return [2 /*return*/, res];
-                    }
+            plugin.parseChapter = function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                return __awaiter(_this, void 0, void 0, function () {
+                    var res;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, orig_4.apply(void 0, args)];
+                            case 1:
+                                res = _a.sent();
+                                if (CFG.translateContent && typeof res === 'string') {
+                                    return [2 /*return*/, translateHTMLContent(res)];
+                                }
+                                return [2 /*return*/, res];
+                        }
+                    });
                 });
-            }); };
+            };
         }
     }
     return wrapPlugin;

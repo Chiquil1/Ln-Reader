@@ -801,15 +801,13 @@ var ParsingState;
     ParsingState[ParsingState["NovelName"] = 11] = "NovelName";
     ParsingState[ParsingState["NovelList"] = 12] = "NovelList";
 })(ParsingState || (ParsingState = {}));
-var plugin = new ReadNovelFullPlugin({ "id": "lightnovelplus", "sourceSite": "https://lightnovelplus.com/", "sourceName": "LightNovelPlus", "options": { "versionIncrements": 1, "novelListing": "book/bookclass.html", "searchPage": "book/search.html", "chapterListing": "get_chapter_list", "chapterParam": "bookId", "latestPage": "last_release", "pageParam": "page_num", "langParam": "language", "urlLangCode": "en" }, "filters": { "type": { "type": "Picker", "label": "Novel Listing", "value": "hot_novel", "options": [{ "label": "Hot Novel", "value": "hot_novel" }, { "label": "Novel Completed", "value": "completed_novel" }] }, "genres": { "type": "Picker", "label": "Genre", "value": "", "options": [{ "label": "Fantasy", "value": "60" }, { "label": "Action", "value": "132" }, { "label": "Sci-fi", "value": "61" }, { "label": "Romance", "value": "59" }, { "label": "Adventure", "value": "62" }, { "label": "Xuanhuan", "value": "64" }, { "label": "Modern", "value": "66" }, { "label": "Mystery", "value": "63" }, { "label": "Romance", "value": "68" }, { "label": "Fantasy", "value": "70" }, { "label": "Historical", "value": "74" }, { "label": "Sci-fi", "value": "75" }, { "label": "Xuanhuan", "value": "76" }, { "label": "Mystery", "value": "77" }, { "label": "Adventure", "value": "116" }, { "label": "LGBT+", "value": "182" }, { "label": "Fantasy Romance", "value": "134" }, { "label": "Video Games", "value": "243" }, { "label": "Sci-fi Romance", "value": "252" }, { "label": "Historical Romance", "value": "256" }, { "label": "Magical Realism", "value": "331" }, { "label": "Eastern Fantasy", "value": "334" }, { "label": "Contemporary Romance", "value": "344" }, { "label": "Games", "value": "503" }, { "label": "Urban", "value": "504" }, { "label": "Harem", "value": "517" }] } } });
+var plugin = new ReadNovelFullPlugin({ "id": "lightnovelplus", "sourceSite": "https://lightnovelplus.com/", "sourceName": "LightNovelPlus", "options": { "versionIncrements": 50, "novelListing": "book/bookclass.html", "searchPage": "book/search.html", "chapterListing": "get_chapter_list", "chapterParam": "bookId", "latestPage": "last_release", "pageParam": "page_num", "langParam": "language", "urlLangCode": "en" }, "filters": { "type": { "type": "Picker", "label": "Novel Listing", "value": "hot_novel", "options": [{ "label": "Hot Novel", "value": "hot_novel" }, { "label": "Novel Completed", "value": "completed_novel" }] }, "genres": { "type": "Picker", "label": "Genre", "value": "", "options": [{ "label": "Fantasy", "value": "60" }, { "label": "Action", "value": "132" }, { "label": "Sci-fi", "value": "61" }, { "label": "Romance", "value": "59" }, { "label": "Adventure", "value": "62" }, { "label": "Xuanhuan", "value": "64" }, { "label": "Modern", "value": "66" }, { "label": "Mystery", "value": "63" }, { "label": "Romance", "value": "68" }, { "label": "Fantasy", "value": "70" }, { "label": "Historical", "value": "74" }, { "label": "Sci-fi", "value": "75" }, { "label": "Xuanhuan", "value": "76" }, { "label": "Mystery", "value": "77" }, { "label": "Adventure", "value": "116" }, { "label": "LGBT+", "value": "182" }, { "label": "Fantasy Romance", "value": "134" }, { "label": "Video Games", "value": "243" }, { "label": "Sci-fi Romance", "value": "252" }, { "label": "Historical Romance", "value": "256" }, { "label": "Magical Realism", "value": "331" }, { "label": "Eastern Fantasy", "value": "334" }, { "label": "Contemporary Romance", "value": "344" }, { "label": "Games", "value": "503" }, { "label": "Urban", "value": "504" }, { "label": "Harem", "value": "517" }] } } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");
 var __ENTranslation = (function () {
     var CFG = {
         enabled: true,
-        provider: 'google',
-        fallbackProvider: 'libretranslate',
         targetLang: 'es',
         sourceLang: 'auto',
         maxBatchChars: 2000,
@@ -820,6 +818,8 @@ var __ENTranslation = (function () {
         translateContent: true,
         translateQuery: true,
     };
+    var providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
+    var providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
     var cache = new Map();
     var active = 0;
     var queue = [];
@@ -850,15 +850,22 @@ var __ENTranslation = (function () {
     };
     var buildUrl = function (provider, text) {
         var enc = encodeURIComponent(text);
-        if (provider === 'deepl') {
-            return ('https://api-free.deepl.com/v2/translate?auth_key=' +
-                (CFG.apiKey || '') +
-                '&text=' +
+        var src = provider === 'mymemory' && CFG.sourceLang === 'auto' ? 'en' : CFG.sourceLang;
+        if (provider === 'google_repeated') {
+            return ('https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=' +
+                src +
+                '&tl=' +
+                CFG.targetLang +
+                '&q=' +
+                enc);
+        }
+        if (provider === 'mymemory') {
+            return ('https://api.mymemory.translated.net/get?q=' +
                 enc +
-                '&target_lang=' +
-                CFG.targetLang.toUpperCase() +
-                '&source_lang=' +
-                (CFG.sourceLang === 'auto' ? '' : CFG.sourceLang));
+                '&langpair=' +
+                src +
+                '|' +
+                CFG.targetLang);
         }
         if (provider === 'libretranslate') {
             return ('https://libretranslate.de/translate?q=' +
@@ -886,6 +893,19 @@ var __ENTranslation = (function () {
                         .join('');
                 }
             }
+            else if (provider === 'google_repeated') {
+                if (Array.isArray(json) && typeof json[0] === 'string') {
+                    return json[0];
+                }
+            }
+            else if (provider === 'mymemory') {
+                if (json &&
+                    json.responseStatus === 200 &&
+                    json.responseData &&
+                    typeof json.responseData.translatedText === 'string') {
+                    return json.responseData.translatedText;
+                }
+            }
             else if (provider === 'deepl') {
                 if (json && Array.isArray(json.translations) && json.translations[0]) {
                     return json.translations[0].text;
@@ -904,7 +924,7 @@ var __ENTranslation = (function () {
     };
     function translateText(text, target, source) {
         return __awaiter(this, void 0, void 0, function () {
-            var t, tl, sl, ck, providers, _i, providers_1, provider, res, json, out, e_1;
+            var t, tl, sl, ck, _i, providers_1, provider, cap, res, json, out, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -916,7 +936,6 @@ var __ENTranslation = (function () {
                         ck = sl + ':' + tl + ':' + t;
                         if (cache.has(ck))
                             return [2 /*return*/, cache.get(ck)];
-                        providers = [CFG.provider, CFG.fallbackProvider];
                         _i = 0, providers_1 = providers;
                         _a.label = 1;
                     case 1:
@@ -925,6 +944,9 @@ var __ENTranslation = (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 5, , 6]);
+                        cap = providerMaxChars[provider] || Infinity;
+                        if (t.length > cap)
+                            return [3 /*break*/, 6];
                         return [4 /*yield*/, (0, fetch_2.fetchApi)(buildUrl(provider, t))];
                     case 3:
                         res = _a.sent();
@@ -1232,20 +1254,26 @@ var __ENTranslation = (function () {
         }
         if (typeof plugin.parseChapter === 'function') {
             var orig_4 = plugin.parseChapter.bind(plugin);
-            plugin.parseChapter = function (chapterPath) { return __awaiter(_this, void 0, void 0, function () {
-                var res;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, orig_4(chapterPath)];
-                        case 1:
-                            res = _a.sent();
-                            if (CFG.translateContent && typeof res === 'string') {
-                                return [2 /*return*/, translateHTMLContent(res)];
-                            }
-                            return [2 /*return*/, res];
-                    }
+            plugin.parseChapter = function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                return __awaiter(_this, void 0, void 0, function () {
+                    var res;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, orig_4.apply(void 0, args)];
+                            case 1:
+                                res = _a.sent();
+                                if (CFG.translateContent && typeof res === 'string') {
+                                    return [2 /*return*/, translateHTMLContent(res)];
+                                }
+                                return [2 /*return*/, res];
+                        }
+                    });
                 });
-            }); };
+            };
         }
     }
     return wrapPlugin;
