@@ -11,7 +11,7 @@ class DDLPlugin implements Plugin.PluginBase {
   id = 'DDL.com';
   name = 'Divine Dao Library';
   site = 'https://www.divinedaolibrary.com/';
-  version = '1.1.2';
+  version = '1.1.3';
   icon = 'src/en/divinedaolibrary/icon.png';
 
   filters = {

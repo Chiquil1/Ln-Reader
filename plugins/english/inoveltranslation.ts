@@ -12,7 +12,7 @@ class INovelTranslation implements Plugin.PluginBase {
   name = 'iNovelTranslation';
   icon = 'src/en/inoveltranslation/icon.png';
   site = 'https://inoveltranslation.com';
-  version = '1.0.3';
+  version = '1.0.4';
   filters: Filters | undefined = undefined;
 
   pluginSettings = {

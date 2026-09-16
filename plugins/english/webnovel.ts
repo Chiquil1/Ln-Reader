@@ -8,7 +8,7 @@ import { storage } from '@libs/storage';
 class Webnovel implements Plugin.PluginBase {
   id = 'webnovel';
   name = 'Webnovel';
-  version = '1.0.4';
+  version = '1.0.5';
   icon = 'src/en/webnovel/icon.png';
   site = 'https://www.webnovel.com';
   headers = {

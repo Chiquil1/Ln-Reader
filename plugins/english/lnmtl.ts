@@ -9,7 +9,7 @@ class LnMTLPlugin implements Plugin.PagePlugin {
   name = 'LnMTL';
   icon = 'src/en/lnmtl/icon.png';
   site = 'https://lnmtl.com/';
-  version = '2.1.2';
+  version = '2.1.3';
 
   async sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));

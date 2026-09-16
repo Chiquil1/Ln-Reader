@@ -10,7 +10,7 @@ class LeafStudio implements Plugin.PluginBase {
   name = 'LeafStudio';
   icon = 'src/en/leafstudio/icon.png';
   site = 'https://leafstudio.site/';
-  version = '1.0.1';
+  version = '1.0.2';
 
   filters: Filters | undefined = undefined;
 

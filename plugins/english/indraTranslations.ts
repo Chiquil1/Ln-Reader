@@ -9,7 +9,7 @@ class IndraTranslations implements Plugin.PluginBase {
   id = 'indratranslations';
   name = 'Indra Translations';
   site = 'https://indratranslations.com';
-  version = '1.2.2';
+  version = '1.2.3';
   icon = 'src/en/indratranslations/icon.png';
   // customCSS = 'src/en/indratranslations/customCSS.css';
   // (optional) Add these files to the repo and uncomment the lines above if you want an icon/custom CSS.

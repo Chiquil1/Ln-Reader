@@ -31,7 +31,7 @@ class MVLEMPYRPlugin implements Plugin.PluginBase {
   name = 'MVLEMPYR';
   icon = 'src/en/mvlempyr/icon.png';
   site = 'https://www.mvlempyr.io/';
-  version = '1.0.13';
+  version = '1.0.14';
 
   _chapSite = 'https://chap.heliosarchive.online/';
   _allNovels: (Plugin.NovelItem & ExtraNovelData)[] | undefined;

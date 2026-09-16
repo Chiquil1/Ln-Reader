@@ -9,7 +9,7 @@ class WitchCultTranslations implements Plugin.PluginBase {
   name = 'Witch Cult Translations';
   site = 'https://witchculttranslation.com';
   icon = 'src/en/wct/icon.png';
-  version = '1.0.1';
+  version = '1.0.2';
 
   private cachedNovel: Plugin.NovelItem | null = null;
 

@@ -11,7 +11,7 @@ class VyNovel implements Plugin.PluginBase {
   id = 'vynovel';
   name = 'VyNovel';
   site = 'https://vynovel.com';
-  version = '1.0.2';
+  version = '1.0.3';
   icon = 'src/en/vynovel/icon.png';
 
   async fetchNovels(

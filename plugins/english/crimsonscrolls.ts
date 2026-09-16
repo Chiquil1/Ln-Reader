@@ -37,7 +37,7 @@ class CrimsonScrollsPlugin implements Plugin.PluginBase {
   name = 'Crimson Scrolls';
   icon = 'src/en/crimsonscrolls/icon.png';
   site = 'https://crimsonscrolls.net';
-  version = '1.0.2';
+  version = '1.0.3';
 
   hideLocked = storage.get('hideLocked');
   pluginSettings = {

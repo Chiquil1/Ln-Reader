@@ -32,7 +32,7 @@ export class FictioneerPlugin implements Plugin.PluginBase {
     this.icon = `multisrc/fictioneer/${metadata.id.toLowerCase()}/icon.png`;
     this.site = metadata.sourceSite;
     const versionIncrements = metadata.options?.versionIncrements || 0;
-    this.version = `1.2.${0 + versionIncrements}`;
+    this.version = `1.2.${1 + versionIncrements}`;
     this.options = metadata.options;
   }
 

@@ -9,7 +9,7 @@ class FictionZonePlugin implements Plugin.PluginBase {
   name = 'Fiction Zone';
   icon = 'src/en/fictionzone/icon.png';
   site = 'https://fictionzone.net';
-  version = '1.0.3';
+  version = '1.0.4';
   filters: Filters | undefined = undefined;
 
   async popularNovels(

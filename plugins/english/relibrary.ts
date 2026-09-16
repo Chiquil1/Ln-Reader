@@ -164,7 +164,7 @@ class ReLibraryPlugin implements Plugin.PluginBase {
   name = 'Re:Library';
   icon = 'src/en/relibrary/icon.png';
   site = 'https://re-library.com';
-  version = '1.0.4';
+  version = '1.0.5';
   imageRequestInit: Plugin.ImageRequestInit = {
     headers: {
       Referer: 'https://re-library.com/',

@@ -14,7 +14,7 @@ import {
 class NovelHall implements Plugin.PluginBase {
   id = 'novelhall';
   name = 'Novel Hall';
-  version = '1.0.5';
+  version = '1.0.6';
   icon = 'src/en/novelhall/icon.png';
   site = 'https://novelhall.com/';
   translationConfig: TranslationConfig = {

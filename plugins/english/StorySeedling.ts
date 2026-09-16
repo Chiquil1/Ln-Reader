@@ -31,7 +31,7 @@ class StorySeedlingPlugin implements Plugin.PluginBase {
   name = 'StorySeedling';
   icon = 'src/en/storyseedling/icon.png';
   site = 'https://storyseedling.com/';
-  version = '1.0.7';
+  version = '1.0.8';
   nonce: string | undefined;
 
   async getCheerio(url: string, search: boolean): Promise<CheerioAPI> {
