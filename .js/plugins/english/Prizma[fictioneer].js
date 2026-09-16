@@ -205,7 +205,7 @@ var FictioneerPlugin = /** @class */ (function () {
     return FictioneerPlugin;
 }());
 exports.FictioneerPlugin = FictioneerPlugin;
-var plugin = new FictioneerPlugin({ "id": "prizmatranslation", "sourceSite": "https://prizmatranslation.com", "sourceName": "Prizma", "options": { "versionIncrements": 50, "browsePage": "home/all-novels" } });
+var plugin = new FictioneerPlugin({ "id": "prizmatranslation", "sourceSite": "https://prizmatranslation.com", "sourceName": "Prizma", "options": { "versionIncrements": 60, "browsePage": "home/all-novels" } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");

@@ -205,7 +205,7 @@ var FictioneerPlugin = /** @class */ (function () {
     return FictioneerPlugin;
 }());
 exports.FictioneerPlugin = FictioneerPlugin;
-var plugin = new FictioneerPlugin({ "id": "dearestrosalie", "sourceSite": "https://dearestrosalie.com", "sourceName": "Dearest Rosalie", "options": { "versionIncrements": 50, "browsePage": "stories", "down": true, "downSince": 1768289212907 } });
+var plugin = new FictioneerPlugin({ "id": "dearestrosalie", "sourceSite": "https://dearestrosalie.com", "sourceName": "Dearest Rosalie", "options": { "versionIncrements": 60, "browsePage": "stories", "down": true, "downSince": 1768289212907 } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");

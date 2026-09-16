@@ -205,7 +205,7 @@ var FictioneerPlugin = /** @class */ (function () {
     return FictioneerPlugin;
 }());
 exports.FictioneerPlugin = FictioneerPlugin;
-var plugin = new FictioneerPlugin({ "id": "novelib", "sourceSite": "https://novelib.com", "sourceName": "NovelLib", "options": { "versionIncrements": 50, "browsePage": "browse" } });
+var plugin = new FictioneerPlugin({ "id": "novelib", "sourceSite": "https://novelib.com", "sourceName": "NovelLib", "options": { "versionIncrements": 60, "browsePage": "browse" } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");

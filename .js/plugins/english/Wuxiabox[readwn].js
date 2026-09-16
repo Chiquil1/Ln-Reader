@@ -232,7 +232,7 @@ var ReadwnPlugin = /** @class */ (function () {
                                 Origin: this.site,
                             },
                             method: 'POST',
-                            body: new URLSearchParams({ "options": { "versionIncrements": 50 },
+                            body: new URLSearchParams({ "options": { "versionIncrements": 60 },
                                 show: 'title',
                                 tempid: '1',
                                 tbname: 'news',

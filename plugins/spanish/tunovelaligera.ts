@@ -10,10 +10,11 @@ class TuNovelaLigera implements Plugin.PagePlugin {
   name = 'TuNovelaLigera';
   icon = 'src/es/tunovelaligera/icon.png';
   site = 'https://tunovelaligera.com';
-  version = '1.2.1';
+  version = '1.2.2';
 
-  async sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  async sleep(_ms: number) {
+    // No-op: la app (LNReader) bloquea este patrón en validatePluginCode.
+    return Promise.resolve();
   }
   async popularNovels(
     pageNo: number,

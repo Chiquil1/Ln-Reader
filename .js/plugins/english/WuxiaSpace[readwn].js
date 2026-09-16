@@ -258,7 +258,7 @@ var ReadwnPlugin = /** @class */ (function () {
     return ReadwnPlugin;
 }());
 exports.ReadwnPlugin = ReadwnPlugin;
-var plugin = new ReadwnPlugin({ "id": "wuxiaspace", "sourceSite": "https://www.wuxiaspot.com", "sourceName": "Wuxia Space", "options": { "versionIncrements": 50 } });
+var plugin = new ReadwnPlugin({ "id": "wuxiaspace", "sourceSite": "https://www.wuxiaspot.com", "sourceName": "Wuxia Space", "options": { "versionIncrements": 60 } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");

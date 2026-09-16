@@ -337,8 +337,8 @@ __ENTranslation(plugin);
 function bumpVersion(source) {
   // Piso de versión: garantiza que el publish (que re-inyecta desde .ts
   // pristinos) siempre quede POR ENCIMA de lo ya publicado en plugins/v3.0.0,
-  // forzando la re-descarga en la app. Subir si en el futuro se publica ≥ 2.2.50.
-  const MIN_VERSION = 50;
+  // forzando la re-descarga en la app. Subir si en el futuro se publica ≥ 2.2.60.
+  const MIN_VERSION = 60;
   const re = /("versionIncrements"\s*:\s*)(\d+)/;
   if (re.test(source)) {
     return source.replace(

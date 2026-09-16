@@ -526,7 +526,7 @@ function extractChapterNumber(data, tempChapter) {
         tempChapter.chapterNumber = parseInt(tempChapterNumber[0]);
     }
 }
-var plugin = new LightNovelWPPlugin({ "id": "hyacinthbloom", "sourceSite": "https://hyacinthbloom.com/", "sourceName": "Hyacinth in Bloom", "options": { "versionIncrements": 50, "lang": "English", "reverseChapters": true, "hasLocked": true } });
+var plugin = new LightNovelWPPlugin({ "id": "hyacinthbloom", "sourceSite": "https://hyacinthbloom.com/", "sourceName": "Hyacinth in Bloom", "options": { "versionIncrements": 60, "lang": "English", "reverseChapters": true, "hasLocked": true } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");

@@ -205,7 +205,7 @@ var FictioneerPlugin = /** @class */ (function () {
     return FictioneerPlugin;
 }());
 exports.FictioneerPlugin = FictioneerPlugin;
-var plugin = new FictioneerPlugin({ "id": "penguinsquad", "sourceSite": "https://penguin-squad.com", "sourceName": "Penguin Squad", "options": { "versionIncrements": 50, "browsePage": "novels" } });
+var plugin = new FictioneerPlugin({ "id": "penguinsquad", "sourceSite": "https://penguin-squad.com", "sourceName": "Penguin Squad", "options": { "versionIncrements": 60, "browsePage": "novels" } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");

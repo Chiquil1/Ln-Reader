@@ -23,6 +23,7 @@ npm run dev               # Genera plugins multisrc + inicia el servidor dev de 
 - Los plugins deben devolver TODOS los capítulos y el contenido completo, nunca paginado.
 - Sube el `version` del plugin en cada cambio; commitea fuente `.ts` + compilado `.js` + `.dist`.
 - Nunca re-agregues sitios listados en `BLACKLIST.json` sin aprobación.
+- **NO uses `setTimeout(`, `setInterval(`, `eval(`, ni `new Function(` en plugins** (incluye templates multisrc y customJS): la app del usuario (`validatePluginCode` en el fork LNReader) bloquea esos patrones y el plugin termina en "actualización fallida". Usa `Promise.resolve()` o `JSON.parse` en su lugar. Verificar con `npm run check:sites` o el scan del validator.
 - Se requiere Node.js >= 22.
 
 ## Reglas del traductor EN→ES (NO romper)
@@ -36,5 +37,5 @@ npm run dev               # Genera plugins multisrc + inicia el servidor dev de 
 - **Errores conocidos del injector** (`scripts/inject-es-translation.js`, ya corregidos, no reintroducir):
   - `norm` debe colapsar solo `[ \t]` y quitar `\r`, CONSERVANDO `\n` (si colapsas `\s+` rompes el batch multi-línea de `parseChapter` → traducción silenciosamente no aplicada).
   - `bumpVersion` corre ANTES de `lastIndexOf('export default plugin;')` (si va después, el `slice` corta metadata con `"versionIncrements":1,` ya insertado → TS1002 "Unterminated string literal").
-  - Esquema de versión: `2.2.${versionIncrements}` (madara) / `2.2.${1 + versionIncrements}` (readnovelfull). Bump = incrementar `"versionIncrements":N`; si falta, insertar `"versionIncrements":1,`. El injector aplica un **piso `MIN_VERSION=50`** para que cualquier publish quede por encima de lo ya publicado en `plugins/v3.0.0` (sube el piso si se publica ≥ 2.2.50).
+  - Esquema de versión: `2.2.${versionIncrements}` (madara) / `2.2.${1 + versionIncrements}` (readnovelfull). Bump = incrementar `"versionIncrements":N`; si falta, insertar `"versionIncrements":1,`. El injector aplica un **piso `MIN_VERSION=60`** para que cualquier publish quede por encima de lo ya publicado en `plugins/v3.0.0` (sube el piso si se publica ≥ 2.2.60).
 - **Para verificar un plugin contra la app real**: evaluarlo con el `initPlugin` exacto (whitelist `packages` + `Function('require','module', ...exports.default)`). No basta con abrirlo en Node plano.

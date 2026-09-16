@@ -6,10 +6,14 @@
     if (scriptContent) {
       const gibMatch = scriptContent.match(/var gib = (\[.*?\])/);
       if (gibMatch) {
-        const gibArray = eval(gibMatch[1]);
-        gibArray.forEach(cssClass => {
-          loadedCheerio(`.${cssClass}`).remove();
-        });
+        try {
+          const gibArray = JSON.parse(gibMatch[1].replace(/,\s*\]/, ']'));
+          gibArray.forEach(cssClass => {
+            loadedCheerio(`.${cssClass}`).remove();
+          });
+        } catch (e) {
+          console.error('LilyOntheValley: could not parse gib array', e);
+        }
       }
     }
 

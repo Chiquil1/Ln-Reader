@@ -314,7 +314,7 @@ var LightNovelWorld = /** @class */ (function () {
     return LightNovelWorld;
 }());
 exports.LightNovelWorld = LightNovelWorld;
-var plugin = new LightNovelWorld({ "options": { "versionIncrements": 50 }, "id": "lightnovelcave", "sourceName": "LightNovelCave", "sourceSite": "https://www.lightnovelcave.com/" });
+var plugin = new LightNovelWorld({ "options": { "versionIncrements": 60 }, "id": "lightnovelcave", "sourceName": "LightNovelCave", "sourceSite": "https://www.lightnovelcave.com/" });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");

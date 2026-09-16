@@ -205,7 +205,7 @@ var FictioneerPlugin = /** @class */ (function () {
     return FictioneerPlugin;
 }());
 exports.FictioneerPlugin = FictioneerPlugin;
-var plugin = new FictioneerPlugin({ "id": "daoistquest", "sourceSite": "https://daoist.quest", "sourceName": "Daoist Quest", "options": { "browsePage": "collection/novels", "versionIncrements": 50 } });
+var plugin = new FictioneerPlugin({ "id": "daoistquest", "sourceSite": "https://daoist.quest", "sourceName": "Daoist Quest", "options": { "browsePage": "collection/novels", "versionIncrements": 60 } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");

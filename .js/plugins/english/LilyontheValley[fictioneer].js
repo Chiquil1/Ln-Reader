@@ -187,10 +187,15 @@ var FictioneerPlugin = /** @class */ (function () {
                         if (scriptContent) {
                             gibMatch = scriptContent.match(/var gib = (\[.*?\])/);
                             if (gibMatch) {
-                                gibArray = eval(gibMatch[1]);
-                                gibArray.forEach(function (cssClass) {
-                                    loadedCheerio(".".concat(cssClass)).remove();
-                                });
+                                try {
+                                    gibArray = JSON.parse(gibMatch[1].replace(/,\s*\]/, ']'));
+                                    gibArray.forEach(function (cssClass) {
+                                        loadedCheerio(".".concat(cssClass)).remove();
+                                    });
+                                }
+                                catch (e) {
+                                    console.error('LilyOntheValley: could not parse gib array', e);
+                                }
                             }
                         }
                         loadedCheerio('ruby').remove();
@@ -229,7 +234,7 @@ var FictioneerPlugin = /** @class */ (function () {
     return FictioneerPlugin;
 }());
 exports.FictioneerPlugin = FictioneerPlugin;
-var plugin = new FictioneerPlugin({ "id": "lilyonthevalley", "sourceSite": "https://lilyonthevalley.com", "sourceName": "Lily on the Valley", "options": { "customJs": { "chapterTransform": "custom/lillyonthevalley/chapterTransform.js" }, "versionIncrements": 50, "browsePage": "stories" } });
+var plugin = new FictioneerPlugin({ "id": "lilyonthevalley", "sourceSite": "https://lilyonthevalley.com", "sourceName": "Lily on the Valley", "options": { "customJs": { "chapterTransform": "custom/lillyonthevalley/chapterTransform.js" }, "versionIncrements": 60, "browsePage": "stories" } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");

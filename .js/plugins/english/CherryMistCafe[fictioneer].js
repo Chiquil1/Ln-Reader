@@ -246,7 +246,7 @@ var FictioneerPlugin = /** @class */ (function () {
     return FictioneerPlugin;
 }());
 exports.FictioneerPlugin = FictioneerPlugin;
-var plugin = new FictioneerPlugin({ "id": "cherrymistcafe", "sourceSite": "https://cherrymist.cafe/", "sourceName": "Cherry Mist Cafe", "options": { "customJs": { "chapterTransform": "custom/cherrymistcafe/chapterTransform.js" }, "versionIncrements": 50, "browsePage": "stories" } });
+var plugin = new FictioneerPlugin({ "id": "cherrymistcafe", "sourceSite": "https://cherrymist.cafe/", "sourceName": "Cherry Mist Cafe", "options": { "customJs": { "chapterTransform": "custom/cherrymistcafe/chapterTransform.js" }, "versionIncrements": 60, "browsePage": "stories" } });
 /* __ENTranslationInjected v1 */
 var fetch_2 = require("@libs/fetch");
 var cheerio_2 = require("cheerio");
