@@ -31,7 +31,7 @@ const __ENTranslation = (function () {
     enabled: true,
     targetLang: 'es',
     sourceLang: 'auto',
-    maxBatchChars: 2000,
+    maxBatchChars: 1600,
     maxConcurrent: 4,
     translateNovelNames: true,
     translateSummaries: true,
@@ -253,6 +253,33 @@ const __ENTranslation = (function () {
     });
     return nodes;
   }
+  function segmentizeText(s, max) {
+    const out = [];
+    let cur = '';
+    for (const word of s.split(/(\\s+)/)) {
+      if (word.length > max) {
+        if (cur) {
+          out.push(cur);
+          cur = '';
+        }
+        let rest = word;
+        while (rest.length > max) {
+          out.push(rest.slice(0, max));
+          rest = rest.slice(max);
+        }
+        cur = rest;
+        continue;
+      }
+      if ((cur + word).length > max && cur) {
+        out.push(cur);
+        cur = word;
+      } else {
+        cur += word;
+      }
+    }
+    if (cur) out.push(cur);
+    return out;
+  }
   async function translateHTMLContent(html) {
     try {
       if (typeof html !== 'string' || !html.trim()) return html;
@@ -260,29 +287,78 @@ const __ENTranslation = (function () {
       const nodes = collectTextNodes($);
       if (!nodes.length) return html;
       let batch = '';
-      const batches = [{ lines: [], texts: [] }];
+      const batches = [];
       const last = () => batches[batches.length - 1];
       for (const node of nodes) {
-        if ((batch + '\\n' + node.value).length > CFG.maxBatchChars && batch !== '') {
-          batches.push({ lines: [], texts: [] });
-          batch = '';
+        if (node.value.trim().length <= CFG.maxBatchChars) {
+          if ((batch + '\\n' + node.value).length > CFG.maxBatchChars && batch !== '') {
+            batches.push({ lines: [], texts: [] });
+            batch = '';
+          }
+          last().lines.push(node.el);
+          last().texts.push(node.value);
+          batch = (batch === '' ? '' : batch + '\\n') + node.value;
+        } else {
+          if (batch !== '') {
+            batches.push({ lines: [], texts: [] });
+            batch = '';
+          }
+          batches.push({
+            lines: [node.el],
+            texts: segmentizeText(node.value, CFG.maxBatchChars),
+            chunked: true,
+          });
         }
-        last().lines.push(node.el);
-        last().texts.push(node.value);
-        batch = (batch === '' ? '' : batch + '\\n') + node.value;
       }
+      let originalTotalLen = 0;
+      let translatedTotalLen = 0;
+      console.warn('[translate] batches:', batches.length, 'nodes:', nodes.length);
+      let bIdx = 0;
       for (const chunk of batches) {
         if (!chunk.lines.length) continue;
+        bIdx++;
+        if (chunk.chunked) {
+          const translated = [];
+          for (const seg of chunk.texts) {
+            const t = await translateText(seg);
+            translated.push(t && t !== seg ? t : seg);
+          }
+          const joined = translated.join(' ');
+          originalTotalLen += chunk.texts.join(' ').length;
+          translatedTotalLen += joined.length;
+          chunk.lines[0].data = joined;
+          continue;
+        }
         const joined = chunk.texts.join('\\n');
+        originalTotalLen += joined.length;
         const translated = await translateText(joined);
-        if (!translated || !translated.trim() || translated === joined) continue;
+        if (!translated || !translated.trim() || translated === joined) {
+          console.warn('[translate] batch', bIdx, ': skipped (no translation or same)');
+          translatedTotalLen += joined.length;
+          continue;
+        }
         const parts = translated.split('\\n');
-        if (parts.length !== chunk.lines.length) continue;
-        for (let i = 0; i < chunk.lines.length; i += 1) {
-          chunk.lines[i].data = parts[i];
+        if (parts.length === chunk.lines.length) {
+          for (let i = 0; i < chunk.lines.length; i += 1) {
+            chunk.lines[i].data = parts[i];
+          }
+          translatedTotalLen += translated.length;
+        } else {
+          console.warn('[translate] batch', bIdx, ': line mismatch', parts.length, 'vs', chunk.lines.length, '- fallback per-line');
+          for (let i = 0; i < chunk.lines.length; i += 1) {
+            const t = await translateText(chunk.texts[i] || '');
+            chunk.lines[i].data = (t && t.trim()) ? t : (chunk.texts[i] || '');
+          }
+          translatedTotalLen += chunk.lines.reduce((s, l) => s + (l.data || '').length, 0);
         }
       }
-      return $.html();
+      console.warn('[translate] original:', originalTotalLen, 'chars, translated:', translatedTotalLen, 'chars');
+      const result = $.html();
+      if (originalTotalLen > 200 && translatedTotalLen < originalTotalLen * 0.4) {
+        console.warn('[translate] RESULT TOO SHORT - returning original');
+        return html;
+      }
+      return result;
     } catch (e) {
       return html;
     }
@@ -304,9 +380,46 @@ const __ENTranslation = (function () {
         const effectiveQuery = CFG.translateQuery
           ? (await translateText(query, 'en', CFG.sourceLang).catch(() => query)) || query
           : query;
-        const res = await orig(effectiveQuery, pageNo);
-        if (Array.isArray(res)) return translateNovelItems(res);
-        return res;
+        const raw = await orig(effectiveQuery, pageNo);
+        if (!Array.isArray(raw)) return raw;
+        const fold = s => {
+          try {
+            return String(s || '')
+              .toLowerCase()
+              .normalize('NFD')
+              .replace(/[\\u0300-\\u036f]/g, '');
+          } catch (e) {
+            return String(s || '').toLowerCase();
+          }
+        };
+        const enQ = effectiveQuery ? fold(effectiveQuery) : '';
+        const esQ = query ? fold(query) : '';
+        const rawEn = new Set();
+        if (enQ && enQ.length >= 2) {
+          raw.forEach((n, i) => {
+            const name = fold(n.name);
+            const path = fold(n.path);
+            if (name.indexOf(enQ) !== -1 || path.indexOf(enQ.replace(/\\s+/g, '-')) !== -1) {
+              rawEn.add(i);
+            }
+          });
+        }
+        const translated = await translateNovelItems(raw);
+        let out = translated;
+        if (rawEn.size || (esQ && esQ.length >= 2)) {
+          out = translated.filter((n, i) => {
+            if (rawEn.has(i)) return true;
+            return (
+              esQ &&
+              esQ.length >= 2 &&
+              fold(n.name).indexOf(esQ) !== -1
+            );
+          });
+        }
+        if (out.length === 0 && raw.length > 0 && raw.length <= 15) {
+          out = translated;
+        }
+        return out;
       };
     }
     if (typeof plugin.parseNovel === 'function') {
@@ -337,8 +450,8 @@ __ENTranslation(plugin);
 function bumpVersion(source) {
   // Piso de versión: garantiza que el publish (que re-inyecta desde .ts
   // pristinos) siempre quede POR ENCIMA de lo ya publicado en plugins/v3.0.0,
-  // forzando la re-descarga en la app. Subir si en el futuro se publica ≥ 2.2.60.
-  const MIN_VERSION = 60;
+  // forzando la re-descarga en la app. Subir si en el futuro se publica ≥ 2.2.70.
+  const MIN_VERSION = 70;
   const re = /("versionIncrements"\s*:\s*)(\d+)/;
   if (re.test(source)) {
     return source.replace(

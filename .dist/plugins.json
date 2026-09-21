@@ -184,7 +184,7 @@
 		"name": "FirstKissNovel",
 		"site": "https://1stkissnovel.org/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/FirstKissNovel[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/1stkissnovel/icon.png"
 	},
@@ -193,7 +193,7 @@
 		"name": "AllNovel",
 		"site": "https://allnovel.org/",
 		"lang": "English",
-		"version": "2.2.2",
+		"version": "2.2.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/AllNovel[readnovelfull].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readnovelfull/allnovel/icon.png"
 	},
@@ -202,7 +202,7 @@
 		"name": "AllNovelFull",
 		"site": "https://novgo.net/",
 		"lang": "English",
-		"version": "2.2.2",
+		"version": "2.2.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/AllNovelFull[readnovelfull].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readnovelfull/anf.net/icon.png"
 	},
@@ -211,7 +211,7 @@
 		"name": "Arcane Translations",
 		"site": "https://arcanetranslations.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/ArcaneTranslations[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/arcane/icon.png"
 	},
@@ -229,7 +229,7 @@
 		"name": "Srank Manga",
 		"site": "https://srankmanga.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/SrankManga[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/asuralightnovel/icon.png"
 	},
@@ -238,7 +238,7 @@
 		"name": "Belle Reservoir",
 		"site": "https://bellereservoir.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/BelleReservoir[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/bellereservoir/icon.png"
 	},
@@ -247,7 +247,7 @@
 		"name": "BoxNovel",
 		"site": "https://novelnice.com/",
 		"lang": "English",
-		"version": "2.2.3",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/BoxNovel[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/boxnovel/icon.png"
 	},
@@ -256,7 +256,7 @@
 		"name": "Cherry Mist Cafe",
 		"site": "https://cherrymist.cafe/",
 		"lang": "English",
-		"version": "1.1.2",
+		"version": "1.1.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/CherryMistCafe[fictioneer].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/fictioneer/cherrymistcafe/icon.png"
 	},
@@ -274,7 +274,7 @@
 		"name": "Citrus Aurora",
 		"site": "https://citrusaurora.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/CitrusAurora[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/citrusaurora/icon.png"
 	},
@@ -283,7 +283,7 @@
 		"name": "Coral Boutique",
 		"site": "https://coralboutique.xyz/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/CoralBoutique[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/coralboutique/icon.png"
 	},
@@ -292,7 +292,7 @@
 		"name": "CPUnovel",
 		"site": "https://cpunovel.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/CPUnovel[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/cpunovel/icon.png"
 	},
@@ -310,7 +310,7 @@
 		"name": "Daoist Quest",
 		"site": "https://daoist.quest",
 		"lang": "English",
-		"version": "1.1.2",
+		"version": "1.1.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/DaoistQuest[fictioneer].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/fictioneer/daoistquest/icon.png"
 	},
@@ -319,7 +319,7 @@
 		"name": "DaoNovel",
 		"site": "https://daonovel.co/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/DaoNovel[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/daonovel/icon.png"
 	},
@@ -328,7 +328,7 @@
 		"name": "DaoTranslate",
 		"site": "https://daotranslate.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/DaoTranslate[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/daotranslate/icon.png"
 	},
@@ -346,7 +346,7 @@
 		"name": "Dearest Rosalie",
 		"site": "https://dearestrosalie.com",
 		"lang": "English",
-		"version": "1.1.1",
+		"version": "1.1.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/DearestRosalie[fictioneer].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/fictioneer/dearestrosalie/icon.png"
 	},
@@ -355,7 +355,7 @@
 		"name": "Dragonholic",
 		"site": "https://dragonholic.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/Dragonholic[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/dragonholic/icon.png"
 	},
@@ -364,7 +364,7 @@
 		"name": "Dragon Tea",
 		"site": "https://dragontea.ink/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/DragonTea[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/dragontea/icon.png"
 	},
@@ -382,7 +382,7 @@
 		"name": "Dusk Blossoms",
 		"site": "https://duskblossoms.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/DuskBlossoms[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/duskblossoms/icon.png"
 	},
@@ -391,7 +391,7 @@
 		"name": "ElloTL",
 		"site": "https://ellotl.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/ElloTL[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/ellotl/icon.png"
 	},
@@ -400,7 +400,7 @@
 		"name": "Eternalune",
 		"site": "https://eternalune.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/Eternalune[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/eternalune/icon.png"
 	},
@@ -409,7 +409,7 @@
 		"name": "Etude Translations",
 		"site": "https://etudetranslations.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/EtudeTranslations[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/etudetranslations/icon.png"
 	},
@@ -418,7 +418,7 @@
 		"name": "FanNovel",
 		"site": "https://www.fanmtl.com",
 		"lang": "English",
-		"version": "1.0.6",
+		"version": "1.0.73",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/FanNovel[readwn].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readwn/fannovel/icon.png"
 	},
@@ -427,7 +427,7 @@
 		"name": "Fans Translations",
 		"site": "https://fanstranslations.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/FansTranslations[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/fanstranslations/icon.png"
 	},
@@ -454,7 +454,7 @@
 		"name": "Foxaholic",
 		"site": "https://www.foxaholic.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/Foxaholic[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/foxaholic/icon.png"
 	},
@@ -481,7 +481,7 @@
 		"name": "Free Web Novel",
 		"site": "https://freewebnovel.com/",
 		"lang": "English",
-		"version": "2.2.4",
+		"version": "2.2.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/FreeWebNovel[readnovelfull].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readnovelfull/fwn.com/icon.png"
 	},
@@ -490,7 +490,7 @@
 		"name": "Galaxy Translations",
 		"site": "https://darkstartranslations.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/GalaxyTranslations[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/galaxytranslations/icon.png"
 	},
@@ -509,7 +509,7 @@
 		"name": "Guavaread",
 		"site": "https://guavaread.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/Guavaread[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/guavaread/icon.png"
 	},
@@ -518,7 +518,7 @@
 		"name": "Hiraeth Translation",
 		"site": "https://hiraethtranslation.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/HiraethTranslation[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/hiraethtranslation/icon.png"
 	},
@@ -527,7 +527,7 @@
 		"name": "HotNovelPub",
 		"site": "https://hotnovelpub.com",
 		"lang": "English",
-		"version": "1.0.1",
+		"version": "1.0.2",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/HotNovelPub[hotnovelpub].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/hotnovelpub/hotnovelpub/icon.png"
 	},
@@ -536,7 +536,7 @@
 		"name": "Hyacinth in Bloom",
 		"site": "https://hyacinthbloom.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/HyacinthinBloom[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/hyacinthbloom/icon.png"
 	},
@@ -563,7 +563,7 @@
 		"name": "iNovelTranslation",
 		"site": "https://inoveltranslation.com",
 		"lang": "English",
-		"version": "1.0.2",
+		"version": "1.0.3",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/inoveltranslation.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/src/en/inoveltranslation/icon.png"
 	},
@@ -572,7 +572,7 @@
 		"name": "Ippotranslations",
 		"site": "https://ippotranslations.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/Ippotranslations[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/ippotranslations/icon.png"
 	},
@@ -581,7 +581,7 @@
 		"name": "KDT Novels",
 		"site": "https://kdtnovels.net/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/KDTNovels[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/kdtnovels/icon.png"
 	},
@@ -590,7 +590,7 @@
 		"name": "Keopi Translations",
 		"site": "https://keopitranslations.com",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/KeopiTranslations[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/keopi/icon.png"
 	},
@@ -599,7 +599,7 @@
 		"name": "KnoxT",
 		"site": "https://knoxt.space/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/KnoxT[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/knoxt/icon.png"
 	},
@@ -608,7 +608,7 @@
 		"name": "Lazy Girl Translations",
 		"site": "https://lazygirltranslations.com",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/LazyGirlTranslations[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/lazygirltranslations/icon.png"
 	},
@@ -626,7 +626,7 @@
 		"name": "Lib Read",
 		"site": "https://libread.com/",
 		"lang": "English",
-		"version": "2.2.4",
+		"version": "2.2.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/LibRead[readnovelfull].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readnovelfull/libread/icon.png"
 	},
@@ -635,7 +635,7 @@
 		"name": "LightNovelCave",
 		"site": "https://www.lightnovelcave.com/",
 		"lang": "English",
-		"version": "1.0.1",
+		"version": "1.0.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/LightNovelCave[lightnovelworld].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelworld/lightnovelcave/icon.png"
 	},
@@ -644,7 +644,7 @@
 		"name": "LightNovelPlus",
 		"site": "https://lightnovelplus.com/",
 		"lang": "English",
-		"version": "2.2.2",
+		"version": "2.2.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/LightNovelPlus[readnovelfull].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readnovelfull/lightnovelplus/icon.png"
 	},
@@ -653,7 +653,7 @@
 		"name": "LightNovelPub Vip",
 		"site": "https://lightnovelpub.vip/",
 		"lang": "English",
-		"version": "1.0.1",
+		"version": "1.0.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/LightNovelPubVip[lightnovelworld].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelworld/lightnovelpubvip/icon.png"
 	},
@@ -671,7 +671,7 @@
 		"name": "Light Novel Updates",
 		"site": "https://www.lightnovelupdates.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/LightNovelUpdates[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/lightnovelupdates/icon.png"
 	},
@@ -680,7 +680,7 @@
 		"name": "Lily on the Valley",
 		"site": "https://lilyonthevalley.com",
 		"lang": "English",
-		"version": "1.1.2",
+		"version": "1.1.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/LilyontheValley[fictioneer].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/fictioneer/lilyonthevalley/icon.png"
 	},
@@ -689,7 +689,7 @@
 		"name": "LightNovelHeaven",
 		"site": "https://lightnovelheaven.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/LightNovelHeaven[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/lnheaven/icon.png"
 	},
@@ -698,7 +698,7 @@
 		"name": "LnMTL",
 		"site": "https://lnmtl.com/",
 		"lang": "English",
-		"version": "2.1.1",
+		"version": "2.1.2",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/lnmtl.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/src/en/lnmtl/icon.png"
 	},
@@ -716,7 +716,7 @@
 		"name": "Ltnovel",
 		"site": "https://www.ltnovels.com",
 		"lang": "English",
-		"version": "1.0.5",
+		"version": "1.0.73",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/Ltnovel[readwn].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readwn/ltnovel/icon.png"
 	},
@@ -725,7 +725,7 @@
 		"name": "LulloBox",
 		"site": "https://lullobox.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/LulloBox[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/lullobox/icon.png"
 	},
@@ -734,7 +734,7 @@
 		"name": "LunarLetters",
 		"site": "https://lunarletters.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/LunarLetters[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/lunarletters/icon.png"
 	},
@@ -743,7 +743,7 @@
 		"name": "Meownovel",
 		"site": "https://meownovel.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/Meownovel[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/meownovel/icon.png"
 	},
@@ -752,7 +752,7 @@
 		"name": "Moonlight Novels",
 		"site": "https://moonlightnovel.com/",
 		"lang": "English",
-		"version": "1.1.12",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/MoonlightNovels[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/moonlightnovel/icon.png"
 	},
@@ -761,7 +761,7 @@
 		"name": "MostNovel",
 		"site": "https://mostnovel.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/MostNovel[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/mostnovel/icon.png"
 	},
@@ -770,7 +770,7 @@
 		"name": "MTL-Novel",
 		"site": "https://mtl-novel.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/MTLNovel[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/mtl-novel/icon.png"
 	},
@@ -779,7 +779,7 @@
 		"name": "MTL Novel",
 		"site": "https://www.mtlnovels.com/",
 		"lang": "English",
-		"version": "1.1.3",
+		"version": "1.1.4",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/MTLNovel[mtlnovel].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/mtlnovel/mtlnovel/icon.png"
 	},
@@ -797,7 +797,7 @@
 		"name": "MysticalSeries",
 		"site": "https://mysticalmerries.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/MysticalSeries[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/mysticalmerries/icon.png"
 	},
@@ -806,7 +806,7 @@
 		"name": "NeoSekai Translations",
 		"site": "https://www.neosekaitranslations.com/",
 		"lang": "English",
-		"version": "2.2.0",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NeoSekaiTranslations[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/neosekaitls/icon.png"
 	},
@@ -815,7 +815,7 @@
 		"name": "Nitro Manga",
 		"site": "https://nitromanga.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NitroManga[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/nitromanga/icon.png"
 	},
@@ -833,7 +833,7 @@
 		"name": "NobleMTL",
 		"site": "https://noblemtl.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NobleMTL[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/noblemtl/icon.png"
 	},
@@ -842,7 +842,7 @@
 		"name": "Noice Translations",
 		"site": "https://noicetranslations.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NoiceTranslations[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/noicetranslations/icon.png"
 	},
@@ -860,7 +860,7 @@
 		"name": "Novel Bin",
 		"site": "https://novelbin.com/",
 		"lang": "English",
-		"version": "2.2.3",
+		"version": "2.2.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NovelBin[readnovelfull].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readnovelfull/novelbin/icon.png"
 	},
@@ -878,7 +878,7 @@
 		"name": "NovelCool",
 		"site": "https://www.novelcool.com",
 		"lang": "English",
-		"version": "1.0.0",
+		"version": "1.0.1",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NovelCool[novelcool].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/novelcool/novelcool/icon.png"
 	},
@@ -887,7 +887,7 @@
 		"name": "Novel Fire",
 		"site": "https://novelfire.net/",
 		"lang": "English",
-		"version": "1.4.3",
+		"version": "1.4.4",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/novelfire.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/src/en/novelfire/icon.png"
 	},
@@ -896,7 +896,7 @@
 		"name": "NovelFull",
 		"site": "https://novelfull.com/",
 		"lang": "English",
-		"version": "2.2.2",
+		"version": "2.2.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NovelFull[readnovelfull].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readnovelfull/novelfull/icon.png"
 	},
@@ -923,7 +923,7 @@
 		"name": "NovelLib",
 		"site": "https://novelib.com",
 		"lang": "English",
-		"version": "1.1.1",
+		"version": "1.1.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NovelLib[fictioneer].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/fictioneer/novelib/icon.png"
 	},
@@ -941,7 +941,7 @@
 		"name": "NovelMultiverse",
 		"site": "https://www.novelmultiverse.com/",
 		"lang": "English",
-		"version": "2.2.0",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NovelMultiverse[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/novelmultiverse/icon.png"
 	},
@@ -950,7 +950,7 @@
 		"name": "Novel Ninja",
 		"site": "https://novelninja.xyz/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NovelNinja[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/novelninja/icon.png"
 	},
@@ -968,7 +968,7 @@
 		"name": "NovelsKnight",
 		"site": "https://novelsknight.punchmanga.online/",
 		"lang": "English",
-		"version": "1.1.13",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NovelsKnight[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/novelsknight/icon.png"
 	},
@@ -977,7 +977,7 @@
 		"name": "NovelTranslate",
 		"site": "https://noveltranslate.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/NovelTranslate[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/noveltl/icon.png"
 	},
@@ -996,7 +996,7 @@
 		"name": "Panda Machine Translations",
 		"site": "https://pandamtl.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/PandaMachineTranslations[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/pandamtl/icon.png"
 	},
@@ -1005,7 +1005,7 @@
 		"name": "Pastel Tales",
 		"site": "https://pasteltales.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/PastelTales[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/pasteltales/icon.png"
 	},
@@ -1023,7 +1023,7 @@
 		"name": "Penguin Squad",
 		"site": "https://penguin-squad.com",
 		"lang": "English",
-		"version": "1.1.1",
+		"version": "1.1.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/PenguinSquad[fictioneer].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/fictioneer/penguinsquad/icon.png"
 	},
@@ -1032,7 +1032,7 @@
 		"name": "Prizma",
 		"site": "https://prizmatranslation.com",
 		"lang": "English",
-		"version": "1.1.1",
+		"version": "1.1.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/Prizma[fictioneer].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/fictioneer/prizmatranslation/icon.png"
 	},
@@ -1050,7 +1050,7 @@
 		"name": "Ranobes",
 		"site": "https://ranobes.top",
 		"lang": "English",
-		"version": "2.0.2",
+		"version": "2.0.3",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/Ranobes[ranobes].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/ranobes/ranobes/icon.png"
 	},
@@ -1059,7 +1059,7 @@
 		"name": "Ranovel",
 		"site": "https://ranovel.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/Ranovel[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/ranovel/icon.png"
 	},
@@ -1068,7 +1068,7 @@
 		"name": "Read Fanfic",
 		"site": "https://readfanfic.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/ReadFanfic[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/readfanfic/icon.png"
 	},
@@ -1086,7 +1086,7 @@
 		"name": "ReadNovelFull",
 		"site": "https://readnovelfull.com/",
 		"lang": "English",
-		"version": "2.2.2",
+		"version": "2.2.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/ReadNovelFull[readnovelfull].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readnovelfull/readnovelfull/icon.png"
 	},
@@ -1104,7 +1104,7 @@
 		"name": "Requiem Translations",
 		"site": "https://requiemtls.com/",
 		"lang": "English",
-		"version": "1.1.15",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/RequiemTranslations[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/requiemtls/icon.png"
 	},
@@ -1122,7 +1122,7 @@
 		"name": "Salmon Latte",
 		"site": "https://salmonlatte.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/SalmonLatte[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/salmonlatte/icon.png"
 	},
@@ -1140,7 +1140,7 @@
 		"name": "SleepyTranslations",
 		"site": "https://sleepytranslations.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/SleepyTranslations[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/sleepttls/icon.png"
 	},
@@ -1149,7 +1149,7 @@
 		"name": "SonicMTL",
 		"site": "https://www.sonicmtl.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/SonicMTL[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/sonicmtl/icon.png"
 	},
@@ -1167,7 +1167,7 @@
 		"name": "Sweet Escape",
 		"site": "https://sweetescapetranslations.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/SweetEscape[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/sweetescape/icon.png"
 	},
@@ -1176,7 +1176,7 @@
 		"name": "System Translation",
 		"site": "https://systemtranslation.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/SystemTranslation[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/systemtranslation/icon.png"
 	},
@@ -1185,7 +1185,7 @@
 		"name": "TranslatinOtaku",
 		"site": "https://translatinotaku.net/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/TranslatinOtaku[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/translatinotaku/icon.png"
 	},
@@ -1194,7 +1194,7 @@
 		"name": "Translation Weaver",
 		"site": "https://transweaver.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/TranslationWeaver[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/transweaver/icon.png"
 	},
@@ -1203,7 +1203,7 @@
 		"name": "Universal Novel",
 		"site": "https://universalnovel.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/UniversalNovel[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/universalnovel/icon.png"
 	},
@@ -1212,7 +1212,7 @@
 		"name": "Vandy Translate",
 		"site": "https://vandytranslate.com",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/VandyTranslate[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/vandytranslate/icon.png"
 	},
@@ -1221,7 +1221,7 @@
 		"name": "Violet Lily",
 		"site": "https://violetlilytranslation.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/VioletLily[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/violetlily/icon.png"
 	},
@@ -1248,7 +1248,7 @@
 		"name": "WebNovelLover",
 		"site": "https://www.webnovelover.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/WebNovelLover[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/webnovelover/icon.png"
 	},
@@ -1257,7 +1257,7 @@
 		"name": "Web Novel Translation",
 		"site": "https://webnoveltranslations.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/WebNovelTranslation[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/webnoveltraslation/icon.png"
 	},
@@ -1266,7 +1266,7 @@
 		"name": "Web Novel Pub",
 		"site": "https://www.webnovelworld.org/",
 		"lang": "English",
-		"version": "1.0.1",
+		"version": "1.0.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/WebNovelPub[lightnovelworld].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelworld/webnovelworld/icon.png"
 	},
@@ -1275,7 +1275,7 @@
 		"name": "White Moonlight Novels",
 		"site": "https://whitemoonlightnovels.com/",
 		"lang": "English",
-		"version": "1.1.11",
+		"version": "1.1.80",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/WhiteMoonlightNovels[lightnovelwp].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/lightnovelwp/whitemoonlightnovels/icon.png"
 	},
@@ -1293,7 +1293,7 @@
 		"name": "Wook's Teahouse",
 		"site": "https://wooksteahouse.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/WooksTeahouse[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/wooksteahouse/icon.png"
 	},
@@ -1302,7 +1302,7 @@
 		"name": "WordExcerpt",
 		"site": "https://wordexcerpt.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/WordExcerpt[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/wordexcerpt/icon.png"
 	},
@@ -1320,7 +1320,7 @@
 		"name": "Wuxiafox",
 		"site": "https://www.wuxiafox.com",
 		"lang": "English",
-		"version": "1.0.4",
+		"version": "1.0.73",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/Wuxiafox[readwn].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readwn/wuxiacity/icon.png"
 	},
@@ -1329,7 +1329,7 @@
 		"name": "Fans MTL",
 		"site": "https://www.fanmtl.com",
 		"lang": "English",
-		"version": "1.0.6",
+		"version": "1.0.73",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/FansMTL[readwn].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readwn/wuxiamtl/icon.png"
 	},
@@ -1347,7 +1347,7 @@
 		"name": "Wuxia Space",
 		"site": "https://www.wuxiaspot.com",
 		"lang": "English",
-		"version": "1.0.5",
+		"version": "1.0.73",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/WuxiaSpace[readwn].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readwn/wuxiaspace/icon.png"
 	},
@@ -1356,7 +1356,7 @@
 		"name": "WuxiaV",
 		"site": "https://www.wuxiav.com",
 		"lang": "English",
-		"version": "1.0.4",
+		"version": "1.0.73",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/WuxiaV[readwn].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/readwn/wuxiav/icon.png"
 	},
@@ -1374,7 +1374,7 @@
 		"name": "WuxiaWorld.Site",
 		"site": "https://wuxiaworld.site/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.71",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/WuxiaWorldSite[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/wuxiaworld.site/icon.png"
 	},
@@ -1383,7 +1383,7 @@
 		"name": "Zetro Translation",
 		"site": "https://zetrotranslation.com/",
 		"lang": "English",
-		"version": "2.2.1",
+		"version": "2.2.70",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/english/ZetroTranslation[madara].js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/multisrc/madara/zetrotl/icon.png"
 	},
@@ -2085,7 +2085,7 @@
 		"name": "TuNovelaLigera",
 		"site": "https://tunovelaligera.com",
 		"lang": "Español",
-		"version": "1.2.1",
+		"version": "1.2.2",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/spanish/tunovelaligera.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/src/es/tunovelaligera/icon.png"
 	},
@@ -2265,7 +2265,7 @@
 		"name": "Light Novel VN",
 		"site": "https://lightnovel.vn",
 		"lang": "Tiếng Việt",
-		"version": "1.0.0",
+		"version": "1.0.1",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/vietnamese/lightnovelvn.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/src/vi/lightnovelvn/icon.png"
 	},
