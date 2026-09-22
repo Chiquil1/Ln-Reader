@@ -10,7 +10,7 @@ class RNCalationPlugin implements Plugin.PluginBase {
   name = 'RNCalation';
   icon = 'src/es/rncalation/icon.png';
   site = 'https://rncalation.online/';
-  version = '1.0.2';
+  version = '1.0.3';
   filters = undefined;
 
   async popularNovels(
