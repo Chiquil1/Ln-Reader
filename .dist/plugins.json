@@ -2049,7 +2049,7 @@
 		"name": "RNCalation",
 		"site": "https://rncalation.online/",
 		"lang": "Español",
-		"version": "1.0.2",
+		"version": "1.0.3",
 		"url": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/.js/plugins/spanish/rncalation.js",
 		"iconUrl": "https://raw.githubusercontent.com/Chiquil1/Ln-Reader/feat/es-translation-selfcontained/public/static/src/es/rncalation/icon.png"
 	},
