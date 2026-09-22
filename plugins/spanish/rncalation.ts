@@ -10,7 +10,7 @@ class RNCalationPlugin implements Plugin.PluginBase {
   name = 'RNCalation';
   icon = 'src/es/rncalation/icon.png';
   site = 'https://rncalation.online/';
-  version = '1.0.3';
+  version = '1.0.4';
   filters = undefined;
 
   async popularNovels(
@@ -87,42 +87,80 @@ class RNCalationPlugin implements Plugin.PluginBase {
       status,
       chapters: [],
     };
-
     const chapters: Plugin.ChapterItem[] = [];
     const seenPaths = new Set<string>();
 
     const baseUrl = this.site + novelPath.replace(/^\//, '').replace(/\/$/, '');
 
-    // El sitio usa un <select id="chapter-select"> con <option> para listar capítulos.
-    // data-base del <select> indica la URL base para leer capítulos.
+    // Estrategia 1: <select id="chapter-select"> con <option> (página de capítulo)
     const selectEl = $('select#chapter-select');
-    const dataBase = selectEl.attr('data-base') || `${baseUrl}/leer/`;
+    const dataBase = selectEl.attr('data-base') || '';
 
-    selectEl.find('option').each((_, el) => {
-      const value = $(el).attr('value') || '';
-      const dataFull = $(el).attr('data-full') || '';
-      const dataNum = $(el).attr('data-num') || '';
+    if (dataBase) {
+      selectEl.find('option').each((_, el) => {
+        const value = $(el).attr('value') || '';
+        const dataFull = $(el).attr('data-full') || '';
+        const dataNum = $(el).attr('data-num') || '';
 
-      if (!value) return;
+        if (!value) return;
 
-      // Construir la URL del capítulo: data-base + value (sin slash extra)
-      const base = dataBase.endsWith('/') ? dataBase : dataBase + '/';
-      const chapterPath = '/' + base.replace(this.site, '') + value;
+        const base = dataBase.endsWith('/') ? dataBase : dataBase + '/';
+        const chapterPath = '/' + base.replace(this.site, '') + value;
 
-      if (seenPaths.has(chapterPath)) return;
-      seenPaths.add(chapterPath);
+        if (seenPaths.has(chapterPath)) return;
+        seenPaths.add(chapterPath);
 
-      const chapterNum = Number(dataNum) || undefined;
-      const chapterName = dataFull || `Chapter ${dataNum}`;
+        const chapterNum = Number(dataNum) || undefined;
+        const chapterName = dataFull || `Chapter ${dataNum}`;
 
-      chapters.push({
-        name: chapterName,
-        path: chapterPath,
-        chapterNumber: chapterNum,
+        chapters.push({
+          name: chapterName,
+          path: chapterPath,
+          chapterNumber: chapterNum,
+        });
       });
-    });
+    }
 
-    // el sitio suele listarlos del más nuevo al más viejo
+    // Estrategia 2: enlaces <a> con href que contiene /leer/ (página de novela)
+    if (chapters.length === 0) {
+      $('a[href*="/leer/"]').each((_, el) => {
+        const href = $(el).attr('href') || '';
+        const chapterPath = href.replace(this.site, '') || href;
+
+        if (!chapterPath || seenPaths.has(chapterPath)) return;
+        seenPaths.add(chapterPath);
+
+        const text = $(el).text().trim();
+        const match = text.match(/(\d+)/);
+        const chapterNum = match ? Number(match[1]) : undefined;
+
+        chapters.push({
+          name: text || `Chapter ${chapterNum || chapters.length + 1}`,
+          path: chapterPath.startsWith('/') ? chapterPath : '/' + chapterPath,
+          chapterNumber: chapterNum,
+        });
+      });
+    }
+
+    // Estrategia 3: enlaces <a> con data-chapter-num (formato viejo)
+    if (chapters.length === 0) {
+      $('a[data-chapter-num]').each((_, el) => {
+        const chapterName =
+          $(el).attr('data-chapter-label') || $(el).text().trim();
+        const chapterPath = $(el).attr('href')?.replace(this.site, '') || '';
+        const chapterNum = Number($(el).attr('data-chapter-num')) || undefined;
+
+        if (chapterPath && !seenPaths.has(chapterPath)) {
+          seenPaths.add(chapterPath);
+          chapters.push({
+            name: chapterName,
+            path: chapterPath.startsWith('/') ? chapterPath : '/' + chapterPath,
+            chapterNumber: chapterNum,
+          });
+        }
+      });
+    }
+
     novel.chapters = chapters.reverse();
 
     return novel;
