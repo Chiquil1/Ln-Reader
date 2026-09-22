@@ -140,9 +140,9 @@ class RNCalationPlugin implements Plugin.PluginBase {
     const $ = cheerio.load(body);
 
     const content =
+      $('.the-content').html() ||
       $('.novel-content').html() ||
       $('#rk-novel-reader .novel-content').html() ||
-      $('.novel-reader .novel-content').html() ||
       '';
     return content;
   }
