@@ -10,7 +10,7 @@ class RNCalationPlugin implements Plugin.PluginBase {
   name = 'RNCalation';
   icon = 'src/es/rncalation/icon.png';
   site = 'https://rncalation.online/';
-  version = '1.0.4';
+  version = '1.0.5';
   filters = undefined;
 
   async popularNovels(
@@ -90,74 +90,41 @@ class RNCalationPlugin implements Plugin.PluginBase {
     const chapters: Plugin.ChapterItem[] = [];
     const seenPaths = new Set<string>();
 
-    const baseUrl = this.site + novelPath.replace(/^\//, '').replace(/\/$/, '');
+    $('a[data-chapter-num]').each((_, el) => {
+      const chapterPath = $(el).attr('href')?.replace(this.site, '') || '';
+      if (!chapterPath || seenPaths.has(chapterPath)) return;
+      seenPaths.add(chapterPath);
 
-    // Estrategia 1: <select id="chapter-select"> con <option> (página de capítulo)
-    const selectEl = $('select#chapter-select');
-    const dataBase = selectEl.attr('data-base') || '';
+      const chapterName =
+        $(el).attr('data-chapter-label') ||
+        $(el).find('[data-cl-title]').text().trim() ||
+        $(el).text().trim();
+      const chapterNum = Number($(el).attr('data-chapter-num')) || undefined;
 
-    if (dataBase) {
-      selectEl.find('option').each((_, el) => {
-        const value = $(el).attr('value') || '';
-        const dataFull = $(el).attr('data-full') || '';
-        const dataNum = $(el).attr('data-num') || '';
-
-        if (!value) return;
-
-        const base = dataBase.endsWith('/') ? dataBase : dataBase + '/';
-        const chapterPath = '/' + base.replace(this.site, '') + value;
-
-        if (seenPaths.has(chapterPath)) return;
-        seenPaths.add(chapterPath);
-
-        const chapterNum = Number(dataNum) || undefined;
-        const chapterName = dataFull || `Chapter ${dataNum}`;
-
-        chapters.push({
-          name: chapterName,
-          path: chapterPath,
-          chapterNumber: chapterNum,
-        });
+      chapters.push({
+        name: chapterName,
+        path: chapterPath.startsWith('/') ? chapterPath : '/' + chapterPath,
+        chapterNumber: chapterNum,
       });
-    }
+    });
 
-    // Estrategia 2: enlaces <a> con href que contiene /leer/ (página de novela)
     if (chapters.length === 0) {
       $('a[href*="/leer/"]').each((_, el) => {
         const href = $(el).attr('href') || '';
         const chapterPath = href.replace(this.site, '') || href;
-
         if (!chapterPath || seenPaths.has(chapterPath)) return;
         seenPaths.add(chapterPath);
 
+        const label = $(el).attr('data-chapter-label') || '';
+        const num = Number($(el).attr('data-chapter-num')) || undefined;
         const text = $(el).text().trim();
-        const match = text.match(/(\d+)/);
-        const chapterNum = match ? Number(match[1]) : undefined;
+        const name = label || text || `Chapter ${num || chapters.length + 1}`;
 
         chapters.push({
-          name: text || `Chapter ${chapterNum || chapters.length + 1}`,
+          name,
           path: chapterPath.startsWith('/') ? chapterPath : '/' + chapterPath,
-          chapterNumber: chapterNum,
+          chapterNumber: num,
         });
-      });
-    }
-
-    // Estrategia 3: enlaces <a> con data-chapter-num (formato viejo)
-    if (chapters.length === 0) {
-      $('a[data-chapter-num]').each((_, el) => {
-        const chapterName =
-          $(el).attr('data-chapter-label') || $(el).text().trim();
-        const chapterPath = $(el).attr('href')?.replace(this.site, '') || '';
-        const chapterNum = Number($(el).attr('data-chapter-num')) || undefined;
-
-        if (chapterPath && !seenPaths.has(chapterPath)) {
-          seenPaths.add(chapterPath);
-          chapters.push({
-            name: chapterName,
-            path: chapterPath.startsWith('/') ? chapterPath : '/' + chapterPath,
-            chapterNumber: chapterNum,
-          });
-        }
       });
     }
 
@@ -172,7 +139,11 @@ class RNCalationPlugin implements Plugin.PluginBase {
     ).then(res => res.text());
     const $ = cheerio.load(body);
 
-    const content = $('.novel-content').html() || '';
+    const content =
+      $('.novel-content').html() ||
+      $('#rk-novel-reader .novel-content').html() ||
+      $('.novel-reader .novel-content').html() ||
+      '';
     return content;
   }
 
