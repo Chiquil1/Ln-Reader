@@ -31,8 +31,10 @@ if [[ "$1" == "--all-branches" ]]; then
         git stash pop
         npm run clean:multisrc
         npm run build:multisrc
+        npm run build:translate:inject
         echo "Compiling TypeScript..."
         npx tsc --project tsconfig.production.json
+        npm run guard:translation-lib
         echo "# $branch" >> $GITHUB_STEP_SUMMARY
         BRANCH=$dist npm run build:manifest -- --only-new 2>> $GITHUB_STEP_SUMMARY
         if [ ! -d ".dist" ] || [ -z "$(ls -A .dist)" ]; then
@@ -82,8 +84,10 @@ git reset
 rm -rf .js
 npm run clean:multisrc
 npm run build:multisrc
+npm run build:translate:inject
 echo "Compiling TypeScript..."
 npx tsc --project tsconfig.production.json
+npm run guard:translation-lib
 npm run build:manifest
 
 if [ ! -d ".dist" ] || [ -z "$(ls -A .dist)" ]; then

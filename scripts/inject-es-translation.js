@@ -1,0 +1,522 @@
+#!/usr/bin/env node
+// Inyecta un traductor EN->ES AUTOCONTENIDO en los plugins MultiSource cuyo
+// idioma es English (plugins/english/*[template].ts).
+//
+// Contrato:
+//  - NO usa @libs/translation: la app del usuario no lo define.
+//  - Usa @libs/fetch (fetchApi) y cheerio (load), ambos en el whitelist de la app.
+//  - Cada plugin compilado queda autocontenido: funciona sin tocar la app.
+//  - Idempotente: no inyecta dos veces (marca comentario).
+//  - Seguro: si la traducción falla o la forma no coincide, devuelve el original.
+
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const MARKER = '/* __ENTranslationInjected v1 */';
+const EN_DIR = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..',
+  'plugins',
+  'english',
+);
+
+const ENGINE = `
+${MARKER}
+import { fetchApi as __translatorFetch } from '@libs/fetch';
+import { load as __translatorParse } from 'cheerio';
+
+const __ENTranslation = (function () {
+  const CFG = {
+    enabled: true,
+    targetLang: 'es',
+    sourceLang: 'auto',
+    maxBatchChars: 1600,
+    maxConcurrent: 4,
+    translateNovelNames: true,
+    translateSummaries: true,
+    translateChapterNames: false,
+    translateContent: true,
+    translateQuery: true,
+  };
+  const providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
+  const providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
+  const cache = new Map();
+  let active = 0;
+  const queue = [];
+  const norm = s =>
+    String(s || '')
+      .replace(/[ \t]+/g, ' ')
+      .replace(/\\r/g, '')
+      .trim();
+  const guard = fn =>
+    new Promise((resolve, reject) => {
+      const start = () => {
+        active += 1;
+        fn()
+          .then(resolve, reject)
+          .finally(() => {
+            active -= 1;
+            const next = queue.shift();
+            if (next) next();
+          });
+      };
+      if (active < CFG.maxConcurrent) start();
+      else queue.push(start);
+    });
+  const buildUrl = (provider, text) => {
+    const enc = encodeURIComponent(text);
+    const src = provider === 'mymemory' && CFG.sourceLang === 'auto' ? 'en' : CFG.sourceLang;
+    if (provider === 'google_repeated') {
+      return (
+        'https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=' +
+        src +
+        '&tl=' +
+        CFG.targetLang +
+        '&q=' +
+        enc
+      );
+    }
+    if (provider === 'mymemory') {
+      return (
+        'https://api.mymemory.translated.net/get?q=' +
+        enc +
+        '&langpair=' +
+        src +
+        '|' +
+        CFG.targetLang
+      );
+    }
+    if (provider === 'libretranslate') {
+      return (
+        'https://libretranslate.de/translate?q=' +
+        enc +
+        '&source=' +
+        CFG.sourceLang +
+        '&target=' +
+        CFG.targetLang +
+        '&format=text'
+      );
+    }
+    return (
+      'https://translate.googleapis.com/translate_a/single?client=gtx&sl=' +
+      CFG.sourceLang +
+      '&tl=' +
+      CFG.targetLang +
+      '&dt=t&q=' +
+      enc
+    );
+  };
+  const extract = (json, provider) => {
+    try {
+      if (provider === 'google') {
+        if (Array.isArray(json) && json[0] && Array.isArray(json[0])) {
+          return json[0]
+            .map(item => (Array.isArray(item) ? item[0] : null))
+            .filter(Boolean)
+            .join('');
+        }
+      } else if (provider === 'google_repeated') {
+        if (Array.isArray(json) && typeof json[0] === 'string') {
+          return json[0];
+        }
+      } else if (provider === 'mymemory') {
+        if (
+          json &&
+          json.responseStatus === 200 &&
+          json.responseData &&
+          typeof json.responseData.translatedText === 'string'
+        ) {
+          return json.responseData.translatedText;
+        }
+      } else if (provider === 'deepl') {
+        if (json && Array.isArray(json.translations) && json.translations[0]) {
+          return json.translations[0].text;
+        }
+      } else if (provider === 'libretranslate') {
+        if (json && typeof json.translatedText === 'string') {
+          return json.translatedText;
+        }
+      }
+    } catch (e) {
+      return null;
+    }
+    return null;
+  };
+  async function translateText(text, target, source) {
+    const t = norm(text);
+    if (!t) return '';
+    const tl = target || CFG.targetLang;
+    const sl = source || CFG.sourceLang;
+    const ck = sl + ':' + tl + ':' + t;
+    if (cache.has(ck)) return cache.get(ck);
+    for (const provider of providers) {
+      try {
+        const cap = providerMaxChars[provider] || Infinity;
+        if (t.length > cap) continue;
+        const res = await __translatorFetch(buildUrl(provider, t));
+        if (!res || !res.ok) continue;
+        const json = await res.json();
+        const out = extract(json, provider);
+        if (out && out !== t) {
+          cache.set(ck, out);
+          return out;
+        }
+      } catch (e) {
+        // probar siguiente proveedor
+      }
+    }
+    return text;
+  }
+  const translateShort = text => guard(() => translateText(text));
+  async function translateList(values) {
+    const out = [];
+    for (const value of values) {
+      const translated = await translateText(value);
+      out.push(translated && translated.trim() ? translated : value);
+    }
+    return out;
+  }
+  async function translateNovelItems(items) {
+    const result = [];
+    for (const item of items) {
+      try {
+        const name = await translateText(typeof item.name === 'string' ? item.name : '');
+        result.push({
+          ...item,
+          name: name && name.trim() ? name : item.name,
+        });
+      } catch (e) {
+        result.push(item);
+      }
+    }
+    return result;
+  }
+  async function translateChapterNames(chapters) {
+    const capped = Array.isArray(chapters) ? chapters.slice(0, CFG.maxChapterNames) : [];
+    const out = [];
+    for (const chapter of capped) {
+      try {
+        const name = await translateText(typeof chapter.name === 'string' ? chapter.name : '');
+        out.push({
+          ...chapter,
+          name: name && name.trim() ? name : chapter.name,
+        });
+      } catch (e) {
+        out.push(chapter);
+      }
+    }
+    return out;
+  }
+  async function translateSourceNovel(novel) {
+    try {
+      const updated = { ...novel };
+      if (CFG.translateNovelNames && typeof updated.name === 'string') {
+        const name = await translateText(updated.name);
+        if (name && name.trim()) updated.name = name;
+      }
+      if (CFG.translateSummaries && typeof updated.summary === 'string' && updated.summary) {
+        const summary = await translateText(updated.summary);
+        if (summary && summary.trim()) updated.summary = summary;
+      }
+      if (CFG.translateChapterNames && Array.isArray(updated.chapters)) {
+        const translatedChapters = await translateChapterNames(updated.chapters);
+        if (translatedChapters.length < updated.chapters.length) {
+          const rest = updated.chapters.slice(translatedChapters.length);
+          updated.chapters = translatedChapters.concat(rest);
+        } else {
+          updated.chapters = translatedChapters;
+        }
+      }
+      return updated;
+    } catch (e) {
+      return novel;
+    }
+  }
+  function collectTextNodes($) {
+    const nodes = [];
+    const root = $('body');
+    if (!root.length) return nodes;
+    root.find('*').each((i, el) => {
+      const tag = (el.tagName || '').toLowerCase();
+      if (['script', 'style', 'pre', 'code', 'svg', 'noscript'].includes(tag)) return;
+      $(el)
+        .contents()
+        .each((j, child) => {
+          if (child.type === 'text') {
+            const value = child.data || '';
+            if (value.trim()) {
+              nodes.push({ el: child, value });
+            }
+          }
+        });
+    });
+    return nodes;
+  }
+  function segmentizeText(s, max) {
+    const out = [];
+    let cur = '';
+    for (const word of s.split(/(\\s+)/)) {
+      if (word.length > max) {
+        if (cur) {
+          out.push(cur);
+          cur = '';
+        }
+        let rest = word;
+        while (rest.length > max) {
+          out.push(rest.slice(0, max));
+          rest = rest.slice(max);
+        }
+        cur = rest;
+        continue;
+      }
+      if ((cur + word).length > max && cur) {
+        out.push(cur);
+        cur = word;
+      } else {
+        cur += word;
+      }
+    }
+    if (cur) out.push(cur);
+    return out;
+  }
+  async function translateHTMLContent(html) {
+    try {
+      if (typeof html !== 'string' || !html.trim()) return html;
+      const $ = __translatorParse(html);
+      const nodes = collectTextNodes($);
+      if (!nodes.length) return html;
+      let batch = '';
+      const batches = [];
+      const last = () => batches[batches.length - 1];
+      for (const node of nodes) {
+        if (node.value.trim().length <= CFG.maxBatchChars) {
+          if ((batch + '\\n' + node.value).length > CFG.maxBatchChars && batch !== '') {
+            batches.push({ lines: [], texts: [] });
+            batch = '';
+          }
+          last().lines.push(node.el);
+          last().texts.push(node.value);
+          batch = (batch === '' ? '' : batch + '\\n') + node.value;
+        } else {
+          if (batch !== '') {
+            batches.push({ lines: [], texts: [] });
+            batch = '';
+          }
+          batches.push({
+            lines: [node.el],
+            texts: segmentizeText(node.value, CFG.maxBatchChars),
+            chunked: true,
+          });
+        }
+      }
+      let originalTotalLen = 0;
+      let translatedTotalLen = 0;
+      console.warn('[translate] batches:', batches.length, 'nodes:', nodes.length);
+      let bIdx = 0;
+      for (const chunk of batches) {
+        if (!chunk.lines.length) continue;
+        bIdx++;
+        if (chunk.chunked) {
+          const translated = [];
+          for (const seg of chunk.texts) {
+            const t = await translateText(seg);
+            translated.push(t && t !== seg ? t : seg);
+          }
+          const joined = translated.join(' ');
+          originalTotalLen += chunk.texts.join(' ').length;
+          translatedTotalLen += joined.length;
+          chunk.lines[0].data = joined;
+          continue;
+        }
+        const joined = chunk.texts.join('\\n');
+        originalTotalLen += joined.length;
+        const translated = await translateText(joined);
+        if (!translated || !translated.trim() || translated === joined) {
+          console.warn('[translate] batch', bIdx, ': skipped (no translation or same)');
+          translatedTotalLen += joined.length;
+          continue;
+        }
+        const parts = translated.split('\\n');
+        if (parts.length === chunk.lines.length) {
+          for (let i = 0; i < chunk.lines.length; i += 1) {
+            chunk.lines[i].data = parts[i];
+          }
+          translatedTotalLen += translated.length;
+        } else {
+          console.warn('[translate] batch', bIdx, ': line mismatch', parts.length, 'vs', chunk.lines.length, '- fallback per-line');
+          for (let i = 0; i < chunk.lines.length; i += 1) {
+            const t = await translateText(chunk.texts[i] || '');
+            chunk.lines[i].data = (t && t.trim()) ? t : (chunk.texts[i] || '');
+          }
+          translatedTotalLen += chunk.lines.reduce((s, l) => s + (l.data || '').length, 0);
+        }
+      }
+      console.warn('[translate] original:', originalTotalLen, 'chars, translated:', translatedTotalLen, 'chars');
+      const result = $.html();
+      if (originalTotalLen > 200 && translatedTotalLen < originalTotalLen * 0.4) {
+        console.warn('[translate] RESULT TOO SHORT - returning original');
+        return html;
+      }
+      return result;
+    } catch (e) {
+      return html;
+    }
+  }
+  function wrapPlugin(plugin) {
+    if (!plugin || !CFG.enabled) return;
+    if (typeof plugin.popularNovels === 'function') {
+      const orig = plugin.popularNovels.bind(plugin);
+      plugin.popularNovels = async (pageNo, options) => {
+        const res = await orig(pageNo, options);
+        if (Array.isArray(res)) return translateNovelItems(res);
+        return res;
+      };
+    }
+    if (typeof plugin.searchNovels === 'function') {
+      const orig = plugin.searchNovels.bind(plugin);
+      plugin.searchNovels = async (searchTerm, pageNo) => {
+        const query = typeof searchTerm === 'string' ? searchTerm : '';
+        const effectiveQuery = CFG.translateQuery
+          ? (await translateText(query, 'en', CFG.sourceLang).catch(() => query)) || query
+          : query;
+        const raw = await orig(effectiveQuery, pageNo);
+        if (!Array.isArray(raw)) return raw;
+        const fold = s => {
+          try {
+            return String(s || '')
+              .toLowerCase()
+              .normalize('NFD')
+              .replace(/[\\u0300-\\u036f]/g, '');
+          } catch (e) {
+            return String(s || '').toLowerCase();
+          }
+        };
+        const enQ = effectiveQuery ? fold(effectiveQuery) : '';
+        const esQ = query ? fold(query) : '';
+        const rawEn = new Set();
+        if (enQ && enQ.length >= 2) {
+          raw.forEach((n, i) => {
+            const name = fold(n.name);
+            const path = fold(n.path);
+            if (name.indexOf(enQ) !== -1 || path.indexOf(enQ.replace(/\\s+/g, '-')) !== -1) {
+              rawEn.add(i);
+            }
+          });
+        }
+        const translated = await translateNovelItems(raw);
+        let out = translated;
+        if (rawEn.size || (esQ && esQ.length >= 2)) {
+          out = translated.filter((n, i) => {
+            if (rawEn.has(i)) return true;
+            return (
+              esQ &&
+              esQ.length >= 2 &&
+              fold(n.name).indexOf(esQ) !== -1
+            );
+          });
+        }
+        if (out.length === 0 && raw.length > 0 && raw.length <= 15) {
+          out = translated;
+        }
+        return out;
+      };
+    }
+    if (typeof plugin.parseNovel === 'function') {
+      const orig = plugin.parseNovel.bind(plugin);
+      plugin.parseNovel = async novelPath => {
+        const res = await orig(novelPath);
+        if (res && typeof res === 'object') return translateSourceNovel(res);
+        return res;
+      };
+    }
+    if (typeof plugin.parseChapter === 'function') {
+      const orig = plugin.parseChapter.bind(plugin);
+      plugin.parseChapter = async (...args) => {
+        const res = await orig(...args);
+        if (CFG.translateContent && typeof res === 'string') {
+          return translateHTMLContent(res);
+        }
+        return res;
+      };
+    }
+  }
+  return wrapPlugin;
+})();
+__ENTranslation(plugin);
+/* __ENTranslationInjected END */
+`;
+
+function bumpVersion(source) {
+  // Piso de versión: garantiza que el publish (que re-inyecta desde .ts
+  // pristinos) siempre quede POR ENCIMA de lo ya publicado en plugins/v3.0.0,
+  // forzando la re-descarga en la app. Subir si en el futuro se publica ≥ 2.2.70.
+  const MIN_VERSION = 70;
+  const re = /("versionIncrements"\s*:\s*)(\d+)/;
+  if (re.test(source)) {
+    return source.replace(
+      re,
+      (match, prefix, num) => prefix + Math.max(Number(num) + 1, MIN_VERSION),
+    );
+  }
+  if (/^\s*this\.version\s*=\s*'[^']+';?$/m.test(source)) {
+    // Esquema de versión literal (p. ej. HotNovelPub '1.0.1', MTLNovel '1.1.3'):
+    // bumpa el número final una vez.
+    return source.replace(
+      /(this\.version\s*=\s*')([^']*)(\d+)([^']*)(')/,
+      (m, a, pre, num, post, quote) =>
+        a + pre + (Number(num) + 1) + post + quote,
+    );
+  }
+  if (/("options"\s*:\s*\{)/.test(source)) {
+    return source.replace(
+      /("options"\s*:\s*\{)/,
+      '$1"versionIncrements":' + MIN_VERSION + ',',
+    );
+  }
+  if (/new \w+\(\{/.test(source)) {
+    // Templates cuya metadata NO define "options" (p. ej. lightnovelworld,
+    // algunos madara/readwn): el constructor lee metadata.options.
+    return source.replace(
+      /(new \w+\(\{)/,
+      '$1"options":{"versionIncrements":' + MIN_VERSION + '},',
+    );
+  }
+  return source;
+}
+
+function injectFile(filePath) {
+  let source = fs.readFileSync(filePath, 'utf-8');
+  if (source.includes(MARKER)) return false;
+  source = bumpVersion(source);
+  const exportIndex = source.lastIndexOf('export default plugin;');
+  if (exportIndex === -1) {
+    console.warn('SALTADO (sin export default plugin):', filePath);
+    return false;
+  }
+  const head = source.slice(0, exportIndex);
+  const tail = source.slice(exportIndex);
+  source = head + ENGINE + '\n' + tail;
+  fs.writeFileSync(filePath, source, 'utf-8');
+  return true;
+}
+
+function run() {
+  let injected = 0;
+  let skipped = 0;
+  const files = fs
+    .readdirSync(EN_DIR)
+    .filter(
+      name => name.endsWith('.ts') && name.includes('[') && name.includes(']'),
+    );
+  for (const name of files) {
+    const filePath = path.join(EN_DIR, name);
+    if (injectFile(filePath)) injected += 1;
+    else skipped += 1;
+  }
+  console.log(
+    `[inject-es-translation] inyectados: ${injected}, ya inyectados/saltados: ${skipped}`,
+  );
+}
+
+run();

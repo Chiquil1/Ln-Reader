@@ -3,13 +3,13 @@ import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { NovelStatus } from '@libs/novelStatus';
 import { Filters, FilterTypes } from '@libs/filterInputs';
-import { defaultCover } from '@/types/constants';
+import { defaultCover } from '@libs/defaultCover';
 import { storage } from '@libs/storage';
 
 class NovelFire implements Plugin.PluginBase {
   id = 'novelfire';
   name = 'Novel Fire';
-  version = '1.4.3';
+  version = '1.4.4';
   icon = 'src/en/novelfire/icon.png';
   site = 'https://novelfire.net/';
   webStorageUtilized = true;
@@ -210,7 +210,6 @@ class NovelFire implements Plugin.PluginBase {
     // When pages > ~30, we get rate limited. To mitigate, split into chunks and retry chunk on rate limit with delay.
     const chunkSize = 5; // 5 pages per chunk was tested to be a good balance between speed and rate limiting.
     const retryCount = 10;
-    const sleepTime = 3.5; // Rate limit seems to be around ~10s, so usually 3 retries should be enough for another ~30 pages.
 
     const chaptersArray: Plugin.SourcePage[] = [];
 
@@ -237,14 +236,11 @@ class NovelFire implements Plugin.PluginBase {
           if (err instanceof NovelFireThrottlingError) {
             attempt += 1;
             console.warn(
-              `[pages=${firstPage}-${lastPage}] Novel Fire is rate limiting requests. Retry attempt ${attempt + 1} in ${sleepTime} seconds...`,
+              `[pages=${firstPage}-${lastPage}] Novel Fire is rate limiting requests. Retry attempt ${attempt + 1}...`,
             );
             if (attempt === retryCount) {
               throw err;
             }
-
-            // Sleep for X second before retrying
-            await new Promise(resolve => setTimeout(resolve, sleepTime * 1000));
           } else {
             throw err;
           }
@@ -600,16 +596,15 @@ class NovelFire implements Plugin.PluginBase {
 export default new NovelFire();
 
 // Custom error for when Novel Fire is rate limiting requests
-class NovelFireThrottlingError extends Error {
+class NovelFireThrottlingError {
   constructor(message = 'Novel Fire is rate limiting requests') {
-    super(message);
-    this.name = 'NovelFireError';
+    this.message = message;
   }
 }
 
-class NovelFireAjaxNotFound extends Error {
+class NovelFireAjaxNotFound {
   constructor(message = 'Novel Fire says its Ajax interface is not found') {
-    super(message);
+    this.message = message;
     this.name = 'NovelFireAjaxError';
   }
 }
