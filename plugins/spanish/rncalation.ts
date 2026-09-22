@@ -91,61 +91,36 @@ class RNCalationPlugin implements Plugin.PluginBase {
     const chapters: Plugin.ChapterItem[] = [];
     const seenPaths = new Set<string>();
 
-    const extractChapters = ($doc: cheerio.CheerioAPI) => {
-      let found = 0;
-      $doc('a[data-chapter-num]').each((_, el) => {
-        const chapterName =
-          $doc(el).attr('data-chapter-label') || $doc(el).text().trim();
-        const chapterPath =
-          $doc(el).attr('href')?.replace(this.site, '/') || '';
-        const chapterNum =
-          Number($doc(el).attr('data-chapter-num')) || undefined;
+    const baseUrl = this.site + novelPath.replace(/^\//, '').replace(/\/$/, '');
 
-        if (chapterPath && !seenPaths.has(chapterPath)) {
-          seenPaths.add(chapterPath);
-          chapters.push({
-            name: chapterName,
-            path: chapterPath,
-            chapterNumber: chapterNum,
-          });
-          found++;
-        }
+    // El sitio usa un <select id="chapter-select"> con <option> para listar capítulos.
+    // data-base del <select> indica la URL base para leer capítulos.
+    const selectEl = $('select#chapter-select');
+    const dataBase = selectEl.attr('data-base') || `${baseUrl}/leer/`;
+
+    selectEl.find('option').each((_, el) => {
+      const value = $(el).attr('value') || '';
+      const dataFull = $(el).attr('data-full') || '';
+      const dataNum = $(el).attr('data-num') || '';
+
+      if (!value) return;
+
+      // Construir la URL del capítulo: data-base + value (sin slash extra)
+      const base = dataBase.endsWith('/') ? dataBase : dataBase + '/';
+      const chapterPath = '/' + base.replace(this.site, '') + value;
+
+      if (seenPaths.has(chapterPath)) return;
+      seenPaths.add(chapterPath);
+
+      const chapterNum = Number(dataNum) || undefined;
+      const chapterName = dataFull || `Chapter ${dataNum}`;
+
+      chapters.push({
+        name: chapterName,
+        path: chapterPath,
+        chapterNumber: chapterNum,
       });
-      return found;
-    };
-
-    // capítulos ya incluidos en el HTML principal de la novela
-    extractChapters($);
-
-    // el resto se carga por páginas vía /chapters?page=N (botón "cargar más")
-    const chaptersBase =
-      this.site + novelPath.replace(/^\//, '').replace(/\/$/, '');
-    let page = 1;
-    let keepGoing = true;
-
-    while (keepGoing) {
-      page++;
-      const pageBody = await fetchApi(
-        `${chaptersBase}/chapters?page=${page}`,
-      ).then(res => res.text());
-
-      if (!pageBody || pageBody.trim().length === 0) {
-        keepGoing = false;
-        break;
-      }
-
-      const $page = cheerio.load(pageBody);
-      const foundThisPage = extractChapters($page);
-
-      if (foundThisPage === 0) {
-        keepGoing = false;
-      }
-
-      // límite de seguridad para no hacer loop infinito si algo sale mal
-      if (page > 200) {
-        keepGoing = false;
-      }
-    }
+    });
 
     // el sitio suele listarlos del más nuevo al más viejo
     novel.chapters = chapters.reverse();
