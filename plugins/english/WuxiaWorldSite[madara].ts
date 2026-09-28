@@ -369,7 +369,6 @@ export class MadaraPlugin implements Plugin.PluginBase {
 
     if (this.options?.customJs) {
       try {
-        
       } catch (error) {
         console.error('Error executing customJs:', error);
         throw error;
@@ -383,34 +382,15 @@ export class MadaraPlugin implements Plugin.PluginBase {
     searchTerm: string,
     pageNo?: number | undefined,
   ): Promise<Plugin.NovelItem[]> {
-    const pagePart = pageNo && pageNo > 1 ? '/page/' + pageNo + '/' : '/';
     const url =
       this.site +
-      pagePart +
-      '?s=' +
+      '/page/' +
+      pageNo +
+      '/?s=' +
       encodeURIComponent(searchTerm) +
       '&post_type=wp-manga';
     const loadedCheerio = await this.getCheerio(url, true);
-    const results = this.parseNovels(loadedCheerio);
-
-    if (!results.length) return [];
-
-    const fold = (s: string) =>
-      s
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-    const query = fold(searchTerm);
-
-    return results
-      .filter(n => fold(n.name).includes(query))
-      .sort((a, b) => {
-        const na = fold(a.name);
-        const nb = fold(b.name);
-        const exactA = na === query ? 0 : na.startsWith(query) ? 1 : 2;
-        const exactB = nb === query ? 0 : nb.startsWith(query) ? 1 : 2;
-        return exactA - exactB;
-      });
+    return this.parseNovels(loadedCheerio);
   }
 
   parseData = (date: string) => {
@@ -482,11 +462,114 @@ export class MadaraPlugin implements Plugin.PluginBase {
   };
 }
 
-const plugin = new MadaraPlugin({"id":"wuxiaworld.site","sourceSite":"https://wuxiaworld.site/","sourceName":"WuxiaWorld.Site","options":{"versionIncrements":70,"useNewChapterEndpoint":true},"filters":{"genre[]":{"type":"Checkbox","label":"Genre","value":[],"options":[{"label":"Action","value":"action"},{"label":"Adult","value":"adult"},{"label":"Adventure","value":"adventure"},{"label":"Comedy","value":"comedy"},{"label":"Drama","value":"drama-genre"},{"label":"Ecchi","value":"ecchi"},{"label":"Fantasy","value":"fantasy"},{"label":"Gender Bender","value":"gender-bender"},{"label":"Harem","value":"harems-novel"},{"label":"Historical","value":"historical"},{"label":"Horror","value":"horror"},{"label":"Isekai","value":"isekai"},{"label":"Josei","value":"josei"},{"label":"LGBT+","value":"lgbt"},{"label":"Magical Realism","value":"magical-realism"},{"label":"Manhwa","value":"manhwa"},{"label":"Martial Arts","value":"martial-arts-genre"},{"label":"Mature","value":"mature"},{"label":"Mecha","value":"mecha"},{"label":"Mystery","value":"mystery"},{"label":"Psychological","value":"psychological"},{"label":"Reincarnation","value":"reincarnation"},{"label":"Romance","value":"romance"},{"label":"School Life","value":"school-life"},{"label":"Sci-fi","value":"sci-fi"},{"label":"Seinen","value":"seinen"},{"label":"Shoujo","value":"shoujo-genre"},{"label":"Shoujo Ai","value":"shoujo-ai"},{"label":"Shounen","value":"shounen"},{"label":"Shounen Ai","value":"shounen-ai"},{"label":"Slice of Life","value":"slice-of-life"},{"label":"Smut","value":"smut"},{"label":"Sports","value":"sports"},{"label":"Supernatural","value":"supernatural"},{"label":"Teen","value":"teen"},{"label":"Thriller","value":"thriller"},{"label":"Tragedy","value":"tragedy"},{"label":"Video Games","value":"video-games"},{"label":"Webcomics","value":"webcomics"},{"label":"Wuxia","value":"wuxia"},{"label":"Xianxia","value":"xianxia"},{"label":"Xuanhuan","value":"xuanhuan"},{"label":"Yaoi","value":"yaoi"},{"label":"Yuri","value":"yuri"}]},"op":{"type":"Switch","label":"having all selected genres","value":false},"author":{"type":"Text","label":"Author","value":""},"artist":{"type":"Text","label":"Artist","value":""},"release":{"type":"Text","label":"Year of Released","value":""},"adult":{"type":"Picker","label":"Adult content","value":"","options":[{"label":"All","value":""},{"label":"None adult content","value":"0"},{"label":"Only adult content","value":"1"}]},"status[]":{"type":"Checkbox","label":"Status","value":[],"options":[{"label":"OnGoing","value":"on-going"},{"label":"Completed","value":"end"},{"label":"Canceled","value":"canceled"},{"label":"On Hold","value":"on-hold"},{"label":"Upcoming","value":"upcoming"}]},"m_orderby":{"type":"Picker","label":"Order by","value":"","options":[{"label":"Relevance","value":""},{"label":"Latest","value":"latest"},{"label":"A-Z","value":"alphabet"},{"label":"Rating","value":"rating"},{"label":"Trending","value":"trending"},{"label":"Most Views","value":"views"},{"label":"New","value":"new-manga"}]}}});
+const plugin = new MadaraPlugin({
+  'id': 'wuxiaworld.site',
+  'sourceSite': 'https://wuxiaworld.site/',
+  'sourceName': 'WuxiaWorld.Site',
+  'options': { 'versionIncrements': 71, 'useNewChapterEndpoint': true },
+  'filters': {
+    'genre[]': {
+      'type': 'Checkbox',
+      'label': 'Genre',
+      'value': [],
+      'options': [
+        { 'label': 'Action', 'value': 'action' },
+        { 'label': 'Adult', 'value': 'adult' },
+        { 'label': 'Adventure', 'value': 'adventure' },
+        { 'label': 'Comedy', 'value': 'comedy' },
+        { 'label': 'Drama', 'value': 'drama-genre' },
+        { 'label': 'Ecchi', 'value': 'ecchi' },
+        { 'label': 'Fantasy', 'value': 'fantasy' },
+        { 'label': 'Gender Bender', 'value': 'gender-bender' },
+        { 'label': 'Harem', 'value': 'harems-novel' },
+        { 'label': 'Historical', 'value': 'historical' },
+        { 'label': 'Horror', 'value': 'horror' },
+        { 'label': 'Isekai', 'value': 'isekai' },
+        { 'label': 'Josei', 'value': 'josei' },
+        { 'label': 'LGBT+', 'value': 'lgbt' },
+        { 'label': 'Magical Realism', 'value': 'magical-realism' },
+        { 'label': 'Manhwa', 'value': 'manhwa' },
+        { 'label': 'Martial Arts', 'value': 'martial-arts-genre' },
+        { 'label': 'Mature', 'value': 'mature' },
+        { 'label': 'Mecha', 'value': 'mecha' },
+        { 'label': 'Mystery', 'value': 'mystery' },
+        { 'label': 'Psychological', 'value': 'psychological' },
+        { 'label': 'Reincarnation', 'value': 'reincarnation' },
+        { 'label': 'Romance', 'value': 'romance' },
+        { 'label': 'School Life', 'value': 'school-life' },
+        { 'label': 'Sci-fi', 'value': 'sci-fi' },
+        { 'label': 'Seinen', 'value': 'seinen' },
+        { 'label': 'Shoujo', 'value': 'shoujo-genre' },
+        { 'label': 'Shoujo Ai', 'value': 'shoujo-ai' },
+        { 'label': 'Shounen', 'value': 'shounen' },
+        { 'label': 'Shounen Ai', 'value': 'shounen-ai' },
+        { 'label': 'Slice of Life', 'value': 'slice-of-life' },
+        { 'label': 'Smut', 'value': 'smut' },
+        { 'label': 'Sports', 'value': 'sports' },
+        { 'label': 'Supernatural', 'value': 'supernatural' },
+        { 'label': 'Teen', 'value': 'teen' },
+        { 'label': 'Thriller', 'value': 'thriller' },
+        { 'label': 'Tragedy', 'value': 'tragedy' },
+        { 'label': 'Video Games', 'value': 'video-games' },
+        { 'label': 'Webcomics', 'value': 'webcomics' },
+        { 'label': 'Wuxia', 'value': 'wuxia' },
+        { 'label': 'Xianxia', 'value': 'xianxia' },
+        { 'label': 'Xuanhuan', 'value': 'xuanhuan' },
+        { 'label': 'Yaoi', 'value': 'yaoi' },
+        { 'label': 'Yuri', 'value': 'yuri' },
+      ],
+    },
+    'op': {
+      'type': 'Switch',
+      'label': 'having all selected genres',
+      'value': false,
+    },
+    'author': { 'type': 'Text', 'label': 'Author', 'value': '' },
+    'artist': { 'type': 'Text', 'label': 'Artist', 'value': '' },
+    'release': { 'type': 'Text', 'label': 'Year of Released', 'value': '' },
+    'adult': {
+      'type': 'Picker',
+      'label': 'Adult content',
+      'value': '',
+      'options': [
+        { 'label': 'All', 'value': '' },
+        { 'label': 'None adult content', 'value': '0' },
+        { 'label': 'Only adult content', 'value': '1' },
+      ],
+    },
+    'status[]': {
+      'type': 'Checkbox',
+      'label': 'Status',
+      'value': [],
+      'options': [
+        { 'label': 'OnGoing', 'value': 'on-going' },
+        { 'label': 'Completed', 'value': 'end' },
+        { 'label': 'Canceled', 'value': 'canceled' },
+        { 'label': 'On Hold', 'value': 'on-hold' },
+        { 'label': 'Upcoming', 'value': 'upcoming' },
+      ],
+    },
+    'm_orderby': {
+      'type': 'Picker',
+      'label': 'Order by',
+      'value': '',
+      'options': [
+        { 'label': 'Relevance', 'value': '' },
+        { 'label': 'Latest', 'value': 'latest' },
+        { 'label': 'A-Z', 'value': 'alphabet' },
+        { 'label': 'Rating', 'value': 'rating' },
+        { 'label': 'Trending', 'value': 'trending' },
+        { 'label': 'Most Views', 'value': 'views' },
+        { 'label': 'New', 'value': 'new-manga' },
+      ],
+    },
+  },
+});
 
-/* __ENTranslationInjected v1 */
+/* __ENTranslationInjected v2 */
 import { fetchApi as __translatorFetch } from '@libs/fetch';
 import { load as __translatorParse } from 'cheerio';
+import { storage as __translatorStorage } from '@libs/storage';
 
 const __ENTranslation = (function () {
   const CFG = {
@@ -497,18 +580,37 @@ const __ENTranslation = (function () {
     maxConcurrent: 4,
     translateNovelNames: true,
     translateSummaries: true,
-    translateChapterNames: false,
+    translateChapterNames: true,
+    maxChapterNames: 5000,
     translateContent: true,
     translateQuery: true,
+    initialPrefetch: 7,
+    prefetchAhead: 10,
+    cacheMaxEntries: 100,
+    maxIndexedNovels: 5,
   };
   const providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
-  const providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
+  const providerMaxChars = {
+    google: 2000,
+    google_repeated: 1800,
+    mymemory: 420,
+    libretranslate: 1800,
+  };
   const cache = new Map();
+  const inflight = new Map();
+  const MAP_KEY = 'es3:map';
+  const ORDER_KEY = 'es3:order';
+  const CH_PREFIX = 'es3:ch:';
+  let map = null;
+  let order = null;
+  let stateReady = false;
+  let chainToken = 0;
+  let origParseChapter = null;
   let active = 0;
   const queue = [];
   const norm = s =>
     String(s || '')
-      .replace(/[ 	]+/g, ' ')
+      .replace(/[ \t]+/g, ' ')
       .replace(/\r/g, '')
       .trim();
   const guard = fn =>
@@ -526,15 +628,15 @@ const __ENTranslation = (function () {
       if (active < CFG.maxConcurrent) start();
       else queue.push(start);
     });
-  const buildUrl = (provider, text) => {
+  const buildUrl = (provider, text, sl, tl) => {
     const enc = encodeURIComponent(text);
-    const src = provider === 'mymemory' && CFG.sourceLang === 'auto' ? 'en' : CFG.sourceLang;
+    const src = provider === 'mymemory' && sl === 'auto' ? 'en' : sl;
     if (provider === 'google_repeated') {
       return (
         'https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=' +
         src +
         '&tl=' +
-        CFG.targetLang +
+        tl +
         '&q=' +
         enc
       );
@@ -546,7 +648,7 @@ const __ENTranslation = (function () {
         '&langpair=' +
         src +
         '|' +
-        CFG.targetLang
+        tl
       );
     }
     if (provider === 'libretranslate') {
@@ -554,17 +656,17 @@ const __ENTranslation = (function () {
         'https://libretranslate.de/translate?q=' +
         enc +
         '&source=' +
-        CFG.sourceLang +
+        (sl === 'auto' ? 'en' : sl) +
         '&target=' +
-        CFG.targetLang +
+        tl +
         '&format=text'
       );
     }
     return (
       'https://translate.googleapis.com/translate_a/single?client=gtx&sl=' +
-      CFG.sourceLang +
+      sl +
       '&tl=' +
-      CFG.targetLang +
+      tl +
       '&dt=t&q=' +
       enc
     );
@@ -591,10 +693,6 @@ const __ENTranslation = (function () {
         ) {
           return json.responseData.translatedText;
         }
-      } else if (provider === 'deepl') {
-        if (json && Array.isArray(json.translations) && json.translations[0]) {
-          return json.translations[0].text;
-        }
       } else if (provider === 'libretranslate') {
         if (json && typeof json.translatedText === 'string') {
           return json.translatedText;
@@ -616,11 +714,11 @@ const __ENTranslation = (function () {
       try {
         const cap = providerMaxChars[provider] || Infinity;
         if (t.length > cap) continue;
-        const res = await __translatorFetch(buildUrl(provider, t));
+        const res = await __translatorFetch(buildUrl(provider, t, sl, tl));
         if (!res || !res.ok) continue;
         const json = await res.json();
         const out = extract(json, provider);
-        if (out && out !== t) {
+        if (typeof out === 'string' && out) {
           cache.set(ck, out);
           return out;
         }
@@ -630,45 +728,167 @@ const __ENTranslation = (function () {
     }
     return text;
   }
-  const translateShort = text => guard(() => translateText(text));
-  async function translateList(values) {
-    const out = [];
-    for (const value of values) {
-      const translated = await translateText(value);
-      out.push(translated && translated.trim() ? translated : value);
+  function ensureState() {
+    if (stateReady) return;
+    stateReady = true;
+    try {
+      const saved = __translatorStorage.get(MAP_KEY);
+      if (saved && typeof saved === 'object' && saved.novels && saved.c2n) {
+        map = saved;
+      }
+    } catch (e) {}
+    if (!map) map = { novels: {}, c2n: {} };
+    try {
+      const savedOrder = __translatorStorage.get(ORDER_KEY);
+      if (Array.isArray(savedOrder)) order = savedOrder;
+    } catch (e) {}
+    if (!order) order = [];
+  }
+  function persistMap() {
+    try {
+      __translatorStorage.set(MAP_KEY, map);
+    } catch (e) {}
+  }
+  function persistOrder() {
+    try {
+      __translatorStorage.set(ORDER_KEY, order);
+    } catch (e) {}
+  }
+  function getCached(path) {
+    if (!path) return null;
+    try {
+      const v = __translatorStorage.get(CH_PREFIX + path);
+      if (typeof v === 'string' && v) return v;
+    } catch (e) {}
+    return null;
+  }
+  function setCached(path, html) {
+    if (!path || !html) return;
+    try {
+      __translatorStorage.set(CH_PREFIX + path, html);
+      const at = order.indexOf(path);
+      if (at >= 0) order.splice(at, 1);
+      order.push(path);
+      while (order.length > CFG.cacheMaxEntries) {
+        const evicted = order.shift();
+        if (evicted) {
+          try {
+            __translatorStorage.delete(CH_PREFIX + evicted);
+          } catch (e) {}
+        }
+      }
+      persistOrder();
+    } catch (e) {}
+  }
+  function indexNovel(novelPath, chapters) {
+    ensureState();
+    const paths = [];
+    if (Array.isArray(chapters)) {
+      for (let i = 0; i < chapters.length; i++) {
+        const c = chapters[i];
+        if (c && typeof c.path === 'string' && c.path) paths.push(c.path);
+      }
+    }
+    const keys = Object.keys(map.novels);
+    if (keys.indexOf(novelPath) === -1) {
+      while (keys.length >= CFG.maxIndexedNovels) {
+        const oldKey = keys.shift();
+        delete map.novels[oldKey];
+        const c2nKeys = Object.keys(map.c2n);
+        for (let i = 0; i < c2nKeys.length; i++) {
+          const entry = map.c2n[c2nKeys[i]];
+          if (entry && entry.n === oldKey) delete map.c2n[c2nKeys[i]];
+        }
+      }
+    }
+    map.novels[novelPath] = paths;
+    for (let i = 0; i < paths.length; i++) {
+      map.c2n[paths[i]] = { n: novelPath, i: i };
+    }
+    persistMap();
+  }
+  async function translateLines(values) {
+    const clean = [];
+    for (let i = 0; i < values.length; i++) {
+      const v = values[i];
+      clean.push(typeof v === 'string' ? v.replace(/\n/g, ' ').trim() : '');
+    }
+    const batches = [];
+    let current = null;
+    let len = 0;
+    for (let i = 0; i < clean.length; i++) {
+      const line = clean[i];
+      if (!line) continue;
+      if (!current || len + 1 + line.length > CFG.maxBatchChars) {
+        current = { idxs: [], texts: [] };
+        batches.push(current);
+        len = 0;
+      }
+      current.idxs.push(i);
+      current.texts.push(line);
+      len += 1 + line.length;
+    }
+    const results = await Promise.all(
+      batches.map(batch =>
+        guard(() => {
+          const joined = batch.texts.join('\n');
+          return translateText(joined).then(t => ({ batch: batch, text: t }));
+        }),
+      ),
+    );
+    const out = clean.slice();
+    for (const result of results) {
+      const batch = result.batch;
+      const text = result.text;
+      if (!text || !text.trim()) continue;
+      const parts = text.split('\n');
+      if (parts.length === batch.texts.length) {
+        for (let i = 0; i < parts.length; i++) {
+          if (parts[i] && parts[i].trim()) out[batch.idxs[i]] = parts[i];
+        }
+      } else if (batch.texts.length <= 8) {
+        for (let i = 0; i < batch.texts.length; i++) {
+          try {
+            const one = await translateText(batch.texts[i]);
+            if (one && one.trim()) out[batch.idxs[i]] = one;
+          } catch (e) {}
+        }
+      }
     }
     return out;
   }
   async function translateNovelItems(items) {
-    const result = [];
-    for (const item of items) {
-      try {
-        const name = await translateText(typeof item.name === 'string' ? item.name : '');
-        result.push({
-          ...item,
-          name: name && name.trim() ? name : item.name,
-        });
-      } catch (e) {
-        result.push(item);
-      }
+    if (!Array.isArray(items) || !items.length) return items;
+    try {
+      const names = items.map(item =>
+        item && typeof item.name === 'string' ? item.name : '',
+      );
+      const translated = await translateLines(names);
+      return items.map((item, i) => ({
+        ...item,
+        name: translated[i] && translated[i].trim() ? translated[i] : item.name,
+      }));
+    } catch (e) {
+      return items;
     }
-    return result;
   }
   async function translateChapterNames(chapters) {
-    const capped = Array.isArray(chapters) ? chapters.slice(0, CFG.maxChapterNames) : [];
-    const out = [];
-    for (const chapter of capped) {
-      try {
-        const name = await translateText(typeof chapter.name === 'string' ? chapter.name : '');
-        out.push({
-          ...chapter,
-          name: name && name.trim() ? name : chapter.name,
-        });
-      } catch (e) {
-        out.push(chapter);
-      }
+    const capped = Array.isArray(chapters)
+      ? chapters.slice(0, CFG.maxChapterNames)
+      : [];
+    if (!capped.length) return [];
+    try {
+      const names = capped.map(ch =>
+        ch && typeof ch.name === 'string' ? ch.name : '',
+      );
+      const translated = await translateLines(names);
+      return capped.map((ch, i) => ({
+        ...ch,
+        name: translated[i] && translated[i].trim() ? translated[i] : ch.name,
+      }));
+    } catch (e) {
+      return capped;
     }
-    return out;
   }
   async function translateSourceNovel(novel) {
     try {
@@ -677,12 +897,18 @@ const __ENTranslation = (function () {
         const name = await translateText(updated.name);
         if (name && name.trim()) updated.name = name;
       }
-      if (CFG.translateSummaries && typeof updated.summary === 'string' && updated.summary) {
+      if (
+        CFG.translateSummaries &&
+        typeof updated.summary === 'string' &&
+        updated.summary
+      ) {
         const summary = await translateText(updated.summary);
         if (summary && summary.trim()) updated.summary = summary;
       }
       if (CFG.translateChapterNames && Array.isArray(updated.chapters)) {
-        const translatedChapters = await translateChapterNames(updated.chapters);
+        const translatedChapters = await translateChapterNames(
+          updated.chapters,
+        );
         if (translatedChapters.length < updated.chapters.length) {
           const rest = updated.chapters.slice(translatedChapters.length);
           updated.chapters = translatedChapters.concat(rest);
@@ -701,7 +927,8 @@ const __ENTranslation = (function () {
     if (!root.length) return nodes;
     root.find('*').each((i, el) => {
       const tag = (el.tagName || '').toLowerCase();
-      if (['script', 'style', 'pre', 'code', 'svg', 'noscript'].includes(tag)) return;
+      if (['script', 'style', 'pre', 'code', 'svg', 'noscript'].includes(tag))
+        return;
       $(el)
         .contents()
         .each((j, child) => {
@@ -744,93 +971,204 @@ const __ENTranslation = (function () {
   }
   async function translateHTMLContent(html) {
     try {
-      if (typeof html !== 'string' || !html.trim()) return html;
+      if (typeof html !== 'string' || !html.trim()) {
+        return { html: html, ok: false };
+      }
       const $ = __translatorParse(html);
       const nodes = collectTextNodes($);
-      if (!nodes.length) return html;
-      let batch = '';
+      if (!nodes.length) return { html: html, ok: false };
       const batches = [];
-      const last = () => batches[batches.length - 1];
+      let batch = null;
       for (const node of nodes) {
-        if (node.value.trim().length <= CFG.maxBatchChars) {
-          if ((batch + '\n' + node.value).length > CFG.maxBatchChars && batch !== '') {
-            batches.push({ lines: [], texts: [] });
-            batch = '';
-          }
-          last().lines.push(node.el);
-          last().texts.push(node.value);
-          batch = (batch === '' ? '' : batch + '\n') + node.value;
-        } else {
-          if (batch !== '') {
-            batches.push({ lines: [], texts: [] });
-            batch = '';
+        const value = node.value;
+        if (value.trim().length > CFG.maxBatchChars) {
+          if (batch) {
+            batches.push(batch);
+            batch = null;
           }
           batches.push({
             lines: [node.el],
-            texts: segmentizeText(node.value, CFG.maxBatchChars),
+            texts: segmentizeText(value, CFG.maxBatchChars),
             chunked: true,
           });
+          continue;
         }
+        if (!batch) batch = { lines: [], texts: [] };
+        if (
+          batch.lines.length &&
+          (batch.texts.join('\n') + '\n' + value).length > CFG.maxBatchChars
+        ) {
+          batches.push(batch);
+          batch = { lines: [], texts: [] };
+        }
+        batch.lines.push(node.el);
+        batch.texts.push(value);
       }
+      if (batch) batches.push(batch);
       let originalTotalLen = 0;
-      let translatedTotalLen = 0;
-      console.warn('[translate] batches:', batches.length, 'nodes:', nodes.length);
-      let bIdx = 0;
+      let changedLen = 0;
       for (const chunk of batches) {
         if (!chunk.lines.length) continue;
-        bIdx++;
         if (chunk.chunked) {
           const translated = [];
           for (const seg of chunk.texts) {
             const t = await translateText(seg);
-            translated.push(t && t !== seg ? t : seg);
+            if (t && t.trim() && t !== seg) {
+              changedLen += t.length;
+              translated.push(t);
+            } else {
+              translated.push(seg);
+            }
           }
-          const joined = translated.join(' ');
           originalTotalLen += chunk.texts.join(' ').length;
-          translatedTotalLen += joined.length;
-          chunk.lines[0].data = joined;
+          chunk.lines[0].data = translated.join(' ');
           continue;
         }
         const joined = chunk.texts.join('\n');
         originalTotalLen += joined.length;
         const translated = await translateText(joined);
         if (!translated || !translated.trim() || translated === joined) {
-          console.warn('[translate] batch', bIdx, ': skipped (no translation or same)');
-          translatedTotalLen += joined.length;
           continue;
         }
         const parts = translated.split('\n');
         if (parts.length === chunk.lines.length) {
           for (let i = 0; i < chunk.lines.length; i += 1) {
-            chunk.lines[i].data = parts[i];
+            if (parts[i] && parts[i].trim()) {
+              if (parts[i] !== chunk.texts[i]) changedLen += parts[i].length;
+              chunk.lines[i].data = parts[i];
+            }
           }
-          translatedTotalLen += translated.length;
         } else {
-          console.warn('[translate] batch', bIdx, ': line mismatch', parts.length, 'vs', chunk.lines.length, '- fallback per-line');
           for (let i = 0; i < chunk.lines.length; i += 1) {
             const t = await translateText(chunk.texts[i] || '');
-            chunk.lines[i].data = (t && t.trim()) ? t : (chunk.texts[i] || '');
+            if (t && t.trim()) {
+              if (t !== chunk.texts[i]) changedLen += t.length;
+              chunk.lines[i].data = t;
+            }
           }
-          translatedTotalLen += chunk.lines.reduce((s, l) => s + (l.data || '').length, 0);
         }
       }
-      console.warn('[translate] original:', originalTotalLen, 'chars, translated:', translatedTotalLen, 'chars');
-      const result = $.html();
-      if (originalTotalLen > 200 && translatedTotalLen < originalTotalLen * 0.4) {
+      const tooShort =
+        originalTotalLen > 200 && changedLen < originalTotalLen * 0.4;
+      if (tooShort) {
+        if (changedLen === 0) {
+          return { html: html, ok: false };
+        }
         console.warn('[translate] RESULT TOO SHORT - returning original');
-        return html;
+        return { html: html, ok: false };
       }
-      return result;
+      return { html: $.html(), ok: changedLen > 0 };
     } catch (e) {
-      return html;
+      return { html: html, ok: false };
     }
+  }
+  async function runDirect(path, args) {
+    if (!origParseChapter) return '';
+    const raw =
+      args && args.length
+        ? await origParseChapter.apply(null, args)
+        : await origParseChapter(path);
+    if (typeof raw !== 'string' || !raw) return raw;
+    if (!CFG.translateContent) return raw;
+    const res = await translateHTMLContent(raw);
+    const out =
+      res && typeof res.html === 'string' && res.html ? res.html : raw;
+    if (res && res.ok && out && out !== raw) setCached(path, out);
+    return out;
+  }
+  function startJob(path, args) {
+    if (path) {
+      const existing = inflight.get(path);
+      if (existing) return existing;
+    }
+    const job = runDirect(path, args).then(
+      value => {
+        if (path && inflight.get(path) === job) inflight.delete(path);
+        return value;
+      },
+      error => {
+        if (path && inflight.get(path) === job) inflight.delete(path);
+        throw error;
+      },
+    );
+    if (path) inflight.set(path, job);
+    return job;
+  }
+  async function ensureBackground(path) {
+    try {
+      const hit = getCached(path);
+      if (hit) return hit;
+      return await startJob(path, null);
+    } catch (e) {
+      return '';
+    }
+  }
+  function scheduleWindow(novelPath, afterIdx, count) {
+    try {
+      ensureState();
+      const paths = map.novels[novelPath];
+      if (!paths || !paths.length) return;
+      const start = afterIdx + 1;
+      const end = Math.min(paths.length, afterIdx + 1 + count);
+      if (start >= end) return;
+      const token = ++chainToken;
+      console.warn('[translate] prefetch', novelPath, start, '->', end - 1);
+      (async () => {
+        for (let i = start; i < end; i++) {
+          if (token !== chainToken) return;
+          const p = paths[i];
+          if (!p) continue;
+          if (getCached(p)) continue;
+          const out = await ensureBackground(p);
+          if (!out) return;
+        }
+      })();
+    } catch (e) {}
+  }
+  function scheduleForPath(path) {
+    try {
+      ensureState();
+      const entry = map.c2n[path];
+      if (!entry) return;
+      scheduleWindow(entry.n, entry.i, CFG.prefetchAhead);
+    } catch (e) {}
   }
   function wrapPlugin(plugin) {
     if (!plugin || !CFG.enabled) return;
     if (typeof plugin.popularNovels === 'function') {
       const orig = plugin.popularNovels.bind(plugin);
       plugin.popularNovels = async (pageNo, options) => {
-        const res = await orig(pageNo, options);
+        let opts = options;
+        try {
+          if (CFG.translateQuery && options && options.filters) {
+            const next = {};
+            let changed = false;
+            for (const key in options.filters) {
+              const f = options.filters[key];
+              next[key] = f && typeof f === 'object' ? { ...f } : f;
+              const value = next[key] && next[key].value;
+              if (
+                typeof value === 'string' &&
+                value.trim() &&
+                !/^\d+$/.test(value.trim()) &&
+                key !== 'm_orderby' &&
+                key !== 'adult'
+              ) {
+                const translated = await translateText(
+                  value,
+                  'en',
+                  CFG.sourceLang,
+                ).catch(() => value);
+                if (translated && translated.trim()) {
+                  next[key].value = translated;
+                  changed = true;
+                }
+              }
+            }
+            if (changed) opts = { ...options, filters: next };
+          }
+        } catch (e) {}
+        const res = await orig(pageNo, opts);
         if (Array.isArray(res)) return translateNovelItems(res);
         return res;
       };
@@ -840,7 +1178,9 @@ const __ENTranslation = (function () {
       plugin.searchNovels = async (searchTerm, pageNo) => {
         const query = typeof searchTerm === 'string' ? searchTerm : '';
         const effectiveQuery = CFG.translateQuery
-          ? (await translateText(query, 'en', CFG.sourceLang).catch(() => query)) || query
+          ? (await translateText(query, 'en', CFG.sourceLang).catch(
+              () => query,
+            )) || query
           : query;
         const raw = await orig(effectiveQuery, pageNo);
         if (!Array.isArray(raw)) return raw;
@@ -856,30 +1196,38 @@ const __ENTranslation = (function () {
         };
         const enQ = effectiveQuery ? fold(effectiveQuery) : '';
         const esQ = query ? fold(query) : '';
-        const rawEn = new Set();
-        if (enQ && enQ.length >= 2) {
-          raw.forEach((n, i) => {
+        const translated = await translateNovelItems(raw);
+        const containsQ = (name, path, q) =>
+          q &&
+          q.length >= 2 &&
+          (name.indexOf(q) !== -1 ||
+            path.indexOf(q.replace(/\s+/g, '-')) !== -1);
+        let out = translated;
+        if (enQ.length >= 2 || esQ.length >= 2) {
+          const exact = [];
+          const partial = [];
+          translated.forEach((n, i) => {
             const name = fold(n.name);
             const path = fold(n.path);
-            if (name.indexOf(enQ) !== -1 || path.indexOf(enQ.replace(/\s+/g, '-')) !== -1) {
-              rawEn.add(i);
+            const rawName = fold(raw[i] ? raw[i].name : '');
+            const rawPath = fold(raw[i] ? raw[i].path : '');
+            if (
+              (enQ.length >= 2 && (name === enQ || rawName === enQ)) ||
+              (esQ.length >= 2 && name === esQ)
+            ) {
+              exact.push(n);
+              return;
+            }
+            if (
+              containsQ(name, path, enQ) ||
+              containsQ(rawName, rawPath, enQ) ||
+              containsQ(name, path, esQ)
+            ) {
+              partial.push(n);
             }
           });
-        }
-        const translated = await translateNovelItems(raw);
-        let out = translated;
-        if (rawEn.size || (esQ && esQ.length >= 2)) {
-          out = translated.filter((n, i) => {
-            if (rawEn.has(i)) return true;
-            return (
-              esQ &&
-              esQ.length >= 2 &&
-              fold(n.name).indexOf(esQ) !== -1
-            );
-          });
-        }
-        if (out.length === 0 && raw.length > 0 && raw.length <= 15) {
-          out = translated;
+          if (exact.length) out = exact;
+          else if (partial.length) out = partial;
         }
         return out;
       };
@@ -888,18 +1236,41 @@ const __ENTranslation = (function () {
       const orig = plugin.parseNovel.bind(plugin);
       plugin.parseNovel = async novelPath => {
         const res = await orig(novelPath);
-        if (res && typeof res === 'object') return translateSourceNovel(res);
+        if (res && typeof res === 'object') {
+          try {
+            ensureState();
+            indexNovel(
+              String(novelPath || ''),
+              Array.isArray(res.chapters) ? res.chapters : [],
+            );
+            scheduleWindow(String(novelPath || ''), -1, CFG.initialPrefetch);
+          } catch (e) {}
+          return translateSourceNovel(res);
+        }
         return res;
       };
     }
     if (typeof plugin.parseChapter === 'function') {
       const orig = plugin.parseChapter.bind(plugin);
+      origParseChapter = orig;
       plugin.parseChapter = async (...args) => {
-        const res = await orig(...args);
-        if (CFG.translateContent && typeof res === 'string') {
-          return translateHTMLContent(res);
+        const path = String((args && args[0]) || '');
+        ensureState();
+        let out;
+        const cached = getCached(path);
+        if (cached) {
+          out = cached;
+        } else if (!path) {
+          out = await orig(...args);
+          if (CFG.translateContent && typeof out === 'string') {
+            const res = await translateHTMLContent(out);
+            if (res && typeof res.html === 'string' && res.html) out = res.html;
+          }
+        } else {
+          out = await startJob(path, args);
         }
-        return res;
+        if (path) scheduleForPath(path);
+        return out;
       };
     }
   }
