@@ -58,7 +58,7 @@ var NovelDex = /** @class */ (function () {
         this.icon = 'src/en/noveldex/icon.png';
         this.site = 'https://noveldex.io/';
         this.api = 'https://noveldex.io/api/ai';
-        this.version = '1.0.3';
+        this.version = '1.0.5';
         this.filters = undefined;
     }
     NovelDex.prototype.getJson = function (url) {
@@ -174,10 +174,22 @@ var NovelDex = /** @class */ (function () {
                     case 2:
                         html = _a.sent();
                         $ = (0, cheerio_1.load)(html);
-                        blocks = $('[data-reader-prose]')
+                        blocks = $('[data-paragraph-index] .prose')
                             .toArray()
                             .map(function (el) { return $(el).html() || ''; })
                             .filter(function (s) { return s.trim(); });
+                        if (!blocks.length) {
+                            blocks = $('[data-paragraph-index] p')
+                                .toArray()
+                                .map(function (el) { return $(el).prop('outerHTML') || ''; })
+                                .filter(function (s) { return s.trim(); });
+                        }
+                        if (!blocks.length) {
+                            blocks = $('[data-reader-prose]')
+                                .toArray()
+                                .map(function (el) { return $(el).html() || ''; })
+                                .filter(function (s) { return s.trim(); });
+                        }
                         if (!blocks.length) {
                             blocks = $('.prose')
                                 .toArray()

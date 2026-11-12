@@ -11,7 +11,7 @@ class NovelDex implements Plugin.PluginBase {
   icon = 'src/en/noveldex/icon.png';
   site = 'https://noveldex.io/';
   api = 'https://noveldex.io/api/ai';
-  version = '1.0.3';
+  version = '1.0.5';
 
   async getJson(url: string): Promise<any> {
     const res = await fetchApi(url);
@@ -94,11 +94,24 @@ class NovelDex implements Plugin.PluginBase {
 
     // Webview-rendered pages expose the content in a .prose container.
     const $ = parseHTML(html);
-    // In webview mode the content is rendered as individual .prose blocks.
-    let blocks = $('[data-reader-prose]')
+    // In webview mode the content is rendered as paragraphs inside
+    // [data-paragraph-index] blocks.
+    let blocks = $('[data-paragraph-index] .prose')
       .toArray()
       .map(el => $(el).html() || '')
       .filter(s => s.trim());
+    if (!blocks.length) {
+      blocks = $('[data-paragraph-index] p')
+        .toArray()
+        .map(el => $(el).prop('outerHTML') || '')
+        .filter(s => s.trim());
+    }
+    if (!blocks.length) {
+      blocks = $('[data-reader-prose]')
+        .toArray()
+        .map(el => $(el).html() || '')
+        .filter(s => s.trim());
+    }
     if (!blocks.length) {
       blocks = $('.prose')
         .toArray()
@@ -108,7 +121,6 @@ class NovelDex implements Plugin.PluginBase {
     if (blocks.length) {
       return blocks.join('\n');
     }
-    // Last resort: collect all <p> inside <article> or <main>.
     const ps = $('article p, main p')
       .toArray()
       .map(el => $(el).prop('outerHTML') || '')
