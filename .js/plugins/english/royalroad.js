@@ -57,7 +57,7 @@ var RoyalRoad = /** @class */ (function () {
     function RoyalRoad() {
         this.id = 'royalroad';
         this.name = 'Royal Road';
-        this.version = '2.3.2';
+        this.version = '2.4.0';
         this.icon = 'src/en/royalroad/icon.png';
         this.site = 'https://www.royalroad.com/';
         this.enableVol = storage_1.storage.get('enableVol');
@@ -528,7 +528,9 @@ var RoyalRoad = /** @class */ (function () {
         var novels = [];
         var tempNovel = {};
         var state = ParsingState.Idle;
-        var parser = new htmlparser2_1.Parser({ "options": { "versionIncrements": 70 }, onopentag: function (name, attribs) {
+        var parser = new htmlparser2_1.Parser({
+            'options': { 'versionIncrements': 70 },
+            onopentag: function (name, attribs) {
                 var _a;
                 if ((_a = attribs['class']) === null || _a === void 0 ? void 0 : _a.includes('fiction-list-item')) {
                     state = ParsingState.Novel;
@@ -550,7 +552,8 @@ var RoyalRoad = /** @class */ (function () {
                         }
                         break;
                 }
-            }, onclosetag: function (name) {
+            },
+            onclosetag: function (name) {
                 if (name === 'figure') {
                     if (tempNovel.path && tempNovel.name) {
                         novels.push(tempNovel);
@@ -1010,7 +1013,12 @@ var __ENTranslation = (function () {
         maxIndexedNovels: 5,
     };
     var providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
-    var providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
+    var providerMaxChars = {
+        google: 2000,
+        google_repeated: 1800,
+        mymemory: 420,
+        libretranslate: 1800,
+    };
     var cache = new Map();
     var inflight = new Map();
     var MAP_KEY = 'es3:map';
@@ -1415,7 +1423,9 @@ var __ENTranslation = (function () {
                             updated.name = name_1;
                         _a.label = 2;
                     case 2:
-                        if (!(CFG.translateSummaries && typeof updated.summary === 'string' && updated.summary)) return [3 /*break*/, 4];
+                        if (!(CFG.translateSummaries &&
+                            typeof updated.summary === 'string' &&
+                            updated.summary)) return [3 /*break*/, 4];
                         return [4 /*yield*/, translateText(updated.summary)];
                     case 3:
                         summary = _a.sent();
@@ -1879,7 +1889,8 @@ var __ENTranslation = (function () {
                             containsQ = function (name, path, q) {
                                 return q &&
                                     q.length >= 2 &&
-                                    (name.indexOf(q) !== -1 || path.indexOf(q.replace(/\s+/g, '-')) !== -1);
+                                    (name.indexOf(q) !== -1 ||
+                                        path.indexOf(q.replace(/\s+/g, '-')) !== -1);
                             };
                             out = translated;
                             if (enQ.length >= 2 || esQ.length >= 2) {
