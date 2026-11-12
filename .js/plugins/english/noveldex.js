@@ -58,7 +58,7 @@ var NovelDex = /** @class */ (function () {
         this.icon = 'src/en/noveldex/icon.png';
         this.site = 'https://noveldex.io/';
         this.api = 'https://noveldex.io/api/ai';
-        this.version = '1.0.1';
+        this.version = '1.0.2';
         this.filters = undefined;
     }
     NovelDex.prototype.getJson = function (url) {
@@ -145,7 +145,9 @@ var NovelDex = /** @class */ (function () {
                         for (_i = 0, list_1 = list; _i < list_1.length; _i++) {
                             ch = list_1[_i];
                             chapters.push({
-                                name: ch.title ? "Chapter ".concat(ch.number, ": ").concat(ch.title) : "Chapter ".concat(ch.number),
+                                name: ch.title
+                                    ? "Chapter ".concat(ch.number, ": ").concat(ch.title)
+                                    : "Chapter ".concat(ch.number),
                                 path: "series/novel/".concat(slug, "/chapter/").concat(ch.number),
                                 chapterNumber: ch.number,
                                 releaseTime: ch.published_at,
@@ -160,7 +162,7 @@ var NovelDex = /** @class */ (function () {
     };
     NovelDex.prototype.parseChapter = function (chapterPath) {
         return __awaiter(this, void 0, void 0, function () {
-            var url, res, html, $, content, m, idx, boundary, end, escaped, unescaped;
+            var url, res, html, $, blocks, content, m, idx, boundary, end, escaped, unescaped;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -172,6 +174,13 @@ var NovelDex = /** @class */ (function () {
                     case 2:
                         html = _a.sent();
                         $ = (0, cheerio_1.load)(html);
+                        blocks = $('[data-reader-prose]')
+                            .toArray()
+                            .map(function (el) { return $(el).html() || ''; })
+                            .filter(function (s) { return s.trim(); });
+                        if (blocks.length) {
+                            return [2 /*return*/, blocks.join('\n')];
+                        }
                         content = $('.prose').html();
                         if (content && content.trim()) {
                             return [2 /*return*/, content];
@@ -184,7 +193,9 @@ var NovelDex = /** @class */ (function () {
                                 boundary = html.slice(idx).match(/\d+:\[/);
                                 end = boundary ? idx + boundary.index : html.length;
                                 escaped = html.slice(idx, end);
-                                unescaped = escaped.replace(/\\u([0-9a-fA-F]{4})/g, function (_, hex) { return String.fromCharCode(parseInt(hex, 16)); });
+                                unescaped = escaped.replace(/\\u([0-9a-fA-F]{4})/g, function (_, hex) {
+                                    return String.fromCharCode(parseInt(hex, 16));
+                                });
                                 if (unescaped.includes('<p'))
                                     return [2 /*return*/, unescaped];
                             }
@@ -223,7 +234,12 @@ var __ENTranslation = (function () {
         maxIndexedNovels: 5,
     };
     var providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
-    var providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
+    var providerMaxChars = {
+        google: 2000,
+        google_repeated: 1800,
+        mymemory: 420,
+        libretranslate: 1800,
+    };
     var cache = new Map();
     var inflight = new Map();
     var MAP_KEY = 'es3:map';
@@ -628,7 +644,9 @@ var __ENTranslation = (function () {
                             updated.name = name_1;
                         _a.label = 2;
                     case 2:
-                        if (!(CFG.translateSummaries && typeof updated.summary === 'string' && updated.summary)) return [3 /*break*/, 4];
+                        if (!(CFG.translateSummaries &&
+                            typeof updated.summary === 'string' &&
+                            updated.summary)) return [3 /*break*/, 4];
                         return [4 /*yield*/, translateText(updated.summary)];
                     case 3:
                         summary = _a.sent();
@@ -1092,7 +1110,8 @@ var __ENTranslation = (function () {
                             containsQ = function (name, path, q) {
                                 return q &&
                                     q.length >= 2 &&
-                                    (name.indexOf(q) !== -1 || path.indexOf(q.replace(/\s+/g, '-')) !== -1);
+                                    (name.indexOf(q) !== -1 ||
+                                        path.indexOf(q.replace(/\s+/g, '-')) !== -1);
                             };
                             out = translated;
                             if (enQ.length >= 2 || esQ.length >= 2) {

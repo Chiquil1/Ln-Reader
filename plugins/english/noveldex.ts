@@ -11,7 +11,7 @@ class NovelDex implements Plugin.PluginBase {
   icon = 'src/en/noveldex/icon.png';
   site = 'https://noveldex.io/';
   api = 'https://noveldex.io/api/ai';
-  version = '1.0.1';
+  version = '1.0.2';
 
   async getJson(url: string): Promise<any> {
     const res = await fetchApi(url);
@@ -94,6 +94,14 @@ class NovelDex implements Plugin.PluginBase {
 
     // Webview-rendered pages expose the content in a .prose container.
     const $ = parseHTML(html);
+    // In webview mode the content is rendered as individual .prose blocks.
+    const blocks = $('[data-reader-prose]')
+      .toArray()
+      .map(el => $(el).html() || '')
+      .filter(s => s.trim());
+    if (blocks.length) {
+      return blocks.join('\n');
+    }
     let content = $('.prose').html();
     if (content && content.trim()) {
       return content;
