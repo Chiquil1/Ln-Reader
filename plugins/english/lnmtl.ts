@@ -8,10 +8,11 @@ class LnMTLPlugin implements Plugin.PagePlugin {
   name = 'LnMTL';
   icon = 'src/en/lnmtl/icon.png';
   site = 'https://lnmtl.com/';
-  version = '2.1.1';
+  version = '2.1.2';
 
-  async sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  async sleep(_ms: number) {
+    // No-op: la app (LNReader) bloquea este patrón en validatePluginCode.
+    return Promise.resolve();
   }
 
   async popularNovels(

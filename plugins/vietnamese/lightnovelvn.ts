@@ -16,7 +16,7 @@ type SearchedResult = {
 class LightNovelVN implements Plugin.PagePlugin {
   id = 'lightnovel.vn';
   name = 'Light Novel VN';
-  version = '1.0.0';
+  version = '1.0.1';
   icon = 'src/vi/lightnovelvn/icon.png';
   filters?: Filters | undefined;
   site = 'https://lightnovel.vn';
@@ -104,8 +104,6 @@ class LightNovelVN implements Plugin.PagePlugin {
     novel.author = loadedCheerio('a[itemprop="author"] > span').text();
 
     novel.summary = loadedCheerio('#bookIntro').text().replace(/\s+/g, ' ');
-    const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-    await delay(1000);
     const chapterListUrl = url + '/danh-sach-chuong';
 
     const chapterListBody = await fetchApi(chapterListUrl).then(r => r.text());

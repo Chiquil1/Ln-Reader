@@ -58,8 +58,9 @@ export class ReadNovelFullPlugin implements Plugin.PluginBase {
   lastSearch: number | null = null;
   searchInterval = 3400;
 
-  async sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  async sleep(_ms: number) {
+    // No-op: la app (LNReader) bloquea este patrón en validatePluginCode.
+    return Promise.resolve();
   }
 
   parseNovels(html: string) {

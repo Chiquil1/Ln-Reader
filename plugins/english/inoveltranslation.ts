@@ -11,7 +11,7 @@ class INovelTranslation implements Plugin.PluginBase {
   name = 'iNovelTranslation';
   icon = 'src/en/inoveltranslation/icon.png';
   site = 'https://inoveltranslation.com';
-  version = '1.0.2';
+  version = '1.0.3';
   filters: Filters | undefined = undefined;
 
   pluginSettings = {
@@ -120,8 +120,6 @@ class INovelTranslation implements Plugin.PluginBase {
   }
 
   async parseChapter(chapterPath: string): Promise<string> {
-    await new Promise(res => setTimeout(res, 1500));
-
     const rscHeader = { ...this.HEADERS, rsc: '1' };
 
     let response;
