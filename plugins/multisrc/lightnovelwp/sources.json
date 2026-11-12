@@ -234,16 +234,6 @@
     }
   },
   {
-    "id": "arcane",
-    "sourceSite": "https://arcanetranslations.com/",
-    "sourceName": "Arcane Translations",
-    "options": {
-      "reverseChapters": true,
-      "lang": "English",
-      "hasLocked": true
-    }
-  },
-  {
     "id": "namevt",
     "sourceSite": "https://namevt.com/",
     "sourceName": "Namevt",
@@ -326,6 +316,6 @@
       "lang": "English",
       "reverseChapters": true,
       "hasLocked": true
-    } 
+    }
   }
 ]

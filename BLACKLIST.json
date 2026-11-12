@@ -5,6 +5,20 @@
     "lang": "Turkish",
     "reason": "Requested by Owner",
     "date": "2025-06-28",
-    "aliases": ["novelokutr.net", "www.novelokutr.net"]
+    "aliases": [
+      "novelokutr.net",
+      "www.novelokutr.net"
+    ]
+  },
+  {
+    "name": "Arcane Translations",
+    "site": "https://arcanetranslations.com/",
+    "lang": "English",
+    "reason": "Site migrated to NovelDex and blocked by Cloudflare",
+    "date": "2026-11-12",
+    "aliases": [
+      "arcanetranslations.com",
+      "www.arcanetranslations.com"
+    ]
   }
 ]
