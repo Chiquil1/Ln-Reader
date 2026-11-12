@@ -9,7 +9,7 @@ import { storage } from '@libs/storage';
 class NovelFire implements Plugin.PluginBase {
   id = 'novelfire';
   name = 'Novel Fire';
-  version = '1.4.9';
+  version = '1.4.10';
   icon = 'src/en/novelfire/icon.png';
   site = 'https://novelfire.net/';
   webStorageUtilized = true;
@@ -487,6 +487,26 @@ class NovelFire implements Plugin.PluginBase {
       }
       // Safety cap to avoid runaway loops.
       if (currentPage > 50) hasMore = false;
+    }
+
+    // If the site search returned nothing (e.g. a Spanish query that did not
+    // translate well), fall back to the popular list so the (translated)
+    // titles can still be filtered by the user's original query.
+    if (allNovels.length === 0 && page <= 1) {
+      const fallback: Plugin.NovelItem[] = [];
+      for (let p = 1; p <= 5; p++) {
+        try {
+          const more = await this.popularNovels(p, {
+            showLatestNovels: false,
+            filters: this.filters,
+          });
+          if (!Array.isArray(more) || !more.length) break;
+          fallback.push(...more);
+        } catch (e) {
+          break;
+        }
+      }
+      if (fallback.length) return fallback;
     }
 
     return allNovels;

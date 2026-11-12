@@ -57,7 +57,7 @@ var NovelFire = /** @class */ (function () {
     function NovelFire() {
         this.id = 'novelfire';
         this.name = 'Novel Fire';
-        this.version = '1.4.9';
+        this.version = '1.4.10';
         this.icon = 'src/en/novelfire/icon.png';
         this.site = 'https://novelfire.net/';
         this.webStorageUtilized = true;
@@ -647,7 +647,7 @@ var NovelFire = /** @class */ (function () {
     };
     NovelFire.prototype.searchNovels = function (searchTerm, page) {
         return __awaiter(this, void 0, void 0, function () {
-            var allNovels, currentPage, hasMore, _loop_1, this_1, state_1;
+            var allNovels, currentPage, hasMore, _loop_1, this_1, state_1, fallback, p, more, e_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -713,7 +713,37 @@ var NovelFire = /** @class */ (function () {
                         if (state_1 === "break")
                             return [3 /*break*/, 3];
                         return [3 /*break*/, 1];
-                    case 3: return [2 /*return*/, allNovels];
+                    case 3:
+                        if (!(allNovels.length === 0 && page <= 1)) return [3 /*break*/, 10];
+                        fallback = [];
+                        p = 1;
+                        _a.label = 4;
+                    case 4:
+                        if (!(p <= 5)) return [3 /*break*/, 9];
+                        _a.label = 5;
+                    case 5:
+                        _a.trys.push([5, 7, , 8]);
+                        return [4 /*yield*/, this.popularNovels(p, {
+                                showLatestNovels: false,
+                                filters: this.filters,
+                            })];
+                    case 6:
+                        more = _a.sent();
+                        if (!Array.isArray(more) || !more.length)
+                            return [3 /*break*/, 9];
+                        fallback.push.apply(fallback, more);
+                        return [3 /*break*/, 8];
+                    case 7:
+                        e_4 = _a.sent();
+                        return [3 /*break*/, 9];
+                    case 8:
+                        p++;
+                        return [3 /*break*/, 4];
+                    case 9:
+                        if (fallback.length)
+                            return [2 /*return*/, fallback];
+                        _a.label = 10;
+                    case 10: return [2 /*return*/, allNovels];
                 }
             });
         });
@@ -858,7 +888,7 @@ var __ENTranslation = (function () {
     };
     function translateText(text, target, source) {
         return __awaiter(this, void 0, void 0, function () {
-            var t, tl, sl, ck, _i, providers_1, provider, cap, res, json, out, e_4;
+            var t, tl, sl, ck, _i, providers_1, provider, cap, res, json, out, e_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -896,7 +926,7 @@ var __ENTranslation = (function () {
                         }
                         return [3 /*break*/, 6];
                     case 5:
-                        e_4 = _a.sent();
+                        e_5 = _a.sent();
                         return [3 /*break*/, 6];
                     case 6:
                         _i++;
@@ -1004,7 +1034,7 @@ var __ENTranslation = (function () {
     }
     function translateLines(values) {
         return __awaiter(this, void 0, void 0, function () {
-            var clean, i, v, batches, current, len, i, line, results, out, _i, results_1, result, batch, text, parts, i, i, one, e_5;
+            var clean, i, v, batches, current, len, i, line, results, out, _i, results_1, result, batch, text, parts, i, i, one, e_6;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1070,7 +1100,7 @@ var __ENTranslation = (function () {
                             out[batch.idxs[i]] = one;
                         return [3 /*break*/, 8];
                     case 7:
-                        e_5 = _a.sent();
+                        e_6 = _a.sent();
                         return [3 /*break*/, 8];
                     case 8:
                         i++;
@@ -1085,7 +1115,7 @@ var __ENTranslation = (function () {
     }
     function translateNovelItems(items) {
         return __awaiter(this, void 0, void 0, function () {
-            var names, translated_1, e_6;
+            var names, translated_1, e_7;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1102,7 +1132,7 @@ var __ENTranslation = (function () {
                         translated_1 = _a.sent();
                         return [2 /*return*/, items.map(function (item, i) { return (__assign(__assign({}, item), { name: translated_1[i] && translated_1[i].trim() ? translated_1[i] : item.name })); })];
                     case 3:
-                        e_6 = _a.sent();
+                        e_7 = _a.sent();
                         return [2 /*return*/, items];
                     case 4: return [2 /*return*/];
                 }
@@ -1111,7 +1141,7 @@ var __ENTranslation = (function () {
     }
     function translateChapterNames(chapters) {
         return __awaiter(this, void 0, void 0, function () {
-            var capped, names, translated_2, e_7;
+            var capped, names, translated_2, e_8;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1131,7 +1161,7 @@ var __ENTranslation = (function () {
                         translated_2 = _a.sent();
                         return [2 /*return*/, capped.map(function (ch, i) { return (__assign(__assign({}, ch), { name: translated_2[i] && translated_2[i].trim() ? translated_2[i] : ch.name })); })];
                     case 3:
-                        e_7 = _a.sent();
+                        e_8 = _a.sent();
                         return [2 /*return*/, capped];
                     case 4: return [2 /*return*/];
                 }
@@ -1140,7 +1170,7 @@ var __ENTranslation = (function () {
     }
     function translateSourceNovel(novel) {
         return __awaiter(this, void 0, void 0, function () {
-            var updated, name_1, summary, translatedChapters, rest, e_8;
+            var updated, name_1, summary, translatedChapters, rest, e_9;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1178,7 +1208,7 @@ var __ENTranslation = (function () {
                         _a.label = 6;
                     case 6: return [2 /*return*/, updated];
                     case 7:
-                        e_8 = _a.sent();
+                        e_9 = _a.sent();
                         return [2 /*return*/, novel];
                     case 8: return [2 /*return*/];
                 }
@@ -1239,7 +1269,7 @@ var __ENTranslation = (function () {
     }
     function translateHTMLContent(html) {
         return __awaiter(this, void 0, void 0, function () {
-            var $, nodes, batches, batch, _i, nodes_1, node, value, originalTotalLen, changedLen, _a, batches_1, chunk, translated_3, _b, _c, seg, t, joined, translated, parts, i, i, t, tooShort, e_9;
+            var $, nodes, batches, batch, _i, nodes_1, node, value, originalTotalLen, changedLen, _a, batches_1, chunk, translated_3, _b, _c, seg, t, joined, translated, parts, i, i, t, tooShort, e_10;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
@@ -1364,7 +1394,7 @@ var __ENTranslation = (function () {
                         }
                         return [2 /*return*/, { html: $.html(), ok: changedLen > 0 }];
                     case 14:
-                        e_9 = _d.sent();
+                        e_10 = _d.sent();
                         return [2 /*return*/, { html: html, ok: false }];
                     case 15: return [2 /*return*/];
                 }
@@ -1426,7 +1456,7 @@ var __ENTranslation = (function () {
     }
     function ensureBackground(path) {
         return __awaiter(this, void 0, void 0, function () {
-            var hit, e_10;
+            var hit, e_11;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1437,7 +1467,7 @@ var __ENTranslation = (function () {
                         return [4 /*yield*/, startJob(path, null)];
                     case 1: return [2 /*return*/, _a.sent()];
                     case 2:
-                        e_10 = _a.sent();
+                        e_11 = _a.sent();
                         return [2 /*return*/, ''];
                     case 3: return [2 /*return*/];
                 }
@@ -1506,7 +1536,7 @@ var __ENTranslation = (function () {
         if (typeof plugin.popularNovels === 'function') {
             var orig_1 = plugin.popularNovels.bind(plugin);
             plugin.popularNovels = function (pageNo, options) { return __awaiter(_this, void 0, void 0, function () {
-                var opts, next, changed, _loop_2, _a, _b, _c, _i, key, e_11, res;
+                var opts, next, changed, _loop_2, _a, _b, _c, _i, key, e_12, res;
                 return __generator(this, function (_d) {
                     switch (_d.label) {
                         case 0:
@@ -1566,7 +1596,7 @@ var __ENTranslation = (function () {
                             _d.label = 6;
                         case 6: return [3 /*break*/, 8];
                         case 7:
-                            e_11 = _d.sent();
+                            e_12 = _d.sent();
                             return [3 /*break*/, 8];
                         case 8: return [4 /*yield*/, orig_1(pageNo, opts)];
                         case 9:
