@@ -9,7 +9,7 @@ import { storage } from '@libs/storage';
 class NovelFire implements Plugin.PluginBase {
   id = 'novelfire';
   name = 'Novel Fire';
-  version = '1.4.5';
+  version = '1.4.6';
   icon = 'src/en/novelfire/icon.png';
   site = 'https://novelfire.net/';
   webStorageUtilized = true;
@@ -438,24 +438,58 @@ class NovelFire implements Plugin.PluginBase {
     searchTerm: string,
     page: number,
   ): Promise<Plugin.NovelItem[]> {
-    if (page === 1) {
-      this.novelList.clear();
-      this.draw = 0;
+    // Only the first page is requested by the app; fetch every page so the
+    // user sees all matches instead of just the first 20.
+    if (page !== 1) {
+      return [];
     }
-    const params = new URLSearchParams();
-    params.append('keyword', searchTerm);
-    params.append('page', page.toString());
-    const url = `${this.site}search?${params.toString()}`;
-    const result = await fetchApi(url);
-    const body = await result.text();
+    this.novelList.clear();
+    this.draw = 0;
 
-    const loadedCheerio = load(body);
+    const allNovels: Plugin.NovelItem[] = [];
+    let currentPage = 1;
+    let hasMore = true;
+    while (hasMore) {
+      const params = new URLSearchParams();
+      params.append('keyword', searchTerm);
+      params.append('page', currentPage.toString());
+      const url = `${this.site}search?${params.toString()}`;
+      const result = await fetchApi(url);
+      const body = await result.text();
 
-    return this.parseNovels(
-      loadedCheerio,
-      '.novel-list.chapters .novel-item',
-      page === 1,
-    );
+      const loadedCheerio = load(body);
+
+      const pageNovels = this.parseNovels(
+        loadedCheerio,
+        '.novel-list.chapters .novel-item',
+        currentPage === 1,
+      );
+
+      if (!pageNovels.length) {
+        hasMore = false;
+        break;
+      }
+      allNovels.push(...pageNovels);
+
+      // Stop when there is no "next page" link.
+      const hasNext =
+        loadedCheerio('a[href*="page=' + (currentPage + 1) + '"]').length > 0 ||
+        loadedCheerio('.pagination a')
+          .toArray()
+          .some(el => {
+            const href = loadedCheerio(el).attr('href') || '';
+            return href.includes('page=' + (currentPage + 1));
+          });
+      if (!hasNext) {
+        hasMore = false;
+      } else {
+        currentPage += 1;
+      }
+      // Safety cap to avoid runaway loops.
+      if (currentPage > 50) hasMore = false;
+    }
+
+    return allNovels;
   }
 
   filters = {

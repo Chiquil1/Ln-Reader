@@ -57,7 +57,7 @@ var NovelFire = /** @class */ (function () {
     function NovelFire() {
         this.id = 'novelfire';
         this.name = 'Novel Fire';
-        this.version = '1.4.5';
+        this.version = '1.4.6';
         this.icon = 'src/en/novelfire/icon.png';
         this.site = 'https://novelfire.net/';
         this.webStorageUtilized = true;
@@ -333,7 +333,8 @@ var NovelFire = /** @class */ (function () {
                         url = "".concat(this.site, "ajax/listChapterDataAjax");
                         start = length === -1 ? 0 : (parseInt(page) - 1) * length;
                         this.draw++;
-                        params = new URLSearchParams({ "options": { "versionIncrements": 70 },
+                        params = new URLSearchParams({
+                            'options': { 'versionIncrements': 70 },
                             draw: this.draw.toString(),
                             'columns[0][data]': 'n_sort',
                             'columns[0][name]': 'cmm_posts_detail.n_sort',
@@ -646,26 +647,71 @@ var NovelFire = /** @class */ (function () {
     };
     NovelFire.prototype.searchNovels = function (searchTerm, page) {
         return __awaiter(this, void 0, void 0, function () {
-            var params, url, result, body, loadedCheerio;
+            var allNovels, currentPage, hasMore, _loop_1, this_1, state_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (page === 1) {
-                            this.novelList.clear();
-                            this.draw = 0;
+                        // Only the first page is requested by the app; fetch every page so the
+                        // user sees all matches instead of just the first 20.
+                        if (page !== 1) {
+                            return [2 /*return*/, []];
                         }
-                        params = new URLSearchParams();
-                        params.append('keyword', searchTerm);
-                        params.append('page', page.toString());
-                        url = "".concat(this.site, "search?").concat(params.toString());
-                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                        this.novelList.clear();
+                        this.draw = 0;
+                        allNovels = [];
+                        currentPage = 1;
+                        hasMore = true;
+                        _loop_1 = function () {
+                            var params, url, result, body, loadedCheerio, pageNovels, hasNext;
+                            return __generator(this, function (_b) {
+                                switch (_b.label) {
+                                    case 0:
+                                        params = new URLSearchParams();
+                                        params.append('keyword', searchTerm);
+                                        params.append('page', currentPage.toString());
+                                        url = "".concat(this_1.site, "search?").concat(params.toString());
+                                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                                    case 1:
+                                        result = _b.sent();
+                                        return [4 /*yield*/, result.text()];
+                                    case 2:
+                                        body = _b.sent();
+                                        loadedCheerio = (0, cheerio_1.load)(body);
+                                        pageNovels = this_1.parseNovels(loadedCheerio, '.novel-list.chapters .novel-item', currentPage === 1);
+                                        if (!pageNovels.length) {
+                                            hasMore = false;
+                                            return [2 /*return*/, "break"];
+                                        }
+                                        allNovels.push.apply(allNovels, pageNovels);
+                                        hasNext = loadedCheerio('a[href*="page=' + (currentPage + 1) + '"]').length > 0 ||
+                                            loadedCheerio('.pagination a').toArray().some(function (el) {
+                                                var href = loadedCheerio(el).attr('href') || '';
+                                                return href.includes('page=' + (currentPage + 1));
+                                            });
+                                        if (!hasNext) {
+                                            hasMore = false;
+                                        }
+                                        else {
+                                            currentPage += 1;
+                                        }
+                                        // Safety cap to avoid runaway loops.
+                                        if (currentPage > 50)
+                                            hasMore = false;
+                                        return [2 /*return*/];
+                                }
+                            });
+                        };
+                        this_1 = this;
+                        _a.label = 1;
                     case 1:
-                        result = _a.sent();
-                        return [4 /*yield*/, result.text()];
+                        if (!hasMore) return [3 /*break*/, 3];
+                        return [5 /*yield**/, _loop_1()];
                     case 2:
-                        body = _a.sent();
-                        loadedCheerio = (0, cheerio_1.load)(body);
-                        return [2 /*return*/, this.parseNovels(loadedCheerio, '.novel-list.chapters .novel-item', page === 1)];
+                        state_1 = _a.sent();
+                        if (state_1 === "break")
+                            return [3 /*break*/, 3];
+                        return [3 /*break*/, 1];
+                    case 3: return [2 /*return*/, allNovels];
                 }
             });
         });
@@ -696,7 +742,12 @@ var __ENTranslation = (function () {
         maxIndexedNovels: 5,
     };
     var providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
-    var providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
+    var providerMaxChars = {
+        google: 2000,
+        google_repeated: 1800,
+        mymemory: 420,
+        libretranslate: 1800,
+    };
     var cache = new Map();
     var inflight = new Map();
     var MAP_KEY = 'es3:map';
@@ -1101,7 +1152,9 @@ var __ENTranslation = (function () {
                             updated.name = name_1;
                         _a.label = 2;
                     case 2:
-                        if (!(CFG.translateSummaries && typeof updated.summary === 'string' && updated.summary)) return [3 /*break*/, 4];
+                        if (!(CFG.translateSummaries &&
+                            typeof updated.summary === 'string' &&
+                            updated.summary)) return [3 /*break*/, 4];
                         return [4 /*yield*/, translateText(updated.summary)];
                     case 3:
                         summary = _a.sent();
@@ -1451,7 +1504,7 @@ var __ENTranslation = (function () {
         if (typeof plugin.popularNovels === 'function') {
             var orig_1 = plugin.popularNovels.bind(plugin);
             plugin.popularNovels = function (pageNo, options) { return __awaiter(_this, void 0, void 0, function () {
-                var opts, next, changed, _loop_1, _a, _b, _c, _i, key, e_11, res;
+                var opts, next, changed, _loop_2, _a, _b, _c, _i, key, e_11, res;
                 return __generator(this, function (_d) {
                     switch (_d.label) {
                         case 0:
@@ -1462,7 +1515,7 @@ var __ENTranslation = (function () {
                             if (!(CFG.translateQuery && options && options.filters)) return [3 /*break*/, 6];
                             next = {};
                             changed = false;
-                            _loop_1 = function (key) {
+                            _loop_2 = function (key) {
                                 var f, value, translated;
                                 return __generator(this, function (_e) {
                                     switch (_e.label) {
@@ -1498,7 +1551,7 @@ var __ENTranslation = (function () {
                             _c = _b[_i];
                             if (!(_c in _a)) return [3 /*break*/, 4];
                             key = _c;
-                            return [5 /*yield**/, _loop_1(key)];
+                            return [5 /*yield**/, _loop_2(key)];
                         case 3:
                             _d.sent();
                             _d.label = 4;
@@ -1565,7 +1618,8 @@ var __ENTranslation = (function () {
                             containsQ = function (name, path, q) {
                                 return q &&
                                     q.length >= 2 &&
-                                    (name.indexOf(q) !== -1 || path.indexOf(q.replace(/\s+/g, '-')) !== -1);
+                                    (name.indexOf(q) !== -1 ||
+                                        path.indexOf(q.replace(/\s+/g, '-')) !== -1);
                             };
                             out = translated;
                             if (enQ.length >= 2 || esQ.length >= 2) {
