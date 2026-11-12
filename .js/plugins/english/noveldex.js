@@ -58,7 +58,7 @@ var NovelDex = /** @class */ (function () {
         this.icon = 'src/en/noveldex/icon.png';
         this.site = 'https://noveldex.io/';
         this.api = 'https://noveldex.io/api/ai';
-        this.version = '1.0.2';
+        this.version = '1.0.3';
         this.filters = undefined;
     }
     NovelDex.prototype.getJson = function (url) {
@@ -162,7 +162,7 @@ var NovelDex = /** @class */ (function () {
     };
     NovelDex.prototype.parseChapter = function (chapterPath) {
         return __awaiter(this, void 0, void 0, function () {
-            var url, res, html, $, blocks, content, m, idx, boundary, end, escaped, unescaped;
+            var url, res, html, $, blocks, ps, m, idx, boundary, end, escaped, unescaped;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -178,12 +178,21 @@ var NovelDex = /** @class */ (function () {
                             .toArray()
                             .map(function (el) { return $(el).html() || ''; })
                             .filter(function (s) { return s.trim(); });
+                        if (!blocks.length) {
+                            blocks = $('.prose')
+                                .toArray()
+                                .map(function (el) { return $(el).html() || ''; })
+                                .filter(function (s) { return s.trim() && /<p/i.test(s); });
+                        }
                         if (blocks.length) {
                             return [2 /*return*/, blocks.join('\n')];
                         }
-                        content = $('.prose').html();
-                        if (content && content.trim()) {
-                            return [2 /*return*/, content];
+                        ps = $('article p, main p')
+                            .toArray()
+                            .map(function (el) { return $(el).prop('outerHTML') || ''; })
+                            .filter(function (s) { return s.trim(); });
+                        if (ps.length) {
+                            return [2 /*return*/, ps.join('\n')];
                         }
                         // Fallback: extract from the RSC payload (native fetch).
                         try {

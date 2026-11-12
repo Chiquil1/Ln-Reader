@@ -11,7 +11,7 @@ class NovelDex implements Plugin.PluginBase {
   icon = 'src/en/noveldex/icon.png';
   site = 'https://noveldex.io/';
   api = 'https://noveldex.io/api/ai';
-  version = '1.0.2';
+  version = '1.0.3';
 
   async getJson(url: string): Promise<any> {
     const res = await fetchApi(url);
@@ -95,16 +95,26 @@ class NovelDex implements Plugin.PluginBase {
     // Webview-rendered pages expose the content in a .prose container.
     const $ = parseHTML(html);
     // In webview mode the content is rendered as individual .prose blocks.
-    const blocks = $('[data-reader-prose]')
+    let blocks = $('[data-reader-prose]')
       .toArray()
       .map(el => $(el).html() || '')
       .filter(s => s.trim());
+    if (!blocks.length) {
+      blocks = $('.prose')
+        .toArray()
+        .map(el => $(el).html() || '')
+        .filter(s => s.trim() && /<p/i.test(s));
+    }
     if (blocks.length) {
       return blocks.join('\n');
     }
-    let content = $('.prose').html();
-    if (content && content.trim()) {
-      return content;
+    // Last resort: collect all <p> inside <article> or <main>.
+    const ps = $('article p, main p')
+      .toArray()
+      .map(el => $(el).prop('outerHTML') || '')
+      .filter(s => s.trim());
+    if (ps.length) {
+      return ps.join('\n');
     }
 
     // Fallback: extract from the RSC payload (native fetch).
