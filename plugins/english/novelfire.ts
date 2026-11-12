@@ -9,7 +9,7 @@ import { storage } from '@libs/storage';
 class NovelFire implements Plugin.PluginBase {
   id = 'novelfire';
   name = 'Novel Fire';
-  version = '1.4.6';
+  version = '1.4.9';
   icon = 'src/en/novelfire/icon.png';
   site = 'https://novelfire.net/';
   webStorageUtilized = true;
@@ -438,9 +438,9 @@ class NovelFire implements Plugin.PluginBase {
     searchTerm: string,
     page: number,
   ): Promise<Plugin.NovelItem[]> {
-    // Only the first page is requested by the app; fetch every page so the
-    // user sees all matches instead of just the first 20.
-    if (page !== 1) {
+    // Fetch every page so the user sees all matches instead of just the first 20.
+    // The app may call with page 0 or 1 for the first request.
+    if (page > 1) {
       return [];
     }
     this.novelList.clear();
@@ -1263,7 +1263,10 @@ const __ENTranslation = (function () {
               () => query,
             )) || query
           : query;
-        const raw = await orig(effectiveQuery, pageNo);
+        let raw = await orig(effectiveQuery, pageNo);
+        if (Array.isArray(raw) && !raw.length && effectiveQuery !== query) {
+          raw = await orig(query, pageNo);
+        }
         if (!Array.isArray(raw)) return raw;
         const fold = s => {
           try {
@@ -1309,6 +1312,7 @@ const __ENTranslation = (function () {
           });
           if (exact.length) out = exact;
           else if (partial.length) out = partial;
+          else out = translated;
         }
         return out;
       };

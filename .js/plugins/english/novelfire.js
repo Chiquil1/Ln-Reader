@@ -57,7 +57,7 @@ var NovelFire = /** @class */ (function () {
     function NovelFire() {
         this.id = 'novelfire';
         this.name = 'Novel Fire';
-        this.version = '1.4.6';
+        this.version = '1.4.9';
         this.icon = 'src/en/novelfire/icon.png';
         this.site = 'https://novelfire.net/';
         this.webStorageUtilized = true;
@@ -651,9 +651,9 @@ var NovelFire = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        // Only the first page is requested by the app; fetch every page so the
-                        // user sees all matches instead of just the first 20.
-                        if (page !== 1) {
+                        // Fetch every page so the user sees all matches instead of just the first 20.
+                        // The app may call with page 0 or 1 for the first request.
+                        if (page > 1) {
                             return [2 /*return*/, []];
                         }
                         this.novelList.clear();
@@ -684,7 +684,9 @@ var NovelFire = /** @class */ (function () {
                                         }
                                         allNovels.push.apply(allNovels, pageNovels);
                                         hasNext = loadedCheerio('a[href*="page=' + (currentPage + 1) + '"]').length > 0 ||
-                                            loadedCheerio('.pagination a').toArray().some(function (el) {
+                                            loadedCheerio('.pagination a')
+                                                .toArray()
+                                                .some(function (el) {
                                                 var href = loadedCheerio(el).attr('href') || '';
                                                 return href.includes('page=' + (currentPage + 1));
                                             });
@@ -1597,6 +1599,12 @@ var __ENTranslation = (function () {
                             return [4 /*yield*/, orig_2(effectiveQuery, pageNo)];
                         case 4:
                             raw = _b.sent();
+                            if (!(Array.isArray(raw) && !raw.length && effectiveQuery !== query)) return [3 /*break*/, 6];
+                            return [4 /*yield*/, orig_2(query, pageNo)];
+                        case 5:
+                            raw = _b.sent();
+                            _b.label = 6;
+                        case 6:
                             if (!Array.isArray(raw))
                                 return [2 /*return*/, raw];
                             fold = function (s) {
@@ -1613,7 +1621,7 @@ var __ENTranslation = (function () {
                             enQ = effectiveQuery ? fold(effectiveQuery) : '';
                             esQ = query ? fold(query) : '';
                             return [4 /*yield*/, translateNovelItems(raw)];
-                        case 5:
+                        case 7:
                             translated = _b.sent();
                             containsQ = function (name, path, q) {
                                 return q &&
@@ -1645,6 +1653,8 @@ var __ENTranslation = (function () {
                                     out = exact_1;
                                 else if (partial_1.length)
                                     out = partial_1;
+                                else
+                                    out = translated;
                             }
                             return [2 /*return*/, out];
                     }
