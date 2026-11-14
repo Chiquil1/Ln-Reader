@@ -1,1 +1,1293 @@
-var e=this&&this.__assign||function(){return e=Object.assign||function(e){for(var t,a=1,r=arguments.length;a<r;a++)for(var l in t=arguments[a])Object.prototype.hasOwnProperty.call(t,l)&&(e[l]=t[l]);return e},e.apply(this,arguments)},t=this&&this.__awaiter||function(e,t,a,r){return new(a||(a=Promise))(function(l,n){function o(e){try{u(r.next(e))}catch(e){n(e)}}function i(e){try{u(r.throw(e))}catch(e){n(e)}}function u(e){var t;e.done?l(e.value):(t=e.value,t instanceof a?t:new a(function(e){e(t)})).then(o,i)}u((r=r.apply(e,t||[])).next())})},a=this&&this.__generator||function(e,t){var a,r,l,n={label:0,sent:function(){if(1&l[0])throw l[1];return l[1]},trys:[],ops:[]},o=Object.create(("function"==typeof Iterator?Iterator:Object).prototype);return o.next=i(0),o.throw=i(1),o.return=i(2),"function"==typeof Symbol&&(o[Symbol.iterator]=function(){return this}),o;function i(i){return function(u){return function(i){if(a)throw new TypeError("Generator is already executing.");for(;o&&(o=0,i[0]&&(n=0)),n;)try{if(a=1,r&&(l=2&i[0]?r.return:i[0]?r.throw||((l=r.return)&&l.call(r),0):r.next)&&!(l=l.call(r,i[1])).done)return l;switch(r=0,l&&(i=[2&i[0],l.value]),i[0]){case 0:case 1:l=i;break;case 4:return n.label++,{value:i[1],done:!1};case 5:n.label++,r=i[1],i=[0];continue;case 7:i=n.ops.pop(),n.trys.pop();continue;default:if(!(l=n.trys,(l=l.length>0&&l[l.length-1])||6!==i[0]&&2!==i[0])){n=0;continue}if(3===i[0]&&(!l||i[1]>l[0]&&i[1]<l[3])){n.label=i[1];break}if(6===i[0]&&n.label<l[1]){n.label=l[1],l=i;break}if(l&&n.label<l[2]){n.label=l[2],n.ops.push(i);break}l[2]&&n.ops.pop(),n.trys.pop();continue}i=t.call(e,n)}catch(e){i=[6,e],r=0}finally{a=l=0}if(5&i[0])throw i[1];return{value:i[0]?i[1]:void 0,done:!0}}([i,u])}}};Object.defineProperty(exports,"__esModule",{value:!0});var r=require("@libs/fetch"),l=require("cheerio"),n=require("@libs/novelStatus"),o=require("@libs/defaultCover"),i=require("@libs/filterInputs"),u=function(){function u(){this.id="novelhi",this.name="NovelHi",this.icon="src/en/novelhi/icon.png",this.site="https://novelhi.com/",this.version="1.1.1",this.loadedNovelCache=[],this.filters={genres:{label:"Genres",value:"",options:[{label:"All",value:""},{label:"Action",value:"action"},{label:"Adventure",value:"adventure"},{label:"Comedy",value:"comedy"},{label:"Light Novel",value:"light-novel"},{label:"Fanfiction",value:"fanfiction"},{label:"Fantasy",value:"fantasy"},{label:"Game",value:"game"},{label:"Gender Bender",value:"gender-bender"},{label:"Harem",value:"harem"},{label:"Historical",value:"historical"},{label:"Horror",value:"horror"},{label:"Martial Arts",value:"martial-arts"},{label:"Mature",value:"mature"},{label:"Mecha",value:"mecha"},{label:"Military",value:"military"},{label:"Mystery",value:"mystery"},{label:"Romance",value:"romance"},{label:"School Life",value:"school-life"},{label:"Sci-fi",value:"sci-fi"},{label:"Slice of Life",value:"slice-of-life"},{label:"Sports",value:"sports"},{label:"Supernatural",value:"supernatural"},{label:"Tragedy",value:"tragedy"},{label:"Urban Life",value:"urban-life"},{label:"Wuxia",value:"wuxia"},{label:"Xianxia",value:"xianxia"},{label:"Xuanhuan",value:"xuanhuan"},{label:"Yaoi",value:"yaoi"},{label:"Yuri",value:"yuri"}],type:i.FilterTypes.Picker},order:{label:"Status",value:"",options:[{label:"All",value:""},{label:"Ongoing",value:"0"},{label:"Completed",value:"1"}],type:i.FilterTypes.Picker},time:{label:"Update Period",value:"",options:[{label:"All",value:""},{label:"3 Days",value:"3"},{label:"7 Days",value:"7"},{label:"15 Days",value:"15"},{label:"30 Days",value:"30"}],type:i.FilterTypes.Picker}}}return u.prototype.getNovels=function(l,n,i){return t(this,void 0,void 0,function(){var t,u,s,c,h;return a(this,function(a){switch(a.label){case 0:return t=new URLSearchParams(e(e(e(e({curr:l.toString(),limit:"10"},n&&{keyword:n}),(null==i?void 0:i.genres.value)&&{"bookGenres[]":i.genres.value}),(null==i?void 0:i.order.value)&&{bookStatus:i.order.value}),(null==i?void 0:i.time.value)&&{updatePeriod:i.time.value})),u="".concat(this.site,"book/searchByPageInShelf?").concat(t),[4,(0,r.fetchApi)(u)];case 1:return[4,a.sent().json()];case 2:return s=a.sent(),c=s.data.list.map(function(e){return{name:e.bookName,path:"s/".concat(e.simpleName),cover:e.picUrl||o.defaultCover,summary:e.bookDesc,author:e.authorName,status:e.bookStatus,genres:e.genres.map(function(e){return e.genreName}).join(", ")}}),(h=this.loadedNovelCache).push.apply(h,c),this.loadedNovelCache.length>100&&(this.loadedNovelCache=this.loadedNovelCache.slice(-100)),[2,c]}})})},u.prototype.popularNovels=function(e,r){return t(this,arguments,void 0,function(e,t){var r=t.filters;return a(this,function(t){return[2,this.getNovels(e,void 0,r)]})})},u.prototype.parseNovel=function(e){return t(this,void 0,void 0,function(){var t,i,u,s,c,h,v,p,f,d,b,m,y;return a(this,function(a){switch(a.label){case 0:return[4,(0,r.fetchApi)(this.site+e)];case 1:return[4,a.sent().text()];case 2:if(t=a.sent(),i=(0,l.load)(t),u=i("#translate <").html())throw console.error("This Novel has been removed and is no longer available"),Error("This Novel has been removed and is no longer available");return s={path:e,name:i("b.layui-icon").text().trim()||i(".tit h1").text().trim()||"Untitled",cover:i(".cover,.decorate-img").attr("src")||o.defaultCover},(c=this.loadedNovelCache.find(function(t){return t.path===e}))?[3,4]:[4,this.searchNovels(s.name,1)];case 3:c=a.sent().find(function(t){return t.path===e}),a.label=4;case 4:return c&&(s.genres=c.genres,s.author=c.author,s.status="1"===c.status?n.NovelStatus.Completed:n.NovelStatus.Ongoing,h=c.summary.replace(/<br\s*\/?>/gi,"\n"),s.summary=(0,l.load)(h).text().trim()),v=[],!(p=i("#bookId").attr("value"))||u?[3,7]:((f=new URLSearchParams).append("bookId",p),f.append("curr","1"),f.append("limit","42121"),d="".concat(this.site,"book/queryIndexList?")+f.toString(),[4,(0,r.fetchApi)(d)]);case 5:return[4,a.sent().json()];case 6:b=a.sent(),null===(y=null===(m=null==b?void 0:b.data)||void 0===m?void 0:m.list)||void 0===y||y.forEach(function(t){return v.push({name:t.indexName,path:e+"/"+t.indexNum,releaseTime:t.createTime})}),a.label=7;case 7:return s.chapters=v.reverse(),[2,s]}})})},u.prototype.parseChapter=function(e){return t(this,void 0,void 0,function(){var t,n,o,i,u,s,c,h,v,p;return a(this,function(a){switch(a.label){case 0:return t=this.site+e,[4,(0,r.fetchApi)(t).then(function(e){return e.text()})];case 1:return n=a.sent(),o=(0,l.load)(n),i=o("#chapterContentPath").attr("value"),u=o("#chapterContentToken").attr("value"),i&&u?(s=new URL(i,this.site).href,[4,(0,r.fetchApi)("".concat(s,"?token=").concat(u),{headers:{Referer:t,"X-Requested-With":"XMLHttpRequest"}}).then(function(e){return e.json()})]):[2,""];case 2:return(c=a.sent())&&(h=c.data.content.replace(/(<[^>]+>)|([a-zA-Z])/g,function(e,t,a){if(t)return t;var r=a<="Z"?65:97,l=(a.charCodeAt(0)-r+13)%26+r;return String.fromCharCode(l)}),v=h.replace(/<sent\b/gi,"<p").replace(/<\/sent>/gi,"</p>").replace(/<br\s*\/?>/gi,""),o("#showReading").html(v)),o("#showReading script,ins").remove(),(p=o("#showReading").html())?[2,p]:[2,o("#translate").parent().html()||""]}})})},u.prototype.searchNovels=function(e,r){return t(this,void 0,void 0,function(){return a(this,function(t){return[2,this.getNovels(r,e)]})})},u}();exports.default=new u;
+"use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var fetch_1 = require("@libs/fetch");
+var cheerio_1 = require("cheerio");
+var novelStatus_1 = require("@libs/novelStatus");
+var defaultCover_1 = require("@libs/defaultCover");
+var filterInputs_1 = require("@libs/filterInputs");
+var NovelHi = /** @class */ (function () {
+    function NovelHi() {
+        this.id = 'novelhi';
+        this.name = 'NovelHi';
+        this.icon = 'src/en/novelhi/icon.png';
+        this.site = 'https://novelhi.com/';
+        this.version = '1.1.2';
+        // Cache for storing extended metadata from the list API | ie: copypasta from readfrom.ts
+        this.loadedNovelCache = [];
+        this.filters = {
+            genres: {
+                label: 'Genres',
+                value: '',
+                options: [
+                    { label: 'All', value: '' },
+                    { label: 'Action', value: 'action' },
+                    { label: 'Adventure', value: 'adventure' },
+                    { label: 'Comedy', value: 'comedy' },
+                    { label: 'Light Novel', value: 'light-novel' },
+                    { label: 'Fanfiction', value: 'fanfiction' },
+                    { label: 'Fantasy', value: 'fantasy' },
+                    { label: 'Game', value: 'game' },
+                    { label: 'Gender Bender', value: 'gender-bender' },
+                    { label: 'Harem', value: 'harem' },
+                    { label: 'Historical', value: 'historical' },
+                    { label: 'Horror', value: 'horror' },
+                    { label: 'Martial Arts', value: 'martial-arts' },
+                    { label: 'Mature', value: 'mature' },
+                    { label: 'Mecha', value: 'mecha' },
+                    { label: 'Military', value: 'military' },
+                    { label: 'Mystery', value: 'mystery' },
+                    { label: 'Romance', value: 'romance' },
+                    { label: 'School Life', value: 'school-life' },
+                    { label: 'Sci-fi', value: 'sci-fi' },
+                    { label: 'Slice of Life', value: 'slice-of-life' },
+                    { label: 'Sports', value: 'sports' },
+                    { label: 'Supernatural', value: 'supernatural' },
+                    { label: 'Tragedy', value: 'tragedy' },
+                    { label: 'Urban Life', value: 'urban-life' },
+                    { label: 'Wuxia', value: 'wuxia' },
+                    { label: 'Xianxia', value: 'xianxia' },
+                    { label: 'Xuanhuan', value: 'xuanhuan' },
+                    { label: 'Yaoi', value: 'yaoi' },
+                    { label: 'Yuri', value: 'yuri' },
+                ],
+                type: filterInputs_1.FilterTypes.Picker,
+            },
+            order: {
+                label: 'Status',
+                value: '',
+                options: [
+                    { label: 'All', value: '' },
+                    { label: 'Ongoing', value: '0' },
+                    { label: 'Completed', value: '1' },
+                ],
+                type: filterInputs_1.FilterTypes.Picker,
+            },
+            time: {
+                label: 'Update Period',
+                value: '',
+                options: [
+                    { label: 'All', value: '' },
+                    { label: '3 Days', value: '3' },
+                    { label: '7 Days', value: '7' },
+                    { label: '15 Days', value: '15' },
+                    { label: '30 Days', value: '30' },
+                ],
+                type: filterInputs_1.FilterTypes.Picker,
+            },
+        };
+    }
+    NovelHi.prototype.getNovels = function (pageNo, keyword, filters) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, url, response, json, novels;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        params = new URLSearchParams(__assign(__assign(__assign(__assign({ "options": { "versionIncrements": 70 }, curr: pageNo.toString(), limit: '10' }, (keyword && { keyword: keyword })), ((filters === null || filters === void 0 ? void 0 : filters.genres.value) && { 'bookGenres[]': filters.genres.value })), ((filters === null || filters === void 0 ? void 0 : filters.order.value) && { bookStatus: filters.order.value })), ((filters === null || filters === void 0 ? void 0 : filters.time.value) && { updatePeriod: filters.time.value })));
+                        url = "".concat(this.site, "book/searchByPageInShelf?").concat(params);
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 1:
+                        response = _b.sent();
+                        return [4 /*yield*/, response.json()];
+                    case 2:
+                        json = _b.sent();
+                        novels = json.data.list.map(function (item) { return ({
+                            name: item.bookName,
+                            path: "s/".concat(item.simpleName),
+                            cover: item.picUrl || defaultCover_1.defaultCover,
+                            summary: item.bookDesc,
+                            author: item.authorName,
+                            status: item.bookStatus,
+                            genres: item.genres.map(function (g) { return g.genreName; }).join(', '),
+                        }); });
+                        (_a = this.loadedNovelCache).push.apply(_a, novels);
+                        if (this.loadedNovelCache.length > 100) {
+                            this.loadedNovelCache = this.loadedNovelCache.slice(-100);
+                        }
+                        return [2 /*return*/, novels];
+                }
+            });
+        });
+    };
+    NovelHi.prototype.popularNovels = function (pageNo_1, _a) {
+        return __awaiter(this, arguments, void 0, function (pageNo, _b) {
+            var filters = _b.filters;
+            return __generator(this, function (_c) {
+                return [2 /*return*/, this.getNovels(pageNo, undefined, filters)];
+            });
+        });
+    };
+    NovelHi.prototype.parseNovel = function (novelPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var data, text, loadedCheerio, translate, novel, moreNovelInfo, summary, chapters, bookId, params, url, res, resJson;
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0: return [4 /*yield*/, (0, fetch_1.fetchApi)(this.site + novelPath)];
+                    case 1:
+                        data = _c.sent();
+                        return [4 /*yield*/, data.text()];
+                    case 2:
+                        text = _c.sent();
+                        loadedCheerio = (0, cheerio_1.load)(text);
+                        translate = loadedCheerio('#translate <').html();
+                        if (translate) {
+                            console.error('This Novel has been removed and is no longer available');
+                            throw Error('This Novel has been removed and is no longer available');
+                        }
+                        novel = {
+                            path: novelPath,
+                            name: loadedCheerio('b.layui-icon').text().trim() ||
+                                loadedCheerio('.tit h1').text().trim() ||
+                                'Untitled',
+                            cover: loadedCheerio('.cover,.decorate-img').attr('src') || defaultCover_1.defaultCover,
+                        };
+                        moreNovelInfo = this.loadedNovelCache.find(function (n) { return n.path === novelPath; });
+                        if (!!moreNovelInfo) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.searchNovels(novel.name, 1)];
+                    case 3:
+                        moreNovelInfo = (_c.sent()).find(function (novel) { return novel.path === novelPath; });
+                        _c.label = 4;
+                    case 4:
+                        if (moreNovelInfo) {
+                            novel.genres = moreNovelInfo.genres;
+                            novel.author = moreNovelInfo.author;
+                            novel.status =
+                                moreNovelInfo.status === '1'
+                                    ? novelStatus_1.NovelStatus.Completed
+                                    : novelStatus_1.NovelStatus.Ongoing;
+                            summary = moreNovelInfo.summary.replace(/<br\s*\/?>/gi, '\n');
+                            novel.summary = (0, cheerio_1.load)(summary).text().trim();
+                        }
+                        chapters = [];
+                        bookId = loadedCheerio('#bookId').attr('value');
+                        if (!(bookId && !translate)) return [3 /*break*/, 7];
+                        params = new URLSearchParams();
+                        params.append('bookId', bookId);
+                        params.append('curr', '1');
+                        params.append('limit', '42121');
+                        url = "".concat(this.site, "book/queryIndexList?") + params.toString();
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url)];
+                    case 5:
+                        res = _c.sent();
+                        return [4 /*yield*/, res.json()];
+                    case 6:
+                        resJson = _c.sent();
+                        (_b = (_a = resJson === null || resJson === void 0 ? void 0 : resJson.data) === null || _a === void 0 ? void 0 : _a.list) === null || _b === void 0 ? void 0 : _b.forEach(function (chapter) {
+                            return chapters.push({
+                                name: chapter.indexName,
+                                path: novelPath + '/' + chapter.indexNum,
+                                releaseTime: chapter.createTime,
+                            });
+                        });
+                        _c.label = 7;
+                    case 7:
+                        novel.chapters = chapters.reverse();
+                        return [2 /*return*/, novel];
+                }
+            });
+        });
+    };
+    NovelHi.prototype.parseChapter = function (chapterPath) {
+        return __awaiter(this, void 0, void 0, function () {
+            var url, result, loadedCheerio, path, token, contentPath, content, rot13, chapter, chapterText;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = this.site + chapterPath;
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)(url).then(function (res) { return res.text(); })];
+                    case 1:
+                        result = _a.sent();
+                        loadedCheerio = (0, cheerio_1.load)(result);
+                        path = loadedCheerio('#chapterContentPath').attr('value');
+                        token = loadedCheerio('#chapterContentToken').attr('value');
+                        if (!path || !token)
+                            return [2 /*return*/, ''];
+                        contentPath = new URL(path, this.site).href;
+                        return [4 /*yield*/, (0, fetch_1.fetchApi)("".concat(contentPath, "?token=").concat(token), {
+                                headers: {
+                                    'Referer': url,
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                },
+                            }).then(function (r) { return r.json(); })];
+                    case 2:
+                        content = _a.sent();
+                        if (content) {
+                            rot13 = content.data.content.replace(/(<[^>]+>)|([a-zA-Z])/g, function (_, tag, char) {
+                                if (tag)
+                                    return tag;
+                                var base = char <= 'Z' ? 65 : 97;
+                                var shift = ((char.charCodeAt(0) - base + 13) % 26) + base;
+                                return String.fromCharCode(shift);
+                            });
+                            chapter = rot13
+                                .replace(/<sent\b/gi, '<p')
+                                .replace(/<\/sent>/gi, '</p>')
+                                .replace(/<br\s*\/?>/gi, '');
+                            loadedCheerio('#showReading').html(chapter);
+                        }
+                        loadedCheerio('#showReading script,ins').remove();
+                        chapterText = loadedCheerio('#showReading').html();
+                        if (!chapterText) {
+                            return [2 /*return*/, loadedCheerio('#translate').parent().html() || ''];
+                        }
+                        return [2 /*return*/, chapterText];
+                }
+            });
+        });
+    };
+    NovelHi.prototype.searchNovels = function (searchTerm, pageNo) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.getNovels(pageNo, searchTerm)];
+            });
+        });
+    };
+    return NovelHi;
+}());
+var plugin = new NovelHi();
+/* __ENTranslationInjected v2 */
+var fetch_2 = require("@libs/fetch");
+var cheerio_2 = require("cheerio");
+var storage_1 = require("@libs/storage");
+var __ENTranslation = (function () {
+    var CFG = {
+        enabled: true,
+        targetLang: 'es',
+        sourceLang: 'auto',
+        maxBatchChars: 1600,
+        maxConcurrent: 4,
+        translateNovelNames: true,
+        translateSummaries: true,
+        translateChapterNames: true,
+        maxChapterNames: 5000,
+        translateContent: true,
+        translateQuery: true,
+        initialPrefetch: 7,
+        prefetchAhead: 10,
+        cacheMaxEntries: 100,
+        maxIndexedNovels: 5,
+    };
+    var providers = ['google', 'google_repeated', 'mymemory', 'libretranslate'];
+    var providerMaxChars = { google: 2000, google_repeated: 1800, mymemory: 420, libretranslate: 1800 };
+    var cache = new Map();
+    var inflight = new Map();
+    var MAP_KEY = 'es3:map';
+    var ORDER_KEY = 'es3:order';
+    var CH_PREFIX = 'es3:ch:';
+    var map = null;
+    var order = null;
+    var stateReady = false;
+    var chainToken = 0;
+    var origParseChapter = null;
+    var active = 0;
+    var queue = [];
+    var norm = function (s) {
+        return String(s || '')
+            .replace(/[ \t]+/g, ' ')
+            .replace(/\r/g, '')
+            .trim();
+    };
+    var guard = function (fn) {
+        return new Promise(function (resolve, reject) {
+            var start = function () {
+                active += 1;
+                fn()
+                    .then(resolve, reject)
+                    .finally(function () {
+                    active -= 1;
+                    var next = queue.shift();
+                    if (next)
+                        next();
+                });
+            };
+            if (active < CFG.maxConcurrent)
+                start();
+            else
+                queue.push(start);
+        });
+    };
+    var buildUrl = function (provider, text, sl, tl) {
+        var enc = encodeURIComponent(text);
+        var src = provider === 'mymemory' && sl === 'auto' ? 'en' : sl;
+        if (provider === 'google_repeated') {
+            return ('https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=' +
+                src +
+                '&tl=' +
+                tl +
+                '&q=' +
+                enc);
+        }
+        if (provider === 'mymemory') {
+            return ('https://api.mymemory.translated.net/get?q=' +
+                enc +
+                '&langpair=' +
+                src +
+                '|' +
+                tl);
+        }
+        if (provider === 'libretranslate') {
+            return ('https://libretranslate.de/translate?q=' +
+                enc +
+                '&source=' +
+                (sl === 'auto' ? 'en' : sl) +
+                '&target=' +
+                tl +
+                '&format=text');
+        }
+        return ('https://translate.googleapis.com/translate_a/single?client=gtx&sl=' +
+            sl +
+            '&tl=' +
+            tl +
+            '&dt=t&q=' +
+            enc);
+    };
+    var extract = function (json, provider) {
+        try {
+            if (provider === 'google') {
+                if (Array.isArray(json) && json[0] && Array.isArray(json[0])) {
+                    return json[0]
+                        .map(function (item) { return (Array.isArray(item) ? item[0] : null); })
+                        .filter(Boolean)
+                        .join('');
+                }
+            }
+            else if (provider === 'google_repeated') {
+                if (Array.isArray(json) && typeof json[0] === 'string') {
+                    return json[0];
+                }
+            }
+            else if (provider === 'mymemory') {
+                if (json &&
+                    json.responseStatus === 200 &&
+                    json.responseData &&
+                    typeof json.responseData.translatedText === 'string') {
+                    return json.responseData.translatedText;
+                }
+            }
+            else if (provider === 'libretranslate') {
+                if (json && typeof json.translatedText === 'string') {
+                    return json.translatedText;
+                }
+            }
+        }
+        catch (e) {
+            return null;
+        }
+        return null;
+    };
+    function translateText(text, target, source) {
+        return __awaiter(this, void 0, void 0, function () {
+            var t, tl, sl, ck, _i, providers_1, provider, cap, res, json, out, e_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        t = norm(text);
+                        if (!t)
+                            return [2 /*return*/, ''];
+                        tl = target || CFG.targetLang;
+                        sl = source || CFG.sourceLang;
+                        ck = sl + ':' + tl + ':' + t;
+                        if (cache.has(ck))
+                            return [2 /*return*/, cache.get(ck)];
+                        _i = 0, providers_1 = providers;
+                        _a.label = 1;
+                    case 1:
+                        if (!(_i < providers_1.length)) return [3 /*break*/, 7];
+                        provider = providers_1[_i];
+                        _a.label = 2;
+                    case 2:
+                        _a.trys.push([2, 5, , 6]);
+                        cap = providerMaxChars[provider] || Infinity;
+                        if (t.length > cap)
+                            return [3 /*break*/, 6];
+                        return [4 /*yield*/, (0, fetch_2.fetchApi)(buildUrl(provider, t, sl, tl))];
+                    case 3:
+                        res = _a.sent();
+                        if (!res || !res.ok)
+                            return [3 /*break*/, 6];
+                        return [4 /*yield*/, res.json()];
+                    case 4:
+                        json = _a.sent();
+                        out = extract(json, provider);
+                        if (typeof out === 'string' && out) {
+                            cache.set(ck, out);
+                            return [2 /*return*/, out];
+                        }
+                        return [3 /*break*/, 6];
+                    case 5:
+                        e_1 = _a.sent();
+                        return [3 /*break*/, 6];
+                    case 6:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 7: return [2 /*return*/, text];
+                }
+            });
+        });
+    }
+    function ensureState() {
+        if (stateReady)
+            return;
+        stateReady = true;
+        try {
+            var saved = storage_1.storage.get(MAP_KEY);
+            if (saved && typeof saved === 'object' && saved.novels && saved.c2n) {
+                map = saved;
+            }
+        }
+        catch (e) { }
+        if (!map)
+            map = { novels: {}, c2n: {} };
+        try {
+            var savedOrder = storage_1.storage.get(ORDER_KEY);
+            if (Array.isArray(savedOrder))
+                order = savedOrder;
+        }
+        catch (e) { }
+        if (!order)
+            order = [];
+    }
+    function persistMap() {
+        try {
+            storage_1.storage.set(MAP_KEY, map);
+        }
+        catch (e) { }
+    }
+    function persistOrder() {
+        try {
+            storage_1.storage.set(ORDER_KEY, order);
+        }
+        catch (e) { }
+    }
+    function getCached(path) {
+        if (!path)
+            return null;
+        try {
+            var v = storage_1.storage.get(CH_PREFIX + path);
+            if (typeof v === 'string' && v)
+                return v;
+        }
+        catch (e) { }
+        return null;
+    }
+    function setCached(path, html) {
+        if (!path || !html)
+            return;
+        try {
+            storage_1.storage.set(CH_PREFIX + path, html);
+            var at = order.indexOf(path);
+            if (at >= 0)
+                order.splice(at, 1);
+            order.push(path);
+            while (order.length > CFG.cacheMaxEntries) {
+                var evicted = order.shift();
+                if (evicted) {
+                    try {
+                        storage_1.storage.delete(CH_PREFIX + evicted);
+                    }
+                    catch (e) { }
+                }
+            }
+            persistOrder();
+        }
+        catch (e) { }
+    }
+    function indexNovel(novelPath, chapters) {
+        ensureState();
+        var paths = [];
+        if (Array.isArray(chapters)) {
+            for (var i = 0; i < chapters.length; i++) {
+                var c = chapters[i];
+                if (c && typeof c.path === 'string' && c.path)
+                    paths.push(c.path);
+            }
+        }
+        var keys = Object.keys(map.novels);
+        if (keys.indexOf(novelPath) === -1) {
+            while (keys.length >= CFG.maxIndexedNovels) {
+                var oldKey = keys.shift();
+                delete map.novels[oldKey];
+                var c2nKeys = Object.keys(map.c2n);
+                for (var i = 0; i < c2nKeys.length; i++) {
+                    var entry = map.c2n[c2nKeys[i]];
+                    if (entry && entry.n === oldKey)
+                        delete map.c2n[c2nKeys[i]];
+                }
+            }
+        }
+        map.novels[novelPath] = paths;
+        for (var i = 0; i < paths.length; i++) {
+            map.c2n[paths[i]] = { n: novelPath, i: i };
+        }
+        persistMap();
+    }
+    function translateLines(values) {
+        return __awaiter(this, void 0, void 0, function () {
+            var clean, i, v, batches, current, len, i, line, results, out, _i, results_1, result, batch, text, parts, i, i, one, e_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        clean = [];
+                        for (i = 0; i < values.length; i++) {
+                            v = values[i];
+                            clean.push(typeof v === 'string' ? v.replace(/\n/g, ' ').trim() : '');
+                        }
+                        batches = [];
+                        current = null;
+                        len = 0;
+                        for (i = 0; i < clean.length; i++) {
+                            line = clean[i];
+                            if (!line)
+                                continue;
+                            if (!current || len + 1 + line.length > CFG.maxBatchChars) {
+                                current = { idxs: [], texts: [] };
+                                batches.push(current);
+                                len = 0;
+                            }
+                            current.idxs.push(i);
+                            current.texts.push(line);
+                            len += 1 + line.length;
+                        }
+                        return [4 /*yield*/, Promise.all(batches.map(function (batch) {
+                                return guard(function () {
+                                    var joined = batch.texts.join('\n');
+                                    return translateText(joined).then(function (t) { return ({ batch: batch, text: t }); });
+                                });
+                            }))];
+                    case 1:
+                        results = _a.sent();
+                        out = clean.slice();
+                        _i = 0, results_1 = results;
+                        _a.label = 2;
+                    case 2:
+                        if (!(_i < results_1.length)) return [3 /*break*/, 10];
+                        result = results_1[_i];
+                        batch = result.batch;
+                        text = result.text;
+                        if (!text || !text.trim())
+                            return [3 /*break*/, 9];
+                        parts = text.split('\n');
+                        if (!(parts.length === batch.texts.length)) return [3 /*break*/, 3];
+                        for (i = 0; i < parts.length; i++) {
+                            if (parts[i] && parts[i].trim())
+                                out[batch.idxs[i]] = parts[i];
+                        }
+                        return [3 /*break*/, 9];
+                    case 3:
+                        if (!(batch.texts.length <= 8)) return [3 /*break*/, 9];
+                        i = 0;
+                        _a.label = 4;
+                    case 4:
+                        if (!(i < batch.texts.length)) return [3 /*break*/, 9];
+                        _a.label = 5;
+                    case 5:
+                        _a.trys.push([5, 7, , 8]);
+                        return [4 /*yield*/, translateText(batch.texts[i])];
+                    case 6:
+                        one = _a.sent();
+                        if (one && one.trim())
+                            out[batch.idxs[i]] = one;
+                        return [3 /*break*/, 8];
+                    case 7:
+                        e_2 = _a.sent();
+                        return [3 /*break*/, 8];
+                    case 8:
+                        i++;
+                        return [3 /*break*/, 4];
+                    case 9:
+                        _i++;
+                        return [3 /*break*/, 2];
+                    case 10: return [2 /*return*/, out];
+                }
+            });
+        });
+    }
+    function translateNovelItems(items) {
+        return __awaiter(this, void 0, void 0, function () {
+            var names, translated_1, e_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!Array.isArray(items) || !items.length)
+                            return [2 /*return*/, items];
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        names = items.map(function (item) {
+                            return item && typeof item.name === 'string' ? item.name : '';
+                        });
+                        return [4 /*yield*/, translateLines(names)];
+                    case 2:
+                        translated_1 = _a.sent();
+                        return [2 /*return*/, items.map(function (item, i) { return (__assign(__assign({}, item), { name: translated_1[i] && translated_1[i].trim() ? translated_1[i] : item.name })); })];
+                    case 3:
+                        e_3 = _a.sent();
+                        return [2 /*return*/, items];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function translateChapterNames(chapters) {
+        return __awaiter(this, void 0, void 0, function () {
+            var capped, names, translated_2, e_4;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        capped = Array.isArray(chapters)
+                            ? chapters.slice(0, CFG.maxChapterNames)
+                            : [];
+                        if (!capped.length)
+                            return [2 /*return*/, []];
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        names = capped.map(function (ch) {
+                            return ch && typeof ch.name === 'string' ? ch.name : '';
+                        });
+                        return [4 /*yield*/, translateLines(names)];
+                    case 2:
+                        translated_2 = _a.sent();
+                        return [2 /*return*/, capped.map(function (ch, i) { return (__assign(__assign({}, ch), { name: translated_2[i] && translated_2[i].trim() ? translated_2[i] : ch.name })); })];
+                    case 3:
+                        e_4 = _a.sent();
+                        return [2 /*return*/, capped];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function translateSourceNovel(novel) {
+        return __awaiter(this, void 0, void 0, function () {
+            var updated, name_1, summary, translatedChapters, rest, e_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 7, , 8]);
+                        updated = __assign({}, novel);
+                        if (!(CFG.translateNovelNames && typeof updated.name === 'string')) return [3 /*break*/, 2];
+                        return [4 /*yield*/, translateText(updated.name)];
+                    case 1:
+                        name_1 = _a.sent();
+                        if (name_1 && name_1.trim())
+                            updated.name = name_1;
+                        _a.label = 2;
+                    case 2:
+                        if (!(CFG.translateSummaries && typeof updated.summary === 'string' && updated.summary)) return [3 /*break*/, 4];
+                        return [4 /*yield*/, translateText(updated.summary)];
+                    case 3:
+                        summary = _a.sent();
+                        if (summary && summary.trim())
+                            updated.summary = summary;
+                        _a.label = 4;
+                    case 4:
+                        if (!(CFG.translateChapterNames && Array.isArray(updated.chapters))) return [3 /*break*/, 6];
+                        return [4 /*yield*/, translateChapterNames(updated.chapters)];
+                    case 5:
+                        translatedChapters = _a.sent();
+                        if (translatedChapters.length < updated.chapters.length) {
+                            rest = updated.chapters.slice(translatedChapters.length);
+                            updated.chapters = translatedChapters.concat(rest);
+                        }
+                        else {
+                            updated.chapters = translatedChapters;
+                        }
+                        _a.label = 6;
+                    case 6: return [2 /*return*/, updated];
+                    case 7:
+                        e_5 = _a.sent();
+                        return [2 /*return*/, novel];
+                    case 8: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function collectTextNodes($) {
+        var nodes = [];
+        var root = $('body');
+        if (!root.length)
+            return nodes;
+        root.find('*').each(function (i, el) {
+            var tag = (el.tagName || '').toLowerCase();
+            if (['script', 'style', 'pre', 'code', 'svg', 'noscript'].includes(tag))
+                return;
+            $(el)
+                .contents()
+                .each(function (j, child) {
+                if (child.type === 'text') {
+                    var value = child.data || '';
+                    if (value.trim()) {
+                        nodes.push({ el: child, value: value });
+                    }
+                }
+            });
+        });
+        return nodes;
+    }
+    function segmentizeText(s, max) {
+        var out = [];
+        var cur = '';
+        for (var _i = 0, _a = s.split(/(\s+)/); _i < _a.length; _i++) {
+            var word = _a[_i];
+            if (word.length > max) {
+                if (cur) {
+                    out.push(cur);
+                    cur = '';
+                }
+                var rest = word;
+                while (rest.length > max) {
+                    out.push(rest.slice(0, max));
+                    rest = rest.slice(max);
+                }
+                cur = rest;
+                continue;
+            }
+            if ((cur + word).length > max && cur) {
+                out.push(cur);
+                cur = word;
+            }
+            else {
+                cur += word;
+            }
+        }
+        if (cur)
+            out.push(cur);
+        return out;
+    }
+    function translateHTMLContent(html) {
+        return __awaiter(this, void 0, void 0, function () {
+            var $, nodes, batches, batch, _i, nodes_1, node, value, originalTotalLen, changedLen, _a, batches_1, chunk, translated_3, _b, _c, seg, t, joined, translated, parts, i, i, t, tooShort, e_6;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        _d.trys.push([0, 14, , 15]);
+                        if (typeof html !== 'string' || !html.trim()) {
+                            return [2 /*return*/, { html: html, ok: false }];
+                        }
+                        $ = (0, cheerio_2.load)(html);
+                        nodes = collectTextNodes($);
+                        if (!nodes.length)
+                            return [2 /*return*/, { html: html, ok: false }];
+                        batches = [];
+                        batch = null;
+                        for (_i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
+                            node = nodes_1[_i];
+                            value = node.value;
+                            if (value.trim().length > CFG.maxBatchChars) {
+                                if (batch) {
+                                    batches.push(batch);
+                                    batch = null;
+                                }
+                                batches.push({
+                                    lines: [node.el],
+                                    texts: segmentizeText(value, CFG.maxBatchChars),
+                                    chunked: true,
+                                });
+                                continue;
+                            }
+                            if (!batch)
+                                batch = { lines: [], texts: [] };
+                            if (batch.lines.length &&
+                                (batch.texts.join('\n') + '\n' + value).length > CFG.maxBatchChars) {
+                                batches.push(batch);
+                                batch = { lines: [], texts: [] };
+                            }
+                            batch.lines.push(node.el);
+                            batch.texts.push(value);
+                        }
+                        if (batch)
+                            batches.push(batch);
+                        originalTotalLen = 0;
+                        changedLen = 0;
+                        _a = 0, batches_1 = batches;
+                        _d.label = 1;
+                    case 1:
+                        if (!(_a < batches_1.length)) return [3 /*break*/, 13];
+                        chunk = batches_1[_a];
+                        if (!chunk.lines.length)
+                            return [3 /*break*/, 12];
+                        if (!chunk.chunked) return [3 /*break*/, 6];
+                        translated_3 = [];
+                        _b = 0, _c = chunk.texts;
+                        _d.label = 2;
+                    case 2:
+                        if (!(_b < _c.length)) return [3 /*break*/, 5];
+                        seg = _c[_b];
+                        return [4 /*yield*/, translateText(seg)];
+                    case 3:
+                        t = _d.sent();
+                        if (t && t.trim() && t !== seg) {
+                            changedLen += t.length;
+                            translated_3.push(t);
+                        }
+                        else {
+                            translated_3.push(seg);
+                        }
+                        _d.label = 4;
+                    case 4:
+                        _b++;
+                        return [3 /*break*/, 2];
+                    case 5:
+                        originalTotalLen += chunk.texts.join(' ').length;
+                        chunk.lines[0].data = translated_3.join(' ');
+                        return [3 /*break*/, 12];
+                    case 6:
+                        joined = chunk.texts.join('\n');
+                        originalTotalLen += joined.length;
+                        return [4 /*yield*/, translateText(joined)];
+                    case 7:
+                        translated = _d.sent();
+                        if (!translated || !translated.trim() || translated === joined) {
+                            return [3 /*break*/, 12];
+                        }
+                        parts = translated.split('\n');
+                        if (!(parts.length === chunk.lines.length)) return [3 /*break*/, 8];
+                        for (i = 0; i < chunk.lines.length; i += 1) {
+                            if (parts[i] && parts[i].trim()) {
+                                if (parts[i] !== chunk.texts[i])
+                                    changedLen += parts[i].length;
+                                chunk.lines[i].data = parts[i];
+                            }
+                        }
+                        return [3 /*break*/, 12];
+                    case 8:
+                        i = 0;
+                        _d.label = 9;
+                    case 9:
+                        if (!(i < chunk.lines.length)) return [3 /*break*/, 12];
+                        return [4 /*yield*/, translateText(chunk.texts[i] || '')];
+                    case 10:
+                        t = _d.sent();
+                        if (t && t.trim()) {
+                            if (t !== chunk.texts[i])
+                                changedLen += t.length;
+                            chunk.lines[i].data = t;
+                        }
+                        _d.label = 11;
+                    case 11:
+                        i += 1;
+                        return [3 /*break*/, 9];
+                    case 12:
+                        _a++;
+                        return [3 /*break*/, 1];
+                    case 13:
+                        tooShort = originalTotalLen > 200 && changedLen < originalTotalLen * 0.4;
+                        if (tooShort) {
+                            if (changedLen === 0) {
+                                return [2 /*return*/, { html: html, ok: false }];
+                            }
+                            console.warn('[translate] RESULT TOO SHORT - returning original');
+                            return [2 /*return*/, { html: html, ok: false }];
+                        }
+                        return [2 /*return*/, { html: $.html(), ok: changedLen > 0 }];
+                    case 14:
+                        e_6 = _d.sent();
+                        return [2 /*return*/, { html: html, ok: false }];
+                    case 15: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function runDirect(path, args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var raw, _a, res, out;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        if (!origParseChapter)
+                            return [2 /*return*/, ''];
+                        if (!(args && args.length)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, origParseChapter.apply(null, args)];
+                    case 1:
+                        _a = _b.sent();
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, origParseChapter(path)];
+                    case 3:
+                        _a = _b.sent();
+                        _b.label = 4;
+                    case 4:
+                        raw = _a;
+                        if (typeof raw !== 'string' || !raw)
+                            return [2 /*return*/, raw];
+                        if (!CFG.translateContent)
+                            return [2 /*return*/, raw];
+                        return [4 /*yield*/, translateHTMLContent(raw)];
+                    case 5:
+                        res = _b.sent();
+                        out = res && typeof res.html === 'string' && res.html ? res.html : raw;
+                        if (res && res.ok && out && out !== raw)
+                            setCached(path, out);
+                        return [2 /*return*/, out];
+                }
+            });
+        });
+    }
+    function startJob(path, args) {
+        if (path) {
+            var existing = inflight.get(path);
+            if (existing)
+                return existing;
+        }
+        var job = runDirect(path, args).then(function (value) {
+            if (path && inflight.get(path) === job)
+                inflight.delete(path);
+            return value;
+        }, function (error) {
+            if (path && inflight.get(path) === job)
+                inflight.delete(path);
+            throw error;
+        });
+        if (path)
+            inflight.set(path, job);
+        return job;
+    }
+    function ensureBackground(path) {
+        return __awaiter(this, void 0, void 0, function () {
+            var hit, e_7;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        hit = getCached(path);
+                        if (hit)
+                            return [2 /*return*/, hit];
+                        return [4 /*yield*/, startJob(path, null)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        e_7 = _a.sent();
+                        return [2 /*return*/, ''];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function scheduleWindow(novelPath, afterIdx, count) {
+        var _this = this;
+        try {
+            ensureState();
+            var paths_1 = map.novels[novelPath];
+            if (!paths_1 || !paths_1.length)
+                return;
+            var start_1 = afterIdx + 1;
+            var end_1 = Math.min(paths_1.length, afterIdx + 1 + count);
+            if (start_1 >= end_1)
+                return;
+            var token_1 = ++chainToken;
+            console.warn('[translate] prefetch', novelPath, start_1, '->', end_1 - 1);
+            (function () { return __awaiter(_this, void 0, void 0, function () {
+                var i, p, out;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            i = start_1;
+                            _a.label = 1;
+                        case 1:
+                            if (!(i < end_1)) return [3 /*break*/, 4];
+                            if (token_1 !== chainToken)
+                                return [2 /*return*/];
+                            p = paths_1[i];
+                            if (!p)
+                                return [3 /*break*/, 3];
+                            if (getCached(p))
+                                return [3 /*break*/, 3];
+                            return [4 /*yield*/, ensureBackground(p)];
+                        case 2:
+                            out = _a.sent();
+                            if (!out)
+                                return [2 /*return*/];
+                            _a.label = 3;
+                        case 3:
+                            i++;
+                            return [3 /*break*/, 1];
+                        case 4: return [2 /*return*/];
+                    }
+                });
+            }); })();
+        }
+        catch (e) { }
+    }
+    function scheduleForPath(path) {
+        try {
+            ensureState();
+            var entry = map.c2n[path];
+            if (!entry)
+                return;
+            scheduleWindow(entry.n, entry.i, CFG.prefetchAhead);
+        }
+        catch (e) { }
+    }
+    function wrapPlugin(plugin) {
+        var _this = this;
+        if (!plugin || !CFG.enabled)
+            return;
+        if (typeof plugin.popularNovels === 'function') {
+            var orig_1 = plugin.popularNovels.bind(plugin);
+            plugin.popularNovels = function (pageNo, options) { return __awaiter(_this, void 0, void 0, function () {
+                var opts, next, changed, _loop_1, _a, _b, _c, _i, key, e_8, res;
+                return __generator(this, function (_d) {
+                    switch (_d.label) {
+                        case 0:
+                            opts = options;
+                            _d.label = 1;
+                        case 1:
+                            _d.trys.push([1, 7, , 8]);
+                            if (!(CFG.translateQuery && options && options.filters)) return [3 /*break*/, 6];
+                            next = {};
+                            changed = false;
+                            _loop_1 = function (key) {
+                                var f, value, translated;
+                                return __generator(this, function (_e) {
+                                    switch (_e.label) {
+                                        case 0:
+                                            f = options.filters[key];
+                                            next[key] = f && typeof f === 'object' ? __assign({}, f) : f;
+                                            value = next[key] && next[key].value;
+                                            if (!(typeof value === 'string' &&
+                                                value.trim() &&
+                                                !/^\d+$/.test(value.trim()) &&
+                                                key !== 'm_orderby' &&
+                                                key !== 'adult')) return [3 /*break*/, 2];
+                                            return [4 /*yield*/, translateText(value, 'en', CFG.sourceLang).catch(function () { return value; })];
+                                        case 1:
+                                            translated = _e.sent();
+                                            if (translated && translated.trim()) {
+                                                next[key].value = translated;
+                                                changed = true;
+                                            }
+                                            _e.label = 2;
+                                        case 2: return [2 /*return*/];
+                                    }
+                                });
+                            };
+                            _a = options.filters;
+                            _b = [];
+                            for (_c in _a)
+                                _b.push(_c);
+                            _i = 0;
+                            _d.label = 2;
+                        case 2:
+                            if (!(_i < _b.length)) return [3 /*break*/, 5];
+                            _c = _b[_i];
+                            if (!(_c in _a)) return [3 /*break*/, 4];
+                            key = _c;
+                            return [5 /*yield**/, _loop_1(key)];
+                        case 3:
+                            _d.sent();
+                            _d.label = 4;
+                        case 4:
+                            _i++;
+                            return [3 /*break*/, 2];
+                        case 5:
+                            if (changed)
+                                opts = __assign(__assign({}, options), { filters: next });
+                            _d.label = 6;
+                        case 6: return [3 /*break*/, 8];
+                        case 7:
+                            e_8 = _d.sent();
+                            return [3 /*break*/, 8];
+                        case 8: return [4 /*yield*/, orig_1(pageNo, opts)];
+                        case 9:
+                            res = _d.sent();
+                            if (Array.isArray(res))
+                                return [2 /*return*/, translateNovelItems(res)];
+                            return [2 /*return*/, res];
+                    }
+                });
+            }); };
+        }
+        if (typeof plugin.searchNovels === 'function') {
+            var orig_2 = plugin.searchNovels.bind(plugin);
+            plugin.searchNovels = function (searchTerm, pageNo) { return __awaiter(_this, void 0, void 0, function () {
+                var query, effectiveQuery, _a, raw, fold, enQ, esQ, translated, containsQ, out, exact_1, partial_1;
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0:
+                            query = typeof searchTerm === 'string' ? searchTerm : '';
+                            if (!CFG.translateQuery) return [3 /*break*/, 2];
+                            return [4 /*yield*/, translateText(query, 'en', CFG.sourceLang).catch(function () { return query; })];
+                        case 1:
+                            _a = (_b.sent()) || query;
+                            return [3 /*break*/, 3];
+                        case 2:
+                            _a = query;
+                            _b.label = 3;
+                        case 3:
+                            effectiveQuery = _a;
+                            return [4 /*yield*/, orig_2(effectiveQuery, pageNo)];
+                        case 4:
+                            raw = _b.sent();
+                            if (!Array.isArray(raw))
+                                return [2 /*return*/, raw];
+                            fold = function (s) {
+                                try {
+                                    return String(s || '')
+                                        .toLowerCase()
+                                        .normalize('NFD')
+                                        .replace(/[\u0300-\u036f]/g, '');
+                                }
+                                catch (e) {
+                                    return String(s || '').toLowerCase();
+                                }
+                            };
+                            enQ = effectiveQuery ? fold(effectiveQuery) : '';
+                            esQ = query ? fold(query) : '';
+                            return [4 /*yield*/, translateNovelItems(raw)];
+                        case 5:
+                            translated = _b.sent();
+                            containsQ = function (name, path, q) {
+                                return q &&
+                                    q.length >= 2 &&
+                                    (name.indexOf(q) !== -1 || path.indexOf(q.replace(/\s+/g, '-')) !== -1);
+                            };
+                            out = translated;
+                            if (enQ.length >= 2 || esQ.length >= 2) {
+                                exact_1 = [];
+                                partial_1 = [];
+                                translated.forEach(function (n, i) {
+                                    var name = fold(n.name);
+                                    var path = fold(n.path);
+                                    var rawName = fold(raw[i] ? raw[i].name : '');
+                                    var rawPath = fold(raw[i] ? raw[i].path : '');
+                                    if ((enQ.length >= 2 && (name === enQ || rawName === enQ)) ||
+                                        (esQ.length >= 2 && name === esQ)) {
+                                        exact_1.push(n);
+                                        return;
+                                    }
+                                    if (containsQ(name, path, enQ) ||
+                                        containsQ(rawName, rawPath, enQ) ||
+                                        containsQ(name, path, esQ)) {
+                                        partial_1.push(n);
+                                    }
+                                });
+                                if (exact_1.length)
+                                    out = exact_1;
+                                else if (partial_1.length)
+                                    out = partial_1;
+                            }
+                            return [2 /*return*/, out];
+                    }
+                });
+            }); };
+        }
+        if (typeof plugin.parseNovel === 'function') {
+            var orig_3 = plugin.parseNovel.bind(plugin);
+            plugin.parseNovel = function (novelPath) { return __awaiter(_this, void 0, void 0, function () {
+                var res;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, orig_3(novelPath)];
+                        case 1:
+                            res = _a.sent();
+                            if (res && typeof res === 'object') {
+                                try {
+                                    ensureState();
+                                    indexNovel(String(novelPath || ''), Array.isArray(res.chapters) ? res.chapters : []);
+                                    scheduleWindow(String(novelPath || ''), -1, CFG.initialPrefetch);
+                                }
+                                catch (e) { }
+                                return [2 /*return*/, translateSourceNovel(res)];
+                            }
+                            return [2 /*return*/, res];
+                    }
+                });
+            }); };
+        }
+        if (typeof plugin.parseChapter === 'function') {
+            var orig_4 = plugin.parseChapter.bind(plugin);
+            origParseChapter = orig_4;
+            plugin.parseChapter = function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                return __awaiter(_this, void 0, void 0, function () {
+                    var path, out, cached, res;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                path = String((args && args[0]) || '');
+                                ensureState();
+                                cached = getCached(path);
+                                if (!cached) return [3 /*break*/, 1];
+                                out = cached;
+                                return [3 /*break*/, 7];
+                            case 1:
+                                if (!!path) return [3 /*break*/, 5];
+                                return [4 /*yield*/, orig_4.apply(void 0, args)];
+                            case 2:
+                                out = _a.sent();
+                                if (!(CFG.translateContent && typeof out === 'string')) return [3 /*break*/, 4];
+                                return [4 /*yield*/, translateHTMLContent(out)];
+                            case 3:
+                                res = _a.sent();
+                                if (res && typeof res.html === 'string' && res.html)
+                                    out = res.html;
+                                _a.label = 4;
+                            case 4: return [3 /*break*/, 7];
+                            case 5: return [4 /*yield*/, startJob(path, args)];
+                            case 6:
+                                out = _a.sent();
+                                _a.label = 7;
+                            case 7:
+                                if (path)
+                                    scheduleForPath(path);
+                                return [2 /*return*/, out];
+                        }
+                    });
+                });
+            };
+        }
+    }
+    return wrapPlugin;
+})();
+__ENTranslation(plugin);
+/* __ENTranslationInjected END */
+exports.default = plugin;

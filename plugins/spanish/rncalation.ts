@@ -10,7 +10,7 @@ class RNCalationPlugin implements Plugin.PluginBase {
   name = 'RNCalation';
   icon = 'src/es/rncalation/icon.png';
   site = 'https://rncalation.online/';
-  version = '1.0.2';
+  version = '1.0.6';
   filters = undefined;
 
   async popularNovels(
@@ -87,67 +87,47 @@ class RNCalationPlugin implements Plugin.PluginBase {
       status,
       chapters: [],
     };
-
     const chapters: Plugin.ChapterItem[] = [];
     const seenPaths = new Set<string>();
 
-    const extractChapters = ($doc: cheerio.CheerioAPI) => {
-      let found = 0;
-      $doc('a[data-chapter-num]').each((_, el) => {
-        const chapterName =
-          $doc(el).attr('data-chapter-label') || $doc(el).text().trim();
-        const chapterPath =
-          $doc(el).attr('href')?.replace(this.site, '/') || '';
-        const chapterNum =
-          Number($doc(el).attr('data-chapter-num')) || undefined;
+    $('a[data-chapter-num]').each((_, el) => {
+      const chapterPath = $(el).attr('href')?.replace(this.site, '') || '';
+      if (!chapterPath || seenPaths.has(chapterPath)) return;
+      seenPaths.add(chapterPath);
 
-        if (chapterPath && !seenPaths.has(chapterPath)) {
-          seenPaths.add(chapterPath);
-          chapters.push({
-            name: chapterName,
-            path: chapterPath,
-            chapterNumber: chapterNum,
-          });
-          found++;
-        }
+      const chapterName =
+        $(el).attr('data-chapter-label') ||
+        $(el).find('[data-cl-title]').text().trim() ||
+        $(el).text().trim();
+      const chapterNum = Number($(el).attr('data-chapter-num')) || undefined;
+
+      chapters.push({
+        name: chapterName,
+        path: chapterPath.startsWith('/') ? chapterPath : '/' + chapterPath,
+        chapterNumber: chapterNum,
       });
-      return found;
-    };
+    });
 
-    // capítulos ya incluidos en el HTML principal de la novela
-    extractChapters($);
+    if (chapters.length === 0) {
+      $('a[href*="/leer/"]').each((_, el) => {
+        const href = $(el).attr('href') || '';
+        const chapterPath = href.replace(this.site, '') || href;
+        if (!chapterPath || seenPaths.has(chapterPath)) return;
+        seenPaths.add(chapterPath);
 
-    // el resto se carga por páginas vía /chapters?page=N (botón "cargar más")
-    const chaptersBase =
-      this.site + novelPath.replace(/^\//, '').replace(/\/$/, '');
-    let page = 1;
-    let keepGoing = true;
+        const label = $(el).attr('data-chapter-label') || '';
+        const num = Number($(el).attr('data-chapter-num')) || undefined;
+        const text = $(el).text().trim();
+        const name = label || text || `Chapter ${num || chapters.length + 1}`;
 
-    while (keepGoing) {
-      page++;
-      const pageBody = await fetchApi(
-        `${chaptersBase}/chapters?page=${page}`,
-      ).then(res => res.text());
-
-      if (!pageBody || pageBody.trim().length === 0) {
-        keepGoing = false;
-        break;
-      }
-
-      const $page = cheerio.load(pageBody);
-      const foundThisPage = extractChapters($page);
-
-      if (foundThisPage === 0) {
-        keepGoing = false;
-      }
-
-      // límite de seguridad para no hacer loop infinito si algo sale mal
-      if (page > 200) {
-        keepGoing = false;
-      }
+        chapters.push({
+          name,
+          path: chapterPath.startsWith('/') ? chapterPath : '/' + chapterPath,
+          chapterNumber: num,
+        });
+      });
     }
 
-    // el sitio suele listarlos del más nuevo al más viejo
     novel.chapters = chapters.reverse();
 
     return novel;
@@ -159,7 +139,11 @@ class RNCalationPlugin implements Plugin.PluginBase {
     ).then(res => res.text());
     const $ = cheerio.load(body);
 
-    const content = $('.novel-content').html() || '';
+    const content =
+      $('.the-content').html() ||
+      $('.novel-content').html() ||
+      $('#rk-novel-reader .novel-content').html() ||
+      '';
     return content;
   }
 
