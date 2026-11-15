@@ -4,12 +4,37 @@ import { NovelStatus } from '@libs/novelStatus';
 import { defaultCover } from '@libs/defaultCover';
 import * as cheerio from 'cheerio';
 
+type BookEntry = {
+  book_id: string;
+  slug: string;
+  title: string;
+  title_es: string;
+  title_en: string;
+  author: string;
+  category: string;
+  category_slug_es: string;
+  tags: string[];
+  one_liner: string;
+  description: string;
+  chapters: number;
+  latest_chapter: number;
+  status: string;
+  url: string;
+  cover: string;
+  language: string;
+};
+
+const PAGE_SIZE = 24;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
+
 class NovelRefinedPlugin implements Plugin.PluginBase {
   id = 'novelrefined';
   name = 'NovelRefined';
   icon = 'src/es/novelrefined/icon.png';
   site = 'https://novelrefined.com';
-  version = '2.1.1';
+  version = '3.0.0';
+
+  private booksCache: { time: number; books: BookEntry[] } | null = null;
 
   private async getCheerio(url: string): Promise<cheerio.CheerioAPI | null> {
     try {
@@ -38,6 +63,27 @@ class NovelRefinedPlugin implements Plugin.PluginBase {
     }
   }
 
+  private async getBooks(): Promise<BookEntry[]> {
+    if (this.booksCache && Date.now() - this.booksCache.time < CACHE_TTL_MS) {
+      return this.booksCache.books;
+    }
+    try {
+      const res = await fetchApi(`${this.site}/data/books.json?v=20260715d`, {
+        headers: {
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache',
+        },
+      });
+      if (!res.ok) return [];
+      const data = await res.json();
+      if (!Array.isArray(data)) return [];
+      this.booksCache = { time: Date.now(), books: data };
+      return data;
+    } catch {
+      return [];
+    }
+  }
+
   private absUrl(src: string): string {
     if (!src) return defaultCover;
     if (src.startsWith('http')) return src;
@@ -45,13 +91,12 @@ class NovelRefinedPlugin implements Plugin.PluginBase {
     return `${this.site}${src.startsWith('/') ? '' : '/'}${src}`;
   }
 
-  private nameFromSlug(path: string): string {
-    const slug = path.split('/').filter(Boolean).pop() || '';
-    return slug
-      .replace(/-novela.*$/, '')
-      .replace(/-/g, ' ')
-      .replace(/\b\w/g, c => c.toUpperCase())
-      .trim();
+  private bookToNovel(b: BookEntry): Plugin.NovelItem {
+    return {
+      name: b.title_es || b.title || b.slug,
+      path: b.url || `/novela/${b.slug}/`,
+      cover: b.cover ? this.absUrl(b.cover) : defaultCover,
+    };
   }
 
   private normalize(s: string): string {
@@ -64,121 +109,59 @@ class NovelRefinedPlugin implements Plugin.PluginBase {
       .trim();
   }
 
-  private parseNovelCards($: cheerio.CheerioAPI): Plugin.NovelItem[] {
-    const map = new Map<string, Plugin.NovelItem>();
-
-    $('a[href]').each((_, element) => {
-      const $el = $(element);
-      const href = $el.attr('href') || '';
-      if (!href.startsWith('/novela/') || href.includes('capitulo')) return;
-
-      const path = href.replace(this.site, '') || href;
-      if (!path || map.has(path)) return;
-
-      let name = $el.text().trim();
-      if (!name) {
-        name =
-          $el
-            .find('img')
-            .attr('alt')
-            ?.replace('Portada de la novela ', '')
-            .trim() || '';
-      }
-      if (!name) {
-        name = this.nameFromSlug(path);
-      }
-
-      let coverRel = $el.find('img').attr('src') || '';
-      if (!coverRel) {
-        coverRel =
-          $el.closest('.nr-novel-card').find('img').first().attr('src') || '';
-      }
-
-      map.set(path, {
-        name,
-        path,
-        cover: coverRel ? this.absUrl(coverRel) : defaultCover,
-      });
-    });
-
-    return [...map.values()];
+  private statusFromString(s: string): NovelStatus {
+    const t = s.toLowerCase();
+    if (t.includes('completad') || t.includes('finalizad') || t === 'completed')
+      return NovelStatus.Completed;
+    if (t.includes('curso') || t.includes('activo') || t === 'ongoing')
+      return NovelStatus.Ongoing;
+    return NovelStatus.Unknown;
   }
 
   async popularNovels(pageNo: number): Promise<Plugin.NovelItem[]> {
-    // El catálogo es de una sola página: avisar a la app que no hay más
-    if (pageNo > 1) return [];
-    const $ = await this.getCheerio(`${this.site}/novelas/`);
-    if (!$) return [];
-    return this.parseNovelCards($);
+    const books = await this.getBooks();
+    const start = (pageNo - 1) * PAGE_SIZE;
+    if (start >= books.length) return [];
+    return books.slice(start, start + PAGE_SIZE).map(b => this.bookToNovel(b));
   }
 
   async searchNovels(
     searchTerm: string,
     pageNo: number,
   ): Promise<Plugin.NovelItem[]> {
-    // Avisar a la app que no hay más páginas (evita bucle de "cargando más")
     if (pageNo > 1) return [];
-
-    const term = searchTerm.trim();
+    const term = this.normalize(searchTerm);
     if (!term) return [];
 
-    // Una sola petición al catálogo, sin paginación infinita
-    const $ = await this.getCheerio(`${this.site}/novelas/`);
-    if (!$) return [];
+    const books = await this.getBooks();
+    const tokens = term.split(' ').filter(Boolean);
+    if (tokens.length === 0) return [];
 
-    const all = this.parseNovelCards($);
-    const tokens = this.normalize(term).split(' ').filter(Boolean);
-    if (tokens.length === 0) return all;
-
-    return all.filter(novel => {
-      const slug = novel.path.split('/').filter(Boolean).pop() || '';
-      const slugName = this.nameFromSlug(slug);
-      const text = this.normalize(`${novel.name} ${slugName}`);
-      return tokens.every(t => text.includes(t));
-    });
+    return books
+      .filter(b => {
+        const text = this.normalize(
+          `${b.title_es} ${b.title} ${b.title_en} ${b.author} ${b.tags.join(' ')}`,
+        );
+        return tokens.every(t => text.includes(t));
+      })
+      .map(b => this.bookToNovel(b));
   }
 
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
-    const $ = await this.getCheerio(`${this.site}${novelPath}`);
-    if (!$) {
-      return {
-        path: novelPath,
-        name: 'Novela',
-        cover: defaultCover,
-        status: NovelStatus.Unknown,
-        chapters: [],
-      };
-    }
+    // Buscar metadatos en el catálogo
+    const books = await this.getBooks();
+    const slug = novelPath.replace(/^\/novela\//, '').replace(/\/$/, '');
+    const meta = books.find(b => b.slug === slug || b.url === novelPath);
 
-    const name = $('h1').first().text().trim() || 'Novela';
+    const name = meta ? meta.title_es || meta.title : 'Novela';
+    const cover = meta && meta.cover ? this.absUrl(meta.cover) : defaultCover;
+    const summary = meta ? meta.description || meta.one_liner : '';
+    const author = meta ? meta.author : '';
+    const status = meta
+      ? this.statusFromString(meta.status)
+      : NovelStatus.Unknown;
 
-    const coverRel =
-      $('img[src*="catalog-covers"]').first().attr('src') ||
-      $('img').first().attr('src') ||
-      '';
-    const cover = coverRel ? this.absUrl(coverRel) : defaultCover;
-
-    let author = '';
-    const jsonLd = $('script[type="application/ld+json"]').html() || '';
-    const authorMatch = jsonLd.match(/"name"\s*:\s*"([^"]+)"/);
-    if (authorMatch) author = authorMatch[1];
-
-    const summary = $('meta[name="description"]').attr('content') || '';
-
-    let status = NovelStatus.Unknown;
-    const statusText = $.text().toLowerCase();
-    if (
-      statusText.includes('completado') ||
-      statusText.includes('finalizado')
-    ) {
-      status = NovelStatus.Completed;
-    } else if (
-      statusText.includes('en curso') ||
-      statusText.includes('activo')
-    ) {
-      status = NovelStatus.Ongoing;
-    }
-
+    // Obtener capítulos del HTML
     const chapters: Plugin.ChapterItem[] = [];
     const seen = new Set<string>();
     let chapterIndex = 0;
