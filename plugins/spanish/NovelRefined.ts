@@ -9,7 +9,7 @@ class NovelRefinedPlugin implements Plugin.PluginBase {
   name = 'NovelRefined';
   icon = 'src/es/novelrefined/icon.png';
   site = 'https://novelrefined.com';
-  version = '2.1.0';
+  version = '2.1.1';
 
   private async getCheerio(url: string): Promise<cheerio.CheerioAPI | null> {
     try {
@@ -104,7 +104,9 @@ class NovelRefinedPlugin implements Plugin.PluginBase {
     return [...map.values()];
   }
 
-  async popularNovels(_pageNo: number): Promise<Plugin.NovelItem[]> {
+  async popularNovels(pageNo: number): Promise<Plugin.NovelItem[]> {
+    // El catálogo es de una sola página: avisar a la app que no hay más
+    if (pageNo > 1) return [];
     const $ = await this.getCheerio(`${this.site}/novelas/`);
     if (!$) return [];
     return this.parseNovelCards($);
@@ -112,8 +114,11 @@ class NovelRefinedPlugin implements Plugin.PluginBase {
 
   async searchNovels(
     searchTerm: string,
-    _pageNo: number,
+    pageNo: number,
   ): Promise<Plugin.NovelItem[]> {
+    // Avisar a la app que no hay más páginas (evita bucle de "cargando más")
+    if (pageNo > 1) return [];
+
     const term = searchTerm.trim();
     if (!term) return [];
 
