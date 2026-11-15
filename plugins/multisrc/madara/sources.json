@@ -562,12 +562,12 @@
   },
   {
     "id": "AnimesHoy12",
-    "sourceSite": "https://animeshoy12.com/",
+    "sourceSite": "https://anslid.com/",
     "sourceName": "AnimesHoy12",
     "options": {
       "lang": "Spanish",
-      "down": true,
-      "downSince": 1768289212951
+      "useNewChapterEndpoint": true,
+      "versionIncrements": 1
     }
   },
   {
