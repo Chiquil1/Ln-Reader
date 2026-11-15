@@ -45,21 +45,75 @@ class KomgaPlugin implements Plugin.PluginBase {
   id = 'komga';
   name = 'Komga';
   icon = 'src/multi/komga/icon.png';
-  version = '1.0.2';
+  version = '1.1.0';
 
-  site = storage.get('url') as string;
-  email = storage.get('email');
-  password = storage.get('password');
+  rawSite = (storage.get('url') as string) || '';
+  email = (storage.get('email') as string) || '';
+  password = (storage.get('password') as string) || '';
 
-  async makeRequest(url: string): Promise<string> {
-    return await fetchApi(url, {
-      headers: {
-        Accept: 'application/json, text/plain, */*',
-        'Content-Type': 'application/json;charset=utf-8',
-        'Authorization': `Basic ${this.btoa(this.email + ':' + this.password)}`,
-      },
-      Referer: this.site,
-    }).then(res => res.text());
+  get site(): string {
+    const url = this.rawSite.trim().replace(/\/+$/, '');
+    return url ? url + '/' : '';
+  }
+
+  private ensureConfigured(): void {
+    if (!this.site) {
+      throw new Error(
+        'Komga: URL not set. Open plugin settings and enter your Komga server URL.',
+      );
+    }
+    if (!this.email || !this.password) {
+      throw new Error(
+        'Komga: email or password not set. Open plugin settings and save your credentials, then restart the app.',
+      );
+    }
+  }
+
+  private parseJson<T>(body: string, context: string): T {
+    try {
+      return JSON.parse(body) as T;
+    } catch {
+      const snippet = body.slice(0, 120).replace(/\s+/g, ' ');
+      throw new Error(
+        `Komga: invalid JSON from ${context}. Response: ${snippet}`,
+      );
+    }
+  }
+
+  async makeRequest(url: string, context = url): Promise<string> {
+    this.ensureConfigured();
+
+    let res: Response;
+    try {
+      res = await fetchApi(url, {
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json;charset=utf-8',
+          'Authorization': `Basic ${this.btoa(this.email + ':' + this.password)}`,
+          'Referer': this.site,
+        },
+      });
+    } catch (e) {
+      throw new Error(
+        `Komga: cannot reach ${this.site} (${e instanceof Error ? e.message : e}). Check the URL and your network.`,
+      );
+    }
+
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
+        throw new Error(
+          'Komga: unauthorized (HTTP ' +
+            res.status +
+            '). Check your email and password in plugin settings.',
+        );
+      }
+      if (res.status === 404) {
+        throw new Error(`Komga: not found (HTTP 404) at ${context}`);
+      }
+      throw new Error(`Komga: server error (HTTP ${res.status}) at ${context}`);
+    }
+
+    return await res.text();
   }
 
   btoa(input = '') {
@@ -93,7 +147,10 @@ class KomgaPlugin implements Plugin.PluginBase {
       acc.push(rest);
 
       if (children) {
-        acc.push(...this.flattenArray(children));
+        const nested = this.flattenArray(children);
+        for (const n of nested) {
+          acc.push(n);
+        }
       }
 
       return acc;
@@ -101,12 +158,20 @@ class KomgaPlugin implements Plugin.PluginBase {
   }
 
   async getSeries(url: string): Promise<Plugin.NovelItem[]> {
+    const response = await this.makeRequest(url, 'series list');
+    const data = this.parseJson<{ content?: SeriesResponse[] }>(
+      response,
+      'series list',
+    );
+
+    const series = data.content;
+    if (!Array.isArray(series)) {
+      throw new Error(
+        'Komga: unexpected response for series list (no content array).',
+      );
+    }
+
     const novels: Plugin.NovelItem[] = [];
-
-    const response = await this.makeRequest(url);
-
-    const series: SeriesResponse[] = JSON.parse(response).content;
-
     for (const s of series) {
       novels.push({
         name: s.name,
@@ -125,6 +190,8 @@ class KomgaPlugin implements Plugin.PluginBase {
       filters,
     }: Plugin.PopularNovelsOptions<typeof this.filters>,
   ): Promise<Plugin.NovelItem[]> {
+    this.ensureConfigured();
+
     const read_status = filters?.read_status.value
       ? '&read_status=' + filters?.read_status.value
       : '';
@@ -139,19 +206,19 @@ class KomgaPlugin implements Plugin.PluginBase {
   }
 
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
+    this.ensureConfigured();
+
     const novel: Plugin.SourceNovel = {
       path: novelPath,
       name: 'Untitled',
     };
 
     const url = this.site + novelPath;
-
-    const response = await this.makeRequest(url);
-
-    const series: SeriesResponse = JSON.parse(response);
+    const response = await this.makeRequest(url, 'series details');
+    const series = this.parseJson<SeriesResponse>(response, 'series details');
 
     novel.name = series.name;
-    novel.author = series.booksMetadata.authors
+    novel.author = (series.booksMetadata?.authors || [])
       .filter((author: Author) => author.role === 'writer')
       .reduce(
         (accumulated: string, current: Author) =>
@@ -159,9 +226,9 @@ class KomgaPlugin implements Plugin.PluginBase {
         '',
       );
     novel.cover = this.site + `api/v1/series/${series.id}/thumbnail`;
-    novel.genres = series.metadata.genres.join(', ');
+    novel.genres = (series.metadata?.genres || []).join(', ');
 
-    switch (series.metadata.status) {
+    switch (series.metadata?.status) {
       case 'ENDED':
         novel.status = NovelStatus.Completed;
         break;
@@ -178,33 +245,44 @@ class KomgaPlugin implements Plugin.PluginBase {
         novel.status = NovelStatus.Unknown;
     }
 
-    novel.summary = series.booksMetadata.summary;
+    novel.summary = series.booksMetadata?.summary || '';
 
     const chapters: Plugin.ChapterItem[] = [];
 
     const booksResponse = await this.makeRequest(
       this.site + `api/v1/series/${series.id}/books?unpaged=true`,
+      'books list',
     );
-
-    const booksData: BookResponse[] = JSON.parse(booksResponse).content;
+    const booksDataParsed = this.parseJson<{ content?: BookResponse[] }>(
+      booksResponse,
+      'books list',
+    );
+    const booksData = Array.isArray(booksDataParsed.content)
+      ? booksDataParsed.content
+      : [];
 
     for (const book of booksData) {
       const bookManifestResponse = await this.makeRequest(
         this.site + `opds/v2/books/${book.id}/manifest`,
+        `manifest for ${book.metadata?.title || book.id}`,
       );
 
-      const bookManifest: BookManifest = JSON.parse(bookManifestResponse);
+      const bookManifest = this.parseJson<BookManifest>(
+        bookManifestResponse,
+        `manifest for ${book.metadata?.title || book.id}`,
+      );
 
-      const toc = this.flattenArray(bookManifest.toc);
+      const toc = this.flattenArray(bookManifest.toc || []);
+      const readingOrder = bookManifest.readingOrder || [];
 
       let i = 1;
-      for (const page of bookManifest.readingOrder) {
+      for (const page of readingOrder) {
         const tocItem = toc.find(
           (v: TocItem) => v.href?.split('#')[0] === page.href,
         );
         const title = tocItem ? tocItem.title : null;
         chapters.push({
-          name: `${i}/${bookManifest.readingOrder.length} - ${book.metadata.title}${title ? ' - ' + title : ''}`,
+          name: `${i}/${readingOrder.length} - ${book.metadata?.title || 'Book'}${title ? ' - ' + title : ''}`,
           path: 'opds/v2' + page.href?.split('opds/v2').pop(),
         });
         i++;
@@ -214,8 +292,12 @@ class KomgaPlugin implements Plugin.PluginBase {
     novel.chapters = chapters;
     return novel;
   }
+
   async parseChapter(chapterPath: string): Promise<string> {
-    const chapterText = await this.makeRequest(this.site + chapterPath);
+    const chapterText = await this.makeRequest(
+      this.site + chapterPath,
+      'chapter',
+    );
     return this.addUrlToImageHref(
       chapterText,
       this.site + chapterPath.split('/').slice(0, -1).join('/') + '/',
@@ -262,7 +344,9 @@ class KomgaPlugin implements Plugin.PluginBase {
     searchTerm: string,
     pageNo: number,
   ): Promise<Plugin.NovelItem[]> {
-    const url = `${this.site}api/v1/series?search=${searchTerm}&page=${pageNo - 1}`;
+    this.ensureConfigured();
+
+    const url = `${this.site}api/v1/series?search=${encodeURIComponent(searchTerm)}&page=${pageNo - 1}`;
 
     return await this.getSeries(url);
   }
